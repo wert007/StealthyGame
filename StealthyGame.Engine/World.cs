@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.DataTypes;
 using StealthyGame.Engine.Debug;
+//using StealthyGame.Engine.Debug;
 using StealthyGame.Engine.GameObjects;
 using StealthyGame.Engine.GameObjects.NPCs;
 using StealthyGame.Engine.MapBasics;
@@ -33,15 +34,15 @@ namespace StealthyGame.Engine
 		{
 			map = LoadMap(file, graphicsDevice);
 			DebugSpriteBatch.SetMap(map);
-			var a = map.ObjectGroups.Where(g => g.Name.StartsWith("NPC")).ToList();
-			foreach (var b in a)
+			var npcGroups = map.ObjectGroups.Where(g => g.Name.StartsWith("NPC")).ToList();
+			foreach (var npc in npcGroups)
 			{
-				string type = b.Name.Split(' ')[1];
-				LoadNPC(type, b.Objects);
-				DebugSpriteBatch.AddGameObject(new DebugNPC(npcs.Last(), Color.Blue)
+				string type = npc.Name.Split(' ')[1];
+				LoadNPC(type, npc.Objects);
+				DebugSpriteBatch.AddDebugObject(new DebugNPC(npcs.Last(), Color.Blue)
 				{
-					ShowVelocity = true,
-					ShowAcceleration = true,
+					ShowVelocity = Color.CornflowerBlue,
+					ShowAcceleration = Color.IndianRed,
 				});
 			}
 		}

@@ -52,6 +52,7 @@ namespace StealthyGame.Engine.OpenTKVersion
 			IsMouseVisible = true;
 			time = new GameTime();
 			batch = new SpriteBatch();
+			batch.Init();
 			GraphicsDevice = new GraphicsDevice();
 		}
 
@@ -78,7 +79,7 @@ namespace StealthyGame.Engine.OpenTKVersion
 			time.AddSeconds(e.Time);
 			GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-			//Draw(time, batch);
+			Draw(time, batch);
 			
 
 			GL.Flush();

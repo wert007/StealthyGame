@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dialogs>
+	<dialog type="text" name="Arazen" id="1" next="2">Guten Tag, Wilkkomen in der Engine!</dialog>
+	<dialog type="text" name="Rozenia" id="2">Störst du schon wieder unsere Gäste, Schatz?</dialog>
+	<dialog type="decision" name="Arazen" id="3" nextyes="4" nextno="5" yes="Doch, eigentlich schon!" no="Im Gegenteil, es ist sehr interessant!">Stimmt doch gar nicht! Oder nerv ich dich etwa?</dialog>
+	<dialog type="text" name="Arazen" id="4">WAAAS?!...</dialog>
+	<dialog type="text" name="Arazen" id="5">Wusst ich's doch!</dialog>
+</dialogs>

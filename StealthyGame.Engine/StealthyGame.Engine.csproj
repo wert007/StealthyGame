@@ -53,17 +53,11 @@
     <Compile Include="DataTypes\HSVColor.cs" />
     <Compile Include="DataTypes\Index2.cs" />
     <Compile Include="DataTypes\Index3.cs" />
-    <Compile Include="Debug\DebugAngleCollection.cs" />
-    <Compile Include="Debug\DebugAnglePair.cs" />
-    <Compile Include="Debug\DebugAnimation2D.cs" />
-    <Compile Include="Debug\DebugGameObject.cs" />
-    <Compile Include="Debug\DebugLight.cs" />
+    <Compile Include="Debug\DebugCollection.cs" />
     <Compile Include="Debug\DebugNPC.cs" />
     <Compile Include="Debug\DebugObstacle.cs" />
-    <Compile Include="Debug\DebugPathfinding.cs" />
-    <Compile Include="Debug\DebugRectangle.cs" />
     <Compile Include="Debug\DebugSpriteBatch.cs" />
-    <Compile Include="Debug\DebugVector.cs" />
+    <Compile Include="Debug\IDebugObject.cs" />
     <Compile Include="GameObjects\NPCs\WanderingNPC.cs" />
     <Compile Include="Geometrics\Area.cs" />
     <Compile Include="Geometrics\Circle.cs" />
@@ -87,6 +81,7 @@
     <Compile Include="Helper\LightHelper.cs" />
     <Compile Include="Helper\RandomHelper.cs" />
     <Compile Include="Helper\VectorHelper.cs" />
+    <Compile Include="LightRenderer.cs" />
     <Compile Include="MapBasics\Tiles\AnimatedTile.cs" />
     <Compile Include="MapBasics\Tiles\BasicTile.cs" />
     <Compile Include="MapBasics\Tiles\InteractiveTiles\DoorTile.cs" />

@@ -14,7 +14,7 @@ namespace StealthyGame.OpenTK
 
 		public MyGame()
 		{
-			player = new Sprite(@"FILENAME");
+			player = new Sprite(@"justapicture.png");
 		}
 
 		public override void Load()
@@ -31,7 +31,8 @@ namespace StealthyGame.OpenTK
 
 		public override void Draw(GameTime time, SpriteBatch batch)
 		{
-			batch.DrawTest();
+			batch.Draw(player, new Rectangle(50, 50, 90, 90), Color.CornflowerBlue);
+			//batch.DrawTest();
 			Console.WriteLine("Drawing..");
 		}
 	}

@@ -11,7 +11,7 @@ namespace StealthyGame.Engine.View
 {
 	public class Camera
 	{
-		public Matrix Tranform { get; private set; }
+		public Matrix Transform { get; private set; }
 		public static Camera Instance { get; private set; }
 		Viewport view;
 		Vector2 position;
@@ -40,7 +40,7 @@ namespace StealthyGame.Engine.View
 			velocity += acceleration;
 			acceleration = new Vector2();
 			position += velocity;
-			Tranform = Matrix.CreateScale(new Vector3(Zoom, Zoom, 0)) *
+			Transform = Matrix.CreateScale(new Vector3(Zoom, Zoom, 0)) *
 				Matrix.CreateTranslation(new Vector3(-target.X * Zoom + view.Width / 2, -target.Y * Zoom + view.Height / 2, 0));
 		}
 	}

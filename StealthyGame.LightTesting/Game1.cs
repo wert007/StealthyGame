@@ -49,7 +49,6 @@ namespace StealthyGame.LightTesting
 			graphics.PreferredBackBufferWidth = height;
 			graphics.ApplyChanges();
 			smap = new StaticLightMap(width, height, 1f);
-			DebugSpriteBatch.Initialize();
 			data = new Color[width * height];
 			PerlinNoise.GenerateNoise();
 			base.Initialize();
@@ -67,7 +66,6 @@ namespace StealthyGame.LightTesting
 			pixel = new Texture2D(GraphicsDevice, 1, 1);
 			pixel.SetData(new Color[] { Color.White });
 			DrawHelper.Pixel = pixel;
-			DebugSpriteBatch.Load(pixel);
 
 			background = Texture2D.FromStream(GraphicsDevice, new FileStream(@".\Content\justapicture.png", FileMode.Open));// Content.Load<Texture2D>("test");
 
@@ -100,8 +98,8 @@ namespace StealthyGame.LightTesting
 			Obstacle obst = new Obstacle(new Index2(90, 50), 3, 3);
 			obst.Update(shape);
 
-			DebugSpriteBatch.AddObstacle(new DebugObstacle(obstacle, Color.DarkGray));
-			DebugSpriteBatch.AddObstacle(new DebugObstacle(obst, Color.Blue));
+			DebugSpriteBatch.AddDebugObject(new DebugObstacle(obstacle, Color.DarkGray));
+			DebugSpriteBatch.AddDebugObject(new DebugObstacle(obst, Color.Blue));
 			//smap.AddObstacle(obstacle);
 			//smap.AddObstacle(obst);
 			smap.AddObstacles(heightmap);

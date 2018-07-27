@@ -62,5 +62,10 @@
       <Name>StealthyGame.Engine.OpenTK</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="justapicture.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

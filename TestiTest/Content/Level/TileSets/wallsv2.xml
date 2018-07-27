@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tileset name="wallsv2" tilewidth="32" tileheight="32" tilecount="36" columns="6">
+ <image source="wallsv1.png" width="192" height="192"/>
+ <tile id="11">
+  <objectgroup draworder="index">
+   <properties>
+    <property name="Animation" type="bool" value="true"/>
+    <property name="AnimationFile" type="file" value="Animations/CellDoorNS.xml"/>
+    <property name="Interactive" type="bool" value="true"/>
+    <property name="Type" value="CellDoor"/>
+   </properties>
+  </objectgroup>
+ </tile>
+ <tile id="17">
+  <objectgroup draworder="index">
+   <properties>
+    <property name="Animation" type="bool" value="true"/>
+    <property name="AnimationFile" type="file" value="Animations/DoorNS.xml"/>
+    <property name="Interactive" type="bool" value="true"/>
+    <property name="Type" value="Door"/>
+   </properties>
+  </objectgroup>
+ </tile>
+ <tile id="30">
+  <objectgroup draworder="index">
+   <properties>
+    <property name="Animation" type="bool" value="true"/>
+    <property name="AnimationFile" type="file" value="Animations/DoorO.xml"/>
+    <property name="Interactive" type="bool" value="true"/>
+    <property name="Type" value="Door"/>
+   </properties>
+  </objectgroup>
+ </tile>
+ <tile id="31">
+  <objectgroup draworder="index">
+   <properties>
+    <property name="Animation" type="bool" value="true"/>
+    <property name="AnimationFile" type="file" value="Animations/CellDoorO.xml"/>
+    <property name="Interactive" type="bool" value="true"/>
+    <property name="Type" value="CellDoor"/>
+   </properties>
+  </objectgroup>
+ </tile>
+</tileset>

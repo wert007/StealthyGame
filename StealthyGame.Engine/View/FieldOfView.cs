@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using StealthyGame.Engine.DataTypes;
-using StealthyGame.Engine.Debug;
+//using StealthyGame.Engine.Debug;
 using StealthyGame.Engine.Geometrics;
 using StealthyGame.Engine.View.Lighting;
 using System;

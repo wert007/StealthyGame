@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.DataTypes;
-using StealthyGame.Engine.Debug;
+//using StealthyGame.Engine.Debug;
 using StealthyGame.Engine.Geometrics;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.MapBasics.Tiles;
@@ -75,8 +75,8 @@ namespace StealthyGame.Engine.View.Lighting
 			int maxY = raycasts.Max(r => r.Max.Y);
 			AnimatedLightArea result = new AnimatedLightArea(minX, minY, maxX - minX, maxY - minY);
 
-			DebugSpriteBatch.AddRectangle(new DebugRectangle(new Rectangle(source.Position.X, source.Position.Y, 32, 32), Color.MonoGameOrange));
-			DebugSpriteBatch.AddRectangle(new DebugRectangle(new Rectangle(minX, minY, result.Width, result.Height), Color.Red));
+			//DebugSpriteBatch.AddRectangle(new DebugRectangle(new Rectangle(source.Position.X, source.Position.Y, 32, 32), Color.MonoGameOrange));
+			//DebugSpriteBatch.AddRectangle(new DebugRectangle(new Rectangle(minX, minY, result.Width, result.Height), Color.Red));
 			//Compute Raycasts
 
 			for (int a = 0; a < source.Animations.Length; a++)

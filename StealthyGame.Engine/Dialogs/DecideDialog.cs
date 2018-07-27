@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StealthyGame.Engine.Dialogs
 {
-	class DecideDialog : BaseDialog
+	class DecisionDialog : BaseDialog
 	{
 		int nextYes;
 		int nextNo;
@@ -14,7 +14,7 @@ namespace StealthyGame.Engine.Dialogs
 		string yes;
 		string no;
 
-		public DecideDialog(int id, string name, string content, int nextYes, int nextNo, string yes, string no) : base(id, name, content)
+		public DecisionDialog(int id, string name, string content, int nextYes, int nextNo, string yes, string no) : base(id, name, content)
 		{
 			this.nextYes = nextYes;
 			this.nextNo = nextNo;

@@ -1,7 +1,8 @@
 ﻿using System;
 
-namespace StealthyGame
+namespace TestiTest
 {
+#if WINDOWS || LINUX
     /// <summary>
     /// The main class.
     /// </summary>
@@ -17,4 +18,5 @@ namespace StealthyGame
                 game.Run();
         }
     }
+#endif
 }

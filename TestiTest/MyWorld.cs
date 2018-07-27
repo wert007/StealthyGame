@@ -6,16 +6,16 @@ using StealthyGame.Engine.GameObjects.NPCs;
 using StealthyGame.Engine.MapBasics.Tiled;
 using StealthyGame.Engine.Pathfinding;
 using StealthyGame.Engine.View;
-using StealthyGame.MapBasics;
+using TestiTest.MapBasics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using StealthyGame.Engine.MapBasics;
-using StealthyGame.GameObjects.NPCs;
+using TestiTest.GameObjects.NPCs;
 
-namespace StealthyGame
+namespace TestiTest
 {
 	class MyWorld : World
 	{

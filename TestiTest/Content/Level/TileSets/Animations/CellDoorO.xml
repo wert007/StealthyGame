@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<animations tilewidth="32" tileheight="32" spacing="1" source="./CellDoorO.png">
+	<animation index="0" name="idle" length="1" duration="100" looped="true"/>
+	<animation index="1" name="idleopen" length="1" duration="100" looped="true"/>
+	<animation index="2" name="close" length="3" duration="100" looped="false"/>
+	<animation index="3" name="open" length="3" duration="100" looped="false"/>
+	<animation index="0" name="idleshadow" length="1" duration="100" looped="true"/>
+	<animation index="1" name="idleopenshadow" length="1" duration="100" looped="true"/>
+	<animation index="2" name="closeshadow" length="3" duration="100" looped="false"/>
+	<animation index="3" name="openshadow" length="3" duration="100" looped="false"/>
+</animations>

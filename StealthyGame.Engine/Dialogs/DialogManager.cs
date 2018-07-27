@@ -80,7 +80,7 @@ namespace StealthyGame.Engine.Dialogs
 									string no = xr["no"];
 									xr.Read();
 									content = xr.ReadContentAsString();
-									result.dialogs.Add(new DecideDialog(id, name, content, nextyes, nextno, yes, no));
+									result.dialogs.Add(new DecisionDialog(id, name, content, nextyes, nextno, yes, no));
 									break;
 								default:
 									throw new NotSupportedException("Unknown Type " + xr["type"]);
