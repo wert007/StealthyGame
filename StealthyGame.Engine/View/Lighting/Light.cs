@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using StealthyGame.Engine.DataTypes;
+using StealthyGame.Engine.Geometrics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +11,28 @@ namespace StealthyGame.Engine.View.Lighting
 {
 	public class Light
 	{
-		public Index2 Position { get; private set; }
-		public HSVColor Color { get; private set; }
-		public int Radius { get; private set; }
+		public Circle Area { get; private set; }
+		public Index2 Position
+		{
+			get { return Area.Center; }
+			set { Area.Center = value; }
+		}
+
+		public int Radius { get { return Area.Radius; } }
+		public HSV Color { get; private set; }				
 		public float Brightness { get; private set; }
 
-		public Light(Index2 position, int radius, float brightness, HSVColor color)
+		public Light(Index2 position, int radius, float brightness, Color color)
 		{
-			Position = position;
+			Area = new Circle(position, radius);
+			Color = new HSV(color);
+			Brightness = brightness;
+		}
+
+		public Light(Index2 position, int radius, float brightness, HSV color)
+		{
+			Area = new Circle(position, radius);
 			Color = color;
-			Radius = radius;
 			Brightness = brightness;
 		}
 	}

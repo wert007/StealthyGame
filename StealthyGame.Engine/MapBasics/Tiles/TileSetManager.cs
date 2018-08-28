@@ -16,6 +16,8 @@ namespace StealthyGame.Engine.MapBasics.Tiles
 		List<TileSet> tileSets;
 		List<int> firstGid;
 
+		public IEnumerable<TileSet> TileSets => tileSets;
+
 		public TileSetManager()
 		{
 			tileSets = new List<TileSet>();
@@ -30,10 +32,16 @@ namespace StealthyGame.Engine.MapBasics.Tiles
 			firstGid.Add(int.Parse(xr["firstgid"]));
 		}
 
+		public void AddTileSet(TileSet tileSet)
+		{
+			firstGid.Add(tileSets.Sum(t => t.TileCount) + 1);
+			tileSets.Add(tileSet);
+		}
+
 		public Rectangle GetSourceRectangle(int index)
 		{
 			Rectangle result = new Rectangle();
-			int i = IndexToTileSet(index);
+			int i = IndexToTileSetIndex(index);
 			if (i >= 0)
 			{
 				result = tileSets[i].GetSourceRectangle(index - firstGid[i]);
@@ -45,7 +53,7 @@ namespace StealthyGame.Engine.MapBasics.Tiles
 		public Color[] GetData(int index)
 		{
 			Color[] result = null;
-			int i = IndexToTileSet(index);
+			int i = IndexToTileSetIndex(index);
 			if(i >= 0)
 			{
 				result = new Color[GetSourceRectangle(index).Width * GetSourceRectangle(index).Height];
@@ -54,7 +62,14 @@ namespace StealthyGame.Engine.MapBasics.Tiles
 			return result;
 		}
 
-		int IndexToTileSet(int index)
+		public TileSet IndexToTileSet(int index)
+		{
+			int tileSet = IndexToTileSetIndex(index);
+			if (tileSet < 0) return null;
+			return tileSets[tileSet];
+		}
+
+		public int IndexToTileSetIndex(int index)
 		{
 			if (index == 0 || index > firstGid.Last() + tileSets.Last().TileCount)
 				return -1;
@@ -66,10 +81,22 @@ namespace StealthyGame.Engine.MapBasics.Tiles
 			return firstGid.Count - 1;
 		}
 
+		public int ShortenIndex(int index)
+		{
+			if (index == 0 || index > firstGid.Last() + tileSets.Last().TileCount)
+				return -1;
+			for (int i = 0; i < firstGid.Count - 1; i++)
+			{
+				if (index >= firstGid[i] && index < firstGid[i + 1])
+					return index - firstGid[i];
+			}
+			return index - firstGid.Last();
+		}
+
 		public bool IsInteractive(int index)
 		{
 			bool result = false;
-			int i = IndexToTileSet(index);
+			int i = IndexToTileSetIndex(index);
 			if (i >= 0)
 			{
 				result = tileSets[i].IsInteractive(index - firstGid[i]);
@@ -80,7 +107,7 @@ namespace StealthyGame.Engine.MapBasics.Tiles
 		public bool IsAnimation(int index)
 		{
 			bool result = false;
-			int i = IndexToTileSet(index);
+			int i = IndexToTileSetIndex(index);
 			if (i >= 0)
 			{
 				result = tileSets[i].IsAnimation(index - firstGid[i]);
@@ -88,10 +115,10 @@ namespace StealthyGame.Engine.MapBasics.Tiles
 			return result;
 		}
 
-		internal TiledProperties GetProperties(int index)
+		public TiledProperties GetProperties(int index)
 		{
 			TiledProperties result = null;
-			int i = IndexToTileSet(index);
+			int i = IndexToTileSetIndex(index);
 			if(i >= 0)
 			{
 				result = tileSets[i].GetProperties(index - firstGid[i]);

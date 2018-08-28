@@ -19,10 +19,10 @@ namespace TestiTest
 {
 	class MyWorld : World
 	{
-		List<RightfulNPC> rnpcs;
+		//List<RightfulNPC> rnpcs;
 		public MyWorld(Camera cam) : base(cam)
 		{
-			rnpcs = new List<RightfulNPC>();
+			//rnpcs = new List<RightfulNPC>();
 		}
 
 		protected override Map LoadMap(string file, GraphicsDevice graphicsDevice)
@@ -32,15 +32,18 @@ namespace TestiTest
 			return result;
 		}
 
-		protected override void LoadNPC(string type, TiledMapObject[] objects)
+		protected override bool LoadNPC(string type, TiledMapObject[] objects)
 		{
-			base.LoadNPC(type, objects);
-			switch (type)
+			if (!base.LoadNPC(type, objects))
 			{
-				default:
-					Console.WriteLine("Unknown Type: " + type);
-					break;
+				switch (type)
+				{
+					default:
+						Console.WriteLine("Unknown Type: " + type);
+						return false;
+				}
 			}
+			return true;
 		}
 	}
 }

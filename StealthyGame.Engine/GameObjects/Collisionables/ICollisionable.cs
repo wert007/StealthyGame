@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,5 +16,7 @@ namespace StealthyGame.Engine.GameObjects.Collisionables
 		/// <returns></returns>
 		bool Collide(ICollisionable other);
 		bool Intersects(ICollisionable other);
+		bool Collide(Vector2 vector);
+		bool Intersects(Vector2 vector);
 	}
 }

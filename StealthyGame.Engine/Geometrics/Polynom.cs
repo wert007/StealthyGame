@@ -13,7 +13,7 @@ namespace StealthyGame.Engine.Geometrics
 {
 	public class Polynom : Area
 	{
-		Index2[] points;
+		public Index2[] Vertices { get; private set; }
 		protected Index2[] Points { get; set; }
 
 		public IEnumerable<Index2> All => Points;
@@ -25,7 +25,7 @@ namespace StealthyGame.Engine.Geometrics
 
 		public Polynom(params Index2[] points) : base(ToArea(points))
 		{
-			this.points = points;
+			this.Vertices = points;
 		}
 
 		private static Index2[] ToArea(Index2[] points)
@@ -149,7 +149,7 @@ namespace StealthyGame.Engine.Geometrics
 			List<Index2> candidates = new List<Index2>();
 			candidates.Add((Min + Max) / 2);
 			candidates.AddRange(GetNeighbours((Min + Max) / 2));
-			foreach (var point in points)
+			foreach (var point in Vertices)
 			{
 				candidates.AddRange(GetNeighbours(point));
 				candidates.Add(point);

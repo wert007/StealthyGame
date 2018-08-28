@@ -73,10 +73,12 @@ namespace StealthyGame.Engine.MapBasics
 				t.SetData(0, new Rectangle(x * BasicTile.Size, y * BasicTile.Size, BasicTile.Size, BasicTile.Size), data, 0, data.Length);
 			}
 			result.Prerendered = t;
-			result.Prerendered.SaveAsPng(new FileStream(".\\prerendered" + result.name + ".png", FileMode.Create), result.Prerendered.Width, result.Prerendered.Height);
-			Console.WriteLine("prerendered" + result.name + "Saved");
+			//result.Prerendered.SaveAsPng(new FileStream(".\\prerendered" + result.name + ".png", FileMode.Create), result.Prerendered.Width, result.Prerendered.Height);
+			//Console.WriteLine("prerendered" + result.name + "Saved");
 			return result;
 		}
+
+		public int[] GetRawData() => data;
 
 		public bool IsInteractive(int x, int y)
 		{

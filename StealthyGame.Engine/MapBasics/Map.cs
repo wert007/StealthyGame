@@ -1,7 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.DataTypes;
-//using StealthyGame.Engine.Debug;
+using StealthyGame.Engine.Debug;
 using StealthyGame.Engine.MapBasics.Tiled;
 using StealthyGame.Engine.MapBasics.Tiles;
 using StealthyGame.Engine.Pathfinding;
@@ -15,7 +15,6 @@ using System.Xml;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.MapBasics.Tiles.InteractiveTiles;
 using StealthyGame.Engine.View.Lighting;
-using StealthyGame.Engine.View.Lighting.LightStorages.Lightmaps;
 using Microsoft.Xna.Framework.Input;
 
 namespace StealthyGame.Engine.MapBasics
@@ -25,69 +24,48 @@ namespace StealthyGame.Engine.MapBasics
 		int width;
 		int height;
 		public TiledObjectGroup[] ObjectGroups { get; private set; }
-		public BasicLightmap Lightmap { get; private set; }
-		MapLayer[] layers;
+		public MapLayer[] Layers { get; private set; }
 		protected BasicTile[,] tiles;
+		public ANewHope hope;
+		
+		public Index2 PixelSize => new Index2(width * 32, height * 32);
+		public Index2 TileSize => new Index2(width, height);
 
-		Obstacle test;
-
-		public Map(int width, int height, TiledObjectGroup[] objectGroups, MapLayer[] layers)
-		{
-			this.width = width;
-			this.height = height;
-			this.ObjectGroups = objectGroups;
-			this.layers = layers;
-			tiles = new BasicTile[width, height];
-			for (int x = 0; x < width; x++)
-			{
-				for (int y = 0; y < height; y++)
-				{
-					for (int z = 0; z < layers.Length; z++)
-					{
-						GetParameters(x, y,z, out Index3 index, out bool interactive, out bool animation, out TiledProperties properties);
-						LoadTiles(x, y, z, properties, interactive, animation);
-					}
-				}
-			}
-			for (int x = 0; x < width; x++)
-			{
-				for (int y = 0; y < height; y++)
-				{
-					tiles[x, y].PathfindingNode.SetNeighbours(
-						GetNeighbours(x, y));
-				}
-			}
-			test = new Obstacle(new Index2(), 50, 50);
-			float[,] arr = new float[50, 50];
-			for (int x = 0; x < 50; x++)
-			{
-				for (int y = 0; y < 50; y++)
-				{
-					arr[x, y] = 1;
-				}
-			}
-			test.Update(arr);
-		}
-
+		//public Map(int width, int height, TiledObjectGroup[] objectGroups, MapLayer[] layers, GraphicsDevice graphicsDevice)
+		//{
+		//	this.width = width;
+		//	this.height = height;
+		//	this.ObjectGroups = objectGroups;
+		//	this.Layers = layers;
+		//	tiles = new BasicTile[width, height];
+		//	hope = new ANewHope(graphicsDevice, this, tileSetManager);
+		//	for (int x = 0; x < width; x++)
+		//	{
+		//		for (int y = 0; y < height; y++)
+		//		{
+		//			for (int z = 0; z < layers.Length; z++)
+		//			{
+		//				GetParameters(x, y,z, out Index3 index, out bool interactive, out bool animation, out TiledProperties properties);
+		//				LoadTiles(x, y, z, properties, interactive, animation);
+		//			}
+		//		}
+		//	}
+		//	for (int x = 0; x < width; x++)
+		//	{
+		//		for (int y = 0; y < height; y++)
+		//		{
+		//			tiles[x, y].PathfindingNode.SetNeighbours(
+		//				GetNeighbours(x, y));
+		//		}
+		//	}
+		//}
 
 		public Map()
 		{
-
-			test = new Obstacle(new Index2(), 50, 50);
-			float[,] arr = new float[50, 50];
-			for (int x = 0; x < 50; x++)
-			{
-				for (int y = 0; y < 50; y++)
-				{
-					arr[x, y] = 1;
-				}
-			}
-			test.Update(arr);
 		}
 
 		public BasicTile GetTile(Index2 position) => GetTile(position.X, position.Y);
 		public BasicTile GetTile(int x, int y) => tiles[x, y];
-		public MapLayer GetLayer(int z) => layers[z];
 
 		protected virtual void LoadTiles(int x, int y, int z, TiledProperties properties, bool interactive, bool animation)
 		{
@@ -96,20 +74,20 @@ namespace StealthyGame.Engine.MapBasics
 				switch (properties.GetProperty("Type"))
 				{
 					case "Door":
-						tiles[x, y] = new DoorTile("door", new Index3(x, y, z), GetLayer(z).DrawOrder);
+						tiles[x, y] = new DoorTile("door", new Index3(x, y, z), Layers[z].DrawOrder);
 						break;
 					default:
-						tiles[x, y] = new InteractiveTile("door", new Index3(x, y, z), GetLayer(z).DrawOrder);
+						tiles[x, y] = new InteractiveTile("door", new Index3(x, y, z), Layers[z].DrawOrder);
 						break;
 				}
 			}
 			else if (animation && !interactive)
 			{
-				tiles[x, y] = new AnimatedTile("flower", new Index3(x, y, z), GetLayer(z).DrawOrder);
+				tiles[x, y] = new AnimatedTile("flower", new Index3(x, y, z), Layers[z].DrawOrder);
 			}
 			else if (!interactive && !animation)
 			{
-				tiles[x, y] = new BasicTile("dirt", new Index3(x, y, z), GetLayer(z).DrawOrder);
+				tiles[x, y] = new BasicTile("dirt", new Index3(x, y, z), Layers[z].DrawOrder);
 			}
 			else
 				throw new NotSupportedException("No Tile should be interacitve but not animated");
@@ -119,9 +97,9 @@ namespace StealthyGame.Engine.MapBasics
 		protected void GetParameters(int x, int y, int z, out Index3 index, out bool interactive, out bool animation, out TiledProperties properties)
 		{
 			index = new Index3(x, y, z);
-			interactive = layers[z].IsInteractive(x,y);
-			animation = layers[z].IsAnimation(x,y);
-			properties = layers[z].GetProperties(x, y);
+			interactive = Layers[z].IsInteractive(x,y);
+			animation = Layers[z].IsAnimation(x,y);
+			properties = Layers[z].GetProperties(x, y);
 		}
 
 		public bool IsAnimated(Vector2 pixel, int z = -1)
@@ -130,7 +108,7 @@ namespace StealthyGame.Engine.MapBasics
 			Index2 index = (Index2) (pixel / 32);
 			if (z == -1)
 			{
-				for (int _z = 0; _z < layers.Length; _z++)
+				for (int _z = 0; _z < Layers.Length; _z++)
 				{
 					GetParameters(index.X, index.Y, _z, out Index3 _index, out bool i, out result, out TiledProperties p);
 				}
@@ -248,11 +226,13 @@ namespace StealthyGame.Engine.MapBasics
 					int yd1 = (int) (door.Position.Y / BasicTile.Size);
 					int xd2 = -1;
 					int yd2 = -1;
+					//Should be 64 > 32
 					if (door.Size.X > door.Size.Y)
 					{
 						xd2 = xd1 + 1;
 						yd2 = yd1;
 					}
+					//Should be 64 > 32
 					else if (door.Size.Y > door.Size.X)
 					{
 						xd2 = xd1;
@@ -300,8 +280,10 @@ namespace StealthyGame.Engine.MapBasics
 			int tilesize = -1;
 			List<TiledObjectGroup> objectGroups = new List<TiledObjectGroup>();
 			List<MapLayer> layers = new List<MapLayer>();
-			List<MapLayer> lightLayers = new List<MapLayer>();
 			TileSetManager ts = new TileSetManager();
+
+			hope = new ANewHope(graphicsDevice, this);
+
 			using (XmlReader xr = XmlReader.Create(file))
 			{
 				while (xr.Read())
@@ -327,7 +309,7 @@ namespace StealthyGame.Engine.MapBasics
 							}
 							else
 							{
-								lightLayers.Add(layer);
+								hope.AddLayer(layer);
 							}
 							break;
 						case "map":
@@ -347,12 +329,12 @@ namespace StealthyGame.Engine.MapBasics
 			}
 			BasicTile.SetTileSize(tilesize);
 
+			hope.LoadTileSets(ts);
+
 			this.width = width;
 			this.height = height;
 			this.ObjectGroups = objectGroups.ToArray();
-			this.layers = layers.ToArray();
-			this.Lightmap = new CombiLightMap(width * BasicTile.Size, height * BasicTile.Size, GetGroupByName("Lights").Properties.GetPropertyAsFloat("DrawOrder"));
-			lightLayers.ForEach(l => ((CombiLightMap)Lightmap).AddStaticObstacles(l.Prerendered));
+			this.Layers = layers.ToArray();
 			tiles = new BasicTile[width, height];
 			for (int x = 0; x < width; x++)
 			{
@@ -389,12 +371,9 @@ namespace StealthyGame.Engine.MapBasics
 			var a = GetGroupByName("Lights");
 			foreach (var b in a.Objects)
 			{
-				Lightmap.AddLight(new StationaryLight((Index2)b.Position, b.Properties.GetPropertyAsInt("Strength"), 1f, new HSVColor(b.Properties.GetPropertyAsColor("Color"))));
+				hope.AddLight(new Light((Index2)b.Position, (short)b.Properties.GetPropertyAsInt("Strength"), 1f, b.Properties.GetPropertyAsColor("Color")));
 			}
-			Lightmap.Generate(this, new HSVColor(new Color(0.1f, 0.15f, 0.15f)), graphicsDevice);
-			//return result;
 		}
-
 
 		public void Update(GameTime time)
 		{
@@ -409,31 +388,28 @@ namespace StealthyGame.Engine.MapBasics
 					}
 				}
 			}
-			test.Update((Index2)Mouse.GetState().Position.ToVector2());
-			//Lightmap.Update(time);
 		}
 
 		public void Draw(SpriteBatch batch, Matrix cam)
 		{
-			for (int i = 0; i < layers.Length; i++)
+			hope.CalculateLightmap(batch, cam, PixelSize, new Color(51, 51, 51));
+			for (int i = 0; i < Layers.Length; i++)
 			{
-				batch.Draw(layers[i].Prerendered, position: new Vector2(), color: Lightmap.DrawOrder < layers[i].DrawOrder ? Lightmap.AmbientColor.RGB * 3f : Color.White,layerDepth: layers[i].DrawOrder);
-				if (i + 1 < layers.Length && layers[i].DrawOrder <= Lightmap.DrawOrder && Lightmap.DrawOrder < layers[i + 1].DrawOrder)
-				{
-					batch.End();
-					batch.Begin(SpriteSortMode.Deferred, LightHelper.Multiply, null, null, null, null, cam);
-					Lightmap.Draw(batch);
-					batch.End();
-					batch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, cam);
-				}
+				batch.Draw(Layers[i].Prerendered, position: new Vector2(), color: Color.White,layerDepth: Layers[i].DrawOrder);
 			}
+			hope._Draw(batch);
+			batch.End();
+			batch.Begin(SpriteSortMode.Deferred, LightHelper.Multiply, null, null, null, null, cam);
+			hope.Draw(batch);
+			batch.End();
+			batch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, cam);
 			for (int x = 0; x < width; x++)
 			{
 				for (int y = 0; y < height; y++)
 				{
 					if (tiles[x, y] is InteractiveTile)
 					{
-						(tiles[x, y] as InteractiveTile).Draw(batch, Lightmap.DrawOrder < tiles[x,y].DrawOrder ? Lightmap.AmbientColor.RGB * 3f : Color.White);
+						(tiles[x, y] as InteractiveTile).Draw(batch, Color.White);
 					}
 				}
 			}

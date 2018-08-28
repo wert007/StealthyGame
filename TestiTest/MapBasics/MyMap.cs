@@ -14,11 +14,6 @@ namespace TestiTest.MapBasics
 {
 	class MyMap : Map
 	{
-		public MyMap(int width, int height, TiledObjectGroup[] objectGroups, MapLayer[] layers) : base(width, height, objectGroups, layers)
-		{
-
-		}
-		
 		public MyMap() { }
 
 		protected override void LoadTiles(int x, int y, int z, TiledProperties properties, bool interactive, bool animation)
@@ -29,7 +24,7 @@ namespace TestiTest.MapBasics
 				switch(properties.GetProperty("Type"))
 				{
 					case "CellDoor":
-						tiles[x, y] = new CellDoor("cellDoor", new Index3(x, y, z), GetLayer(z).DrawOrder);
+						tiles[x, y] = new CellDoor("cellDoor", new Index3(x, y, z), Layers[z].DrawOrder);
 						break;
 
 				}

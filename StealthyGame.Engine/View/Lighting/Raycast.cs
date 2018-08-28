@@ -12,7 +12,7 @@ using System.Collections;
 
 namespace StealthyGame.Engine.View.Lighting
 {
-	public class Raycast : Line
+	public class Raycast : OldLine
 	{
 		public Raycast(Index2 start, Index2 end) 
 			: base(start, end) {	}

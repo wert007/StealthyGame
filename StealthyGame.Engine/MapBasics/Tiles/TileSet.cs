@@ -11,20 +11,24 @@ using System.Xml;
 
 namespace StealthyGame.Engine.MapBasics.Tiles
 {
-	class TileSet
+	public class TileSet
 	{
-		string name;
+		public string Name { get; private set; }
+		public string ImagePath { get; private set; }
+		public string SourcePath { get; private set; }
 		public int TileCount { get; private set; }
 		int columns;
 		public int TileSize { get; private set; } = 32;
 		TiledProperties[] properties;
 
 		public Texture2D Texture { get; private set; }
+		
 
 		public static TileSet Load(string file, GraphicsDevice graphicsDevice)
 		{
 			TileSet result = new TileSet();
 			result.properties = null;
+			result.SourcePath = file;
 			using (XmlReader xr = XmlReader.Create(file))
 			{
 				while(xr.Read())
@@ -33,7 +37,7 @@ namespace StealthyGame.Engine.MapBasics.Tiles
 						continue;
 					if (xr.Name == "tileset")
 					{
-						result.name = xr["name"];
+						result.Name = xr["name"];
 						result.TileSize = int.Parse(xr["tilewidth"]); //should be same as tileheight
 						result.TileCount = int.Parse(xr["tilecount"]);
 						result.columns = int.Parse(xr["columns"]);
@@ -41,8 +45,9 @@ namespace StealthyGame.Engine.MapBasics.Tiles
 					}
 					else if (xr.Name == "image")
 					{
-						string imagePath = Path.Combine(Path.GetDirectoryName(file), xr["source"]);
-						result.Texture = Texture2D.FromStream(graphicsDevice, new FileStream(imagePath, FileMode.Open));
+						result.ImagePath = Path.Combine(Path.GetDirectoryName(file), xr["source"]);
+						using (FileStream fs = new FileStream(result.ImagePath, FileMode.Open))
+							result.Texture = Texture2D.FromStream(graphicsDevice, fs);
 					}
 					else if (xr.Name == "tile")
 					{

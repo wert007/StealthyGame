@@ -72,7 +72,7 @@ namespace StealthyGame.Engine.Geometrics
 			inc = new Index2(sgn(delta.X), sgn(delta.Y));
 			if (delta.X < 0) delta.X = -delta.X;
 			if (delta.Y < 0) delta.Y = -delta.Y;
-			if(delta.X > delta.Y)
+			if (delta.X > delta.Y)
 			{
 				parallel = new Index2(inc.X, 0);
 				diagonal = new Index2(inc.X, inc.Y);

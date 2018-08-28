@@ -10,6 +10,7 @@ using StealthyGame.Engine.MapBasics.Tiled;
 using StealthyGame.Engine.MapBasics.Tiles;
 using StealthyGame.Engine.Pathfinding;
 using StealthyGame.Engine.View;
+using StealthyGame.Engine.View.Lighting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,9 @@ namespace StealthyGame.Engine
 		public Map map;
 		Camera cam;
 		public List<NPC> npcs;
+
+		List<NPC> followed = new List<NPC>();
+		List<Light> follower = new List<Light>();
 
 		public World(Camera cam)
 		{
@@ -54,7 +58,7 @@ namespace StealthyGame.Engine
 			return result;
 		}
 
-		protected virtual void LoadNPC(string type, TiledMapObject[] objects)
+		protected virtual bool LoadNPC(string type, TiledMapObject[] objects)
 		{
 			switch (type)
 			{
@@ -71,7 +75,10 @@ namespace StealthyGame.Engine
 								throw new NotSupportedException("Unknown Type " + o.Type);
 						}
 					}
-					npcs.Add(new RoutedNPC(new Route(true, wayPoints.ToArray())));
+					followed.Add(new RoutedNPC(new Route(true, wayPoints.ToArray())));
+					npcs.Add(followed.Last());
+					follower.Add(new Light((Index2)followed.Last().Position, 50, 0.5f, Color.Red));
+					map.hope.AddLight(follower.Last());
 					break;
 				case "Wander":
 					foreach (var o in objects)
@@ -87,9 +94,9 @@ namespace StealthyGame.Engine
 					}
 					break;
 				default:
-					Console.WriteLine("Unknown Type: " + type);
-					break;
+					return false;
 			}
+			return true;
 		}
 
 		public void Update(GameTime time)
@@ -98,6 +105,10 @@ namespace StealthyGame.Engine
 			foreach (var npc in npcs)
 			{
 				npc.Update(time);
+			}
+			for (int i = 0; i < followed.Count; i++)
+			{
+				follower[i].Position = (Index2)followed[i].Position;
 			}
 		}
 	}

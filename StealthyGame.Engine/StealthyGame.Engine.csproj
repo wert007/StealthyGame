@@ -54,15 +54,23 @@
     <Compile Include="DataTypes\Index2.cs" />
     <Compile Include="DataTypes\Index3.cs" />
     <Compile Include="Debug\DebugCollection.cs" />
+    <Compile Include="Debug\DebugLight.cs" />
     <Compile Include="Debug\DebugNPC.cs" />
-    <Compile Include="Debug\DebugObstacle.cs" />
     <Compile Include="Debug\DebugSpriteBatch.cs" />
     <Compile Include="Debug\IDebugObject.cs" />
+    <Compile Include="Debug\UI\ClassTree.cs" />
+    <Compile Include="GameMechanics\Phases\Phase.cs" />
+    <Compile Include="GameMechanics\Phases\PhaseContainer.cs" />
+    <Compile Include="GameMechanics\Phases\PhaseManager.cs" />
+    <Compile Include="GameObjects\Collisionables\CollisionCircle.cs" />
     <Compile Include="GameObjects\NPCs\WanderingNPC.cs" />
     <Compile Include="Geometrics\Area.cs" />
     <Compile Include="Geometrics\Circle.cs" />
     <Compile Include="Geometrics\IGeometric.cs" />
     <Compile Include="Geometrics\Line.cs" />
+    <Compile Include="Geometrics\Maths\LinearExpression.cs" />
+    <Compile Include="Geometrics\OldLine.cs" />
+    <Compile Include="Geometrics\Polygon.cs" />
     <Compile Include="Geometrics\Polynom.cs" />
     <Compile Include="Geometrics\Rectangle.cs" />
     <Compile Include="Geometrics\Voronoi.cs" />
@@ -76,12 +84,11 @@
     <Compile Include="GameObjects\Collisionables\ICollisionable.cs" />
     <Compile Include="GameObjects\NPCs\NPC.cs" />
     <Compile Include="GameObjects\NPCs\RoutedNPC.cs" />
-    <Compile Include="GameObjects\Player.cs" />
     <Compile Include="Helper\GeometricsHelper.cs" />
     <Compile Include="Helper\LightHelper.cs" />
     <Compile Include="Helper\RandomHelper.cs" />
     <Compile Include="Helper\VectorHelper.cs" />
-    <Compile Include="LightRenderer.cs" />
+    <Compile Include="Input\KeyboardManager.cs" />
     <Compile Include="MapBasics\Tiles\AnimatedTile.cs" />
     <Compile Include="MapBasics\Tiles\BasicTile.cs" />
     <Compile Include="MapBasics\Tiles\InteractiveTiles\DoorTile.cs" />
@@ -102,25 +109,20 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="View\Camera.cs" />
     <Compile Include="View\FieldOfView.cs" />
+    <Compile Include="View\Lighting\ANewHope.cs" />
     <Compile Include="View\Lighting\AnimatedTileLighting.cs" />
+    <Compile Include="View\Lighting\LightArray.cs" />
+    <Compile Include="View\Lighting\Lightmap.cs" />
     <Compile Include="View\Lighting\LightRaycast.cs" />
-    <Compile Include="View\Lighting\LightStorages\AnimatedLightArea.cs" />
     <Compile Include="Geometrics\Bresenham.cs" />
-    <Compile Include="View\Lighting\LightStorages\ILightStorage.cs" />
     <Compile Include="View\Lighting\Light.cs" />
-    <Compile Include="View\Lighting\LightStorages\LightArea.cs" />
-    <Compile Include="View\Lighting\LightStorages\Lightmaps\BasicLightmap.cs" />
-    <Compile Include="View\Lighting\LightStorages\Lightmaps\CombiLightMap.cs" />
-    <Compile Include="View\Lighting\LightStorages\Lightmaps\DynamicLightMap.cs" />
-    <Compile Include="View\Lighting\LightStorages\Lightmaps\StaticLightMap.cs" />
-    <Compile Include="View\Lighting\Obstacle.cs" />
     <Compile Include="View\Lighting\Raycast.cs" />
-    <Compile Include="View\Lighting\StationaryLight.cs" />
     <Compile Include="World.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

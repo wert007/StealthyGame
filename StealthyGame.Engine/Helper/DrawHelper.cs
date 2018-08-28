@@ -14,6 +14,85 @@ namespace StealthyGame.Engine.Helper
 	{
 		public static Texture2D Pixel { get; set; }
 
+		public static Color GetPixel(this Color[] data, int x, int y, int width) => data[y * width + x];
+
+		public static Texture2D GaussianBlur(this Texture2D origin, int radius)
+		{
+			Texture2D result = new Texture2D(origin.GraphicsDevice, origin.Width, origin.Height);
+			Color[] data = new Color[origin.Width * origin.Height];
+			origin.GetData(data);
+			Color[] resultData = new Color[origin.Width * origin.Height];
+			int maskSize = (radius - 1) / 2;
+			int[,] mask = Mask(maskSize);
+			int maskSum = MaskSum(mask);
+			for (int x = maskSize; x < origin.Width - maskSize; x++)
+			{
+				for (int y = maskSize; y < origin.Height - maskSize; y++)
+				{
+					Color cur = Color.TransparentBlack;
+					int r = 0;
+					int g = 0;
+					int b = 0;
+					int a = 0;
+					for (int xOff = -maskSize; xOff <= maskSize; xOff++)
+					{
+						for (int yOff = -maskSize; yOff <= maskSize; yOff++)
+						{
+							cur = data.GetPixel(x + xOff, y + yOff, origin.Width);
+							r += cur.R * mask[xOff + maskSize, yOff + maskSize];
+							g += cur.G * mask[xOff + maskSize, yOff + maskSize];
+							b += cur.B * mask[xOff + maskSize, yOff + maskSize];
+							a += cur.A * mask[xOff + maskSize, yOff + maskSize];
+						}
+					}
+					cur = new Color(r / maskSum, g / maskSum, b / maskSum, a / maskSum);
+					resultData[y * origin.Width + x] = cur;
+				}
+			}
+			result.SetData(resultData);
+			return result;
+		}
+
+		private static int MaskSum(int[,] mask)
+		{
+			int sum = 0;
+			for (int x = 0; x < mask.GetLength(0); x++)
+			{
+				for (int y = 0; y < mask.GetLength(1); y++)
+				{
+					sum += mask[x, y];
+				}
+			}
+			return sum;
+		}
+
+		private static int[,] Mask(int size)
+		{
+			float[,] tmpResult = new float[2 * size + 1, 2 * size + 1];
+			for (int x = -size; x <= size; x++)
+			{
+				for (int y = -size; y <= size; y++)
+				{
+					 tmpResult[x + size, y + size] = Foo(x, y, 2 * size + 1);
+				}
+			}
+			float min = tmpResult[0, 0];
+			int[,] result = new int[tmpResult.GetLength(0), tmpResult.GetLength(1)];
+			for (int x = 0; x < tmpResult.GetLength(0); x++)
+			{
+				for (int y = 0; y < tmpResult.GetLength(1); y++)
+				{
+					result[x, y] = (int)Math.Round(tmpResult[x, y] / min);
+				}
+			}
+			return result;
+		}
+
+		private static float Foo(int x, int y, float r)
+		{
+			float sigma = r / 3f;
+			return (1f / (MathHelper.TwoPi * sigma * sigma)) * (float)Math.Pow(Math.E, -((x * x + y * y) / 2 * sigma * sigma));
+		}
 		
 
 		public static void Draw(this Vector2 vector, Vector2 position, SpriteBatch batch, HSVColor color, int thickness = 3)
@@ -63,7 +142,7 @@ namespace StealthyGame.Engine.Helper
 
 		public static void DrawCircle(this SpriteBatch batch, Circle circle, Color color, int thickness = 2)
 		{
-			foreach (var point in circle.All)
+			foreach (var point in circle.CalculateEdge())
 			{
 				batch.Draw(Pixel, new Rectangle(point.X - thickness / 2, point.Y - thickness / 2, thickness, thickness), color);
 			}

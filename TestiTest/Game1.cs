@@ -4,10 +4,18 @@ using Microsoft.Xna.Framework.Input;
 using StealthyGame.Engine;
 using StealthyGame.Engine.DataTypes;
 using StealthyGame.Engine.Debug;
+using StealthyGame.Engine.Debug.UI;
 using StealthyGame.Engine.Dialogs;
+using StealthyGame.Engine.GameMechanics.Phases;
 using StealthyGame.Engine.Helper;
+using StealthyGame.Engine.Input;
+using StealthyGame.Engine.UI;
+using StealthyGame.Engine.UI.DataTypes;
+using StealthyGame.Engine.UI.Engine;
 using StealthyGame.Engine.View;
 using StealthyGame.Engine.View.Lighting;
+using TestiTest.GameMechanics.Phases;
+using TestiTest.GameMechanics.Phases.Containers;
 
 namespace TestiTest
 {
@@ -18,100 +26,118 @@ namespace TestiTest
 	{
 		GraphicsDeviceManager graphics;
 		SpriteBatch batch;
-		Camera cam;
-		bool debug;
 		Texture2D pix;
-		int followedNPC;
-		MyWorld w;
-		LightRenderer lr;
+		PhaseManager phaseManager;
+		bool freeze;
+		RenderTarget2D gameContent;
+		Rectangle render;
+		KeyboardManager keyboardManager;
+		ClassTree classTree;
+		ClassTreeControl classTreeControl;
+		int width;
+		int height;
+		ScrollBar scrollBar;
 
 		public Game1()
 		{
 			graphics = new GraphicsDeviceManager(this);
 			graphics.GraphicsProfile = GraphicsProfile.HiDef;
-			//temp
 
 			Content.RootDirectory = "Content";
 		}
-		
+
 		protected override void Initialize()
 		{
-			RasterizerState rasterizerState = new RasterizerState();
-			rasterizerState.CullMode = CullMode.None;
-			//GraphicsDevice.RasterizerState = rasterizerState;
+			width = GraphicsDevice.Viewport.Width;
+			height = GraphicsDevice.Viewport.Height;
 
-			cam = new Camera(GraphicsDevice.Viewport);
-			w = new MyWorld(cam);
-			w.Load(@".\Content\Level\Maps\map.xml", GraphicsDevice);
-			cam.Follow = w.npcs[0];
-			DialogManager.Load(@".\Content\Level\Dialogs\dialog.xml");
-			debug = false;
-			followedNPC = 0;
-			lr = new LightRenderer(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
-			Light light = new Light(new Index2(192, 160), 64, 1, new HSVColor(Color.AliceBlue));
-			lr.AddLight(light);
-			lr.AddObstacle(new Rectangle(150, 140, 20, 40));
+
+			GameContainer gc = new GameContainer(GraphicsDevice, null);
+
+			phaseManager = new PhaseManager(new GamePhase(gc));
+
+			gameContent = new RenderTarget2D(GraphicsDevice, width, height);
+			render = new Rectangle(0, 0, width, height);
+
+			FontManager.Initialize(Content);
+			Control.Initialize(width, height);
+
+			keyboardManager = new KeyboardManager();
+
+			classTree = new ClassTree();
+			classTree.SetRoot(this);
+
+
+
+
 			base.Initialize();
 		}
-		
+
 		protected override void LoadContent()
 		{
 			batch = new SpriteBatch(GraphicsDevice);
 
 			pix = Content.Load<Texture2D>("Pixel");
 			DrawHelper.Pixel = pix;
+			classTreeControl = new ClassTreeControl(null, classTree, Content.Load<Texture2D>("arrow"));
+			scrollBar = new ScrollBar(null, Orientation.Vertical);
+			scrollBar.HorizontalAlignment = HorizontalAlignment.Right;
 
-			lr.Load(Content);
+
+			phaseManager.Load(Content);
+
 		}
 
 		protected override void Update(GameTime time)
 		{
+
+
+
+			classTreeControl.Update(time);
+
+			keyboardManager.Update(time);
+			if (keyboardManager.IsKeyPressed(Keys.F))
+				freeze = !freeze;
 			//if (Keyboard.GetState().IsKeyDown(Keys.I))
 			//	DebugSpriteBatch.DrawPathfinding = !DebugSpriteBatch.DrawPathfinding;
 			//if (Keyboard.GetState().IsKeyDown(Keys.O))
 			//	DebugSpriteBatch.DrawPathfindingNeighbours = !DebugSpriteBatch.DrawPathfindingNeighbours;
-			if (Keyboard.GetState().IsKeyDown(Keys.N))
-				debug = !debug;
 
-			if (Keyboard.GetState().IsKeyDown(Keys.U))
+			//IsMouseVisible = false;
+			if (freeze)
 			{
-				followedNPC = (followedNPC + 1) % w.npcs.Count;
-				cam.Follow = w.npcs[followedNPC];
+				IsMouseVisible = true;
+				return;
 			}
 
-			w.Update(time);
-			cam.Update(time);
-			
+			phaseManager.Update(time);
+
 			base.Update(time);
 		}
 
-		protected override void Draw(GameTime gameTime)
+		protected override void Draw(GameTime time)
 		{
-			GraphicsDevice.Clear(Color.MonoGameOrange);
 
-
-			batch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, cam.Transform);
-			w.map.Draw(batch, cam.Transform);
-			//batch.End();
-			//batch.Begin(SpriteSortMode.Deferred, new BlendState()
-			//{
-			//	ColorSourceBlend = Blend.DestinationColor,
-			//	ColorDestinationBlend = Blend.Zero,
-			//	ColorBlendFunction = BlendFunction.Add
-			//}, null, null, null, null, cam.Tranform);
-			//w.map.Lightmap.Draw(batch);
-
-			if (debug)
+			GraphicsDevice.Clear(new Color(51, 51, 51));
+			render = new Rectangle(200, 0, GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 80);
+			if (!freeze)
 			{
-				batch.End();
-				batch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, cam.Transform);
-				DebugSpriteBatch.Draw(batch);
+
+				GraphicsDevice.SetRenderTarget(gameContent);
+				GraphicsDevice.Clear(Color.Black);
+				phaseManager.Draw(batch, time);
+				GraphicsDevice.SetRenderTarget(null);
+				//renderTarget.Dispose();
+				render = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 			}
-
+			batch.Begin();
+			batch.Draw(gameContent, render, freeze ? Color.Gray : Color.White);
+			if (freeze)
+				classTreeControl.Draw(batch);
+			scrollBar.Draw(batch);
 			batch.End();
-			lr.Draw(GraphicsDevice, cam);
 
-			base.Draw(gameTime);
+			base.Draw(time);
 		}
 	}
 }
