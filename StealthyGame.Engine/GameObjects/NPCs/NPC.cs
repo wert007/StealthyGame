@@ -13,10 +13,11 @@ namespace StealthyGame.Engine.GameObjects.NPCs
 {
 	public class NPC : GameObject
 	{
-		public BasicTile CurrentTile { get; private set; }
-		public BasicTile NextTile { get; private set; }
+		public Node CurrentTile { get; private set; }
+		public Node NextTile { get; private set; }
 		Path path;
 		public float Speed { get; protected set; } = 40;
+		Map map;
 
 		bool move;
 
@@ -27,19 +28,20 @@ namespace StealthyGame.Engine.GameObjects.NPCs
 		 * 1000		100
 		 */
 
-		public delegate void TargetReachedHandler(BasicTile target);
+		public delegate void TargetReachedHandler(Node target);
 		public event TargetReachedHandler TargetReached;
 
-		public NPC(BasicTile spawn)
+		public NPC(Node spawn, Map map)
 		{
 			CurrentTile = spawn;
+			this.map = map;
 		}
 
 		protected override void InnerUpdate(GameTime time)
 		{
 			if (path != null && move)
 			{
-				if ((NextTile.Center - Center).LengthSquared() < WalkAccuracy())
+				if ((NextTile.Position - Center).LengthSquared() < WalkAccuracy())
 				{
 					if (path.IsDone)
 					{
@@ -50,22 +52,21 @@ namespace StealthyGame.Engine.GameObjects.NPCs
 						return;
 					}
 					CurrentTile = NextTile;
-					path.Reached(NextTile.PathfindingNode);
-					NextTile = path.Next().Parent;
-					if(NextTile is InteractiveTile)
+					path.Reached(NextTile);
+					NextTile = path.Next();
+					if(map.IsInteractive(NextTile))
 					{
-						var inter = NextTile as InteractiveTile;
-						inter.Interact(this);
+						map.GetInteractiveTiles(NextTile)[0].Interact(this);
 						move = false;
 					}
 				}
-				Vector2 dir = (NextTile.Center - Center);
+				Vector2 dir = (NextTile.Position - Center);
 				dir.Normalize();
 				Accelerate(Speed * dir);
 			}
 			else if(path != null && !move)
 			{
-				move = (NextTile as InteractiveTile).InteractionDone;
+				move = map.GetInteractiveTiles(NextTile)[0].InteractionDone;
 			}
 		}
 
@@ -81,11 +82,11 @@ namespace StealthyGame.Engine.GameObjects.NPCs
 				return 1;
 		}
 
-		public void WalkTo(BasicTile target)
+		public void WalkTo(Node target)
 		{
 			if (path == null)
 			{
-				path = Pathfinder.findPath(CurrentTile.PathfindingNode, target.PathfindingNode);
+				path = Pathfinder.findPath(CurrentTile, target);
 				move = true; //may not found a valid path
 			}
 			if (path.IsFailure)
@@ -93,7 +94,7 @@ namespace StealthyGame.Engine.GameObjects.NPCs
 				Console.WriteLine("ERROR: NOT POSSIBLE TO REACH");
 			}
 			else
-				NextTile = path.Next().Parent;
+				NextTile = path.Next();
 		}
 	}
 }

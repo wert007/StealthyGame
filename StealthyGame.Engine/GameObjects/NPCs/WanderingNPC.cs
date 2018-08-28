@@ -18,7 +18,7 @@ namespace StealthyGame.Engine.GameObjects.NPCs
 		float tempo;
 
 
-		public WanderingNPC(BasicTile spawn, float tempo) : base(spawn)
+		public WanderingNPC(Node spawn, Map map, float tempo) : base(spawn, map)
 		{
 			if (rand == null)
 				rand = new Random();
@@ -28,13 +28,13 @@ namespace StealthyGame.Engine.GameObjects.NPCs
 			WanderingNPC_TargetReached(spawn);
 		}
 
-		private void WanderingNPC_TargetReached(BasicTile target)
+		private void WanderingNPC_TargetReached(Node target)
 		{
 			Speed = tempo * rand.Next(5) + 15;
 			timeWaited = breakDuration / (10 * tempo);
 			int len = rand.Next(8) + 5;
 			List<Node> nodes = new List<Node>();
-			Node start = target.PathfindingNode;
+			Node start = target;
 			Node fin = start;
 			while (fin == start)
 			{
@@ -48,7 +48,7 @@ namespace StealthyGame.Engine.GameObjects.NPCs
 				fin = nodes.Last();
 				nodes.Clear();
 			}
-			WalkTo(fin.Parent);
+			WalkTo(fin);
 		}
 
 		protected override void InnerUpdate(GameTime time)

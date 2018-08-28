@@ -16,9 +16,11 @@ namespace StealthyGame.Engine.View.Lighting
 		AnimationCollection animations;
 		public int Size => BasicTile.Size;
 
+		
+
 		public AnimatedTileLighting(BasicTile tile)
 		{
-			Position = tile.Position.ToIndex2();
+			Position = tile.Position;
 			var array = tile.Animations.GetAnimations().Where(a => a.Name.EndsWith("shadow")).ToArray();
 			animations = new AnimationCollection(tile.Animations.StartAnimation + "shadow");
 			if (animations.Length <= 0)

@@ -15,21 +15,6 @@ namespace TestiTest.MapBasics
 	class MyMap : Map
 	{
 		public MyMap() { }
-
-		protected override void LoadTiles(int x, int y, int z, TiledProperties properties, bool interactive, bool animation)
-		{
-			base.LoadTiles(x, y, z, properties, interactive, animation);
-			if(interactive && animation)
-			{
-				switch(properties.GetProperty("Type"))
-				{
-					case "CellDoor":
-						tiles[x, y] = new CellDoor("cellDoor", new Index3(x, y, z), Layers[z].DrawOrder);
-						break;
-
-				}
-			}
-			tiles[x, y].AddProperties(properties);
-		}
+		
 	}
 }

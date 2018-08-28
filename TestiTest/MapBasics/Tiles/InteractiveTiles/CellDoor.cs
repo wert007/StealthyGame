@@ -25,7 +25,7 @@ namespace TestiTest.MapBasics.Tiles.InteractiveTiles
 		State state;
 		RightfulNPC requester;
 
-		public CellDoor(string name, Index3 index, float drawOrder) : base(name, index, drawOrder)
+		public CellDoor(string name, Index2 index) : base(name, index)
 		{
 			durationOfInteraction = 0.6f;
 			timeStayOpen = 0.5f;

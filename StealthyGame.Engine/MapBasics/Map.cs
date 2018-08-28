@@ -25,11 +25,21 @@ namespace StealthyGame.Engine.MapBasics
 		int height;
 		public TiledObjectGroup[] ObjectGroups { get; private set; }
 		public MapLayer[] Layers { get; private set; }
-		protected BasicTile[,] tiles;
-		public ANewHope hope;
+		public LightRenderer hope;
+		Node[,] nodes;
 		
 		public Index2 PixelSize => new Index2(width * 32, height * 32);
 		public Index2 TileSize => new Index2(width, height);
+
+		internal bool IsInteractive(Node nextTile)
+		{
+			return Layers.Any(l => l.IsInteractive(nextTile.Index.X, nextTile.Index.Y));
+		}
+
+		internal InteractiveTile[] GetInteractiveTiles(Node nextTile)
+		{
+			return Layers.Where(l => l.IsInteractive(nextTile.Index.X, nextTile.Index.Y)).Select<MapLayer, InteractiveTile>(sl => sl.GetInteractiveAt(nextTile.Index)).ToArray();
+		}
 
 		//public Map(int width, int height, TiledObjectGroup[] objectGroups, MapLayer[] layers, GraphicsDevice graphicsDevice)
 		//{
@@ -64,59 +74,33 @@ namespace StealthyGame.Engine.MapBasics
 		{
 		}
 
-		public BasicTile GetTile(Index2 position) => GetTile(position.X, position.Y);
-		public BasicTile GetTile(int x, int y) => tiles[x, y];
+		internal Node GetNode(Index2 index2) => nodes[index2.X, index2.Y];
 
-		protected virtual void LoadTiles(int x, int y, int z, TiledProperties properties, bool interactive, bool animation)
-		{
-			if (interactive && animation)
-			{
-				switch (properties.GetProperty("Type"))
-				{
-					case "Door":
-						tiles[x, y] = new DoorTile("door", new Index3(x, y, z), Layers[z].DrawOrder);
-						break;
-					default:
-						tiles[x, y] = new InteractiveTile("door", new Index3(x, y, z), Layers[z].DrawOrder);
-						break;
-				}
-			}
-			else if (animation && !interactive)
-			{
-				tiles[x, y] = new AnimatedTile("flower", new Index3(x, y, z), Layers[z].DrawOrder);
-			}
-			else if (!interactive && !animation)
-			{
-				tiles[x, y] = new BasicTile("dirt", new Index3(x, y, z), Layers[z].DrawOrder);
-			}
-			else
-				throw new NotSupportedException("No Tile should be interacitve but not animated");
-			tiles[x, y].AddProperties(properties);
-		}
 
-		protected void GetParameters(int x, int y, int z, out Index3 index, out bool interactive, out bool animation, out TiledProperties properties)
-		{
-			index = new Index3(x, y, z);
-			interactive = Layers[z].IsInteractive(x,y);
-			animation = Layers[z].IsAnimation(x,y);
-			properties = Layers[z].GetProperties(x, y);
-		}
 
-		public bool IsAnimated(Vector2 pixel, int z = -1)
-		{
-			bool result = false;
-			Index2 index = (Index2) (pixel / 32);
-			if (z == -1)
-			{
-				for (int _z = 0; _z < Layers.Length; _z++)
-				{
-					GetParameters(index.X, index.Y, _z, out Index3 _index, out bool i, out result, out TiledProperties p);
-				}
-				return result;
-			}
-			GetParameters(index.X, index.Y, z, out Index3 __index, out bool _i, out result, out TiledProperties _p);
-			return result;
-		}
+		//protected void GetParameters(int x, int y, int z, out Index3 index, out bool interactive, out bool animation, out TiledProperties properties)
+		//{
+		//	index = new Index3(x, y, z);
+		//	interactive = Layers[z].IsInteractive(x,y);
+		//	animation = Layers[z].IsAnimation(x,y);
+		//	properties = Layers[z].GetProperties(x, y);
+		//}
+
+		//public bool IsAnimated(Vector2 pixel, int z = -1)
+		//{
+		//	bool result = false;
+		//	Index2 index = (Index2) (pixel / 32);
+		//	if (z == -1)
+		//	{
+		//		for (int _z = 0; _z < Layers.Length; _z++)
+		//		{
+		//			GetParameters(index.X, index.Y, _z, out Index3 _index, out bool i, out result, out TiledProperties p);
+		//		}
+		//		return result;
+		//	}
+		//	GetParameters(index.X, index.Y, z, out Index3 __index, out bool _i, out result, out TiledProperties _p);
+		//	return result;
+		//}
 
 		protected Node[] GetNeighbours(int x, int y)
 		{
@@ -134,7 +118,7 @@ namespace StealthyGame.Engine.MapBasics
 
 						buf[1 + xOff, 1 + yOff] = null;
 					else
-						buf[1 + xOff, 1 + yOff] = tiles[x + xOff, y + yOff].PathfindingNode;
+						buf[1 + xOff, 1 + yOff] = nodes[x + xOff, y + yOff];
 				}
 			}
 
@@ -219,7 +203,7 @@ namespace StealthyGame.Engine.MapBasics
 				}
 			}
 
-			if (true)
+			if (true)//???
 				foreach (var door in GetGroupByName("Pathfinding").Objects.Where(o => o.Type == "Door"))
 				{
 					int xd1 = (int) (door.Position.X / BasicTile.Size);
@@ -242,11 +226,11 @@ namespace StealthyGame.Engine.MapBasics
 						throw new FormatException("Error on Map. Door objects in the Pathfinding Layer must contain two tiles!");
 					if (x == xd1 && y == yd1)
 					{
-						buf[xd2 - x, yd2 - y] = GetTile(xd2, yd2).PathfindingNode;
+						buf[xd2 - x, yd2 - y] = nodes[xd2, yd2];
 					}
 					else if (x == xd2 && y == yd2)
 					{
-						buf[1 + xd1 - x, 1 + yd1 - y] = GetTile(xd1, yd1).PathfindingNode;
+						buf[1 + xd1 - x, 1 + yd1 - y] = nodes[xd1, yd1];
 					}
 				}
 
@@ -282,7 +266,7 @@ namespace StealthyGame.Engine.MapBasics
 			List<MapLayer> layers = new List<MapLayer>();
 			TileSetManager ts = new TileSetManager();
 
-			hope = new ANewHope(graphicsDevice, this);
+			hope = new LightRenderer(graphicsDevice, this);
 
 			using (XmlReader xr = XmlReader.Create(file))
 			{
@@ -302,7 +286,7 @@ namespace StealthyGame.Engine.MapBasics
 							string name = xr["name"];
 							using (StringReader sr = new StringReader(xr.ReadOuterXml()))
 							using (XmlReader r = XmlReader.Create(sr))
-								layer = MapLayer.Load(r, graphicsDevice, ts);
+								layer = MapLayer.Load(r, graphicsDevice, ts, System.IO.Path.GetDirectoryName(file));
 							if (!name.StartsWith("Light"))
 							{
 								layers.Add(layer);
@@ -335,58 +319,35 @@ namespace StealthyGame.Engine.MapBasics
 			this.height = height;
 			this.ObjectGroups = objectGroups.ToArray();
 			this.Layers = layers.ToArray();
-			tiles = new BasicTile[width, height];
-			for (int x = 0; x < width; x++)
-			{
-				for (int y = 0; y < height; y++)
-				{
-					for (int z = 0; z < layers.Count; z++)
-					{
-						GetParameters(x, y, z, out Index3 index, out bool interactive, out bool animation, out TiledProperties properties);
-						LoadTiles(x, y, z, properties, interactive, animation);
-					}
-				}
-			}
-			for (int x = 0; x < width; x++)
-			{
-				for (int y = 0; y < height; y++)
-				{
-					tiles[x, y].PathfindingNode.SetNeighbours(
-						GetNeighbours(x, y));
-				}
-			}
+			nodes = new Node[width, height];
 
 			for (int x = 0; x < width; x++)
 			{
 				for (int y = 0; y < height; y++)
 				{
-					if (tiles[x, y] is InteractiveTile)
-					{
-						var i = tiles[x, y] as InteractiveTile;
-						i.Load(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(file), @".\..\TileSets", i.Properties.GetPropertyAsFile("AnimationFile")), graphicsDevice);
-					}
+					nodes[x, y] = new Node(new Index2(x,y));
+				}
+			}
+			for (int x = 0; x < width; x++)
+			{
+				for (int y = 0; y < height; y++)
+				{
+					nodes[x, y].SetNeighbours(GetNeighbours(x, y));
 				}
 			}
 
-			var a = GetGroupByName("Lights");
-			foreach (var b in a.Objects)
+			var lightbulbs = GetGroupByName("Lights");
+			foreach (var lightbulb in lightbulbs.Objects)
 			{
-				hope.AddLight(new Light((Index2)b.Position, (short)b.Properties.GetPropertyAsInt("Strength"), 1f, b.Properties.GetPropertyAsColor("Color")));
+				hope.AddLight(new Light((Index2)lightbulb.Position, (short)lightbulb.Properties.GetPropertyAsInt("Strength"), 1f, lightbulb.Properties.GetPropertyAsColor("Color")));
 			}
 		}
 
 		public void Update(GameTime time)
 		{
-			for (int x = 0; x < width; x++)
+			foreach (var layer in Layers)
 			{
-				for (int y = 0; y < height; y++)
-				{
-					if (tiles[x, y] is InteractiveTile)
-					{
-						var i = tiles[x, y] as InteractiveTile;
-						i.Update(time);
-					}
-				}
+				layer.Update(time);
 			}
 		}
 
@@ -395,24 +356,14 @@ namespace StealthyGame.Engine.MapBasics
 			hope.CalculateLightmap(batch, cam, PixelSize, new Color(51, 51, 51));
 			for (int i = 0; i < Layers.Length; i++)
 			{
-				batch.Draw(Layers[i].Prerendered, position: new Vector2(), color: Color.White,layerDepth: Layers[i].DrawOrder);
+				Layers[i].Draw(batch);
 			}
-			hope._Draw(batch);
 			batch.End();
 			batch.Begin(SpriteSortMode.Deferred, LightHelper.Multiply, null, null, null, null, cam);
 			hope.Draw(batch);
 			batch.End();
 			batch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, cam);
-			for (int x = 0; x < width; x++)
-			{
-				for (int y = 0; y < height; y++)
-				{
-					if (tiles[x, y] is InteractiveTile)
-					{
-						(tiles[x, y] as InteractiveTile).Draw(batch, Color.White);
-					}
-				}
-			}
+			
 
 		}
 	}

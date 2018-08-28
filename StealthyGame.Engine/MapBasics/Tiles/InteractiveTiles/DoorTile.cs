@@ -13,7 +13,7 @@ namespace StealthyGame.Engine.MapBasics.Tiles.InteractiveTiles
 		protected float timeStayOpen;
 		protected float currentDuration;
 
-		public DoorTile(string name, Index3 index, float drawOrder) : base(name, index,drawOrder)
+		public DoorTile(string name, Index2 index) : base(name, index)
 		{
 			durationOfInteraction = 0.3f;
 			timeStayOpen = 1f;

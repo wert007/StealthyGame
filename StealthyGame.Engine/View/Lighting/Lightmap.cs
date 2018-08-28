@@ -69,10 +69,19 @@ namespace StealthyGame.Engine.View.Lighting
 					if (x + 16 < areaOfInfluence.X || y + 16 < areaOfInfluence.Y ||
 						x - 16 > areaOfInfluence.Right || y - 16 > areaOfInfluence.Bottom)
 						continue;
+					
 					tileSet = tileSetsShadow.TileSets.FirstOrDefault(t => t.Name == tileSetsMap.IndexToTileSet(data[i]).Name + "_shadow");
+
 					if (tileSet == null) continue;
 
+
 					actualData = tileSetsMap.ShortenIndex(data[i]) + 1;
+					if(tileSet.IsAnimation(actualData))
+					{
+						AnimatedTileLighting atl = new AnimatedTileLighting();
+						
+						continue;
+					}
 					sourceRectangle = tileSetsShadow.GetSourceRectangle(actualData);
 
 					batch.Draw(tileSet.Texture, new Rectangle(x - areaOfInfluence.X, y - areaOfInfluence.Y, 16, 16), sourceRectangle, Color.White); //16  //

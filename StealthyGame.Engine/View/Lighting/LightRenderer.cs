@@ -21,7 +21,7 @@ namespace StealthyGame.Engine.View.Lighting
 	//Is Equal to Old Shadows?
 	//Else Calculate Lightmap
 	//Draw Lightmap
-	public class ANewHope
+	public class LightRenderer
 	{
 		Texture2D texture;
 		Camera camera;
@@ -33,7 +33,7 @@ namespace StealthyGame.Engine.View.Lighting
 		Lightmap lightmap;
 		GraphicsDevice graphicsDevice;
 
-		public ANewHope(GraphicsDevice graphicsDevice, Map map)
+		public LightRenderer(GraphicsDevice graphicsDevice, Map map)
 		{
 			camera = Camera.Instance;
 			lights = new List<Light>();

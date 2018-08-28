@@ -17,14 +17,14 @@ namespace StealthyGame.Engine.GameObjects.NPCs
 		float paused;
 		bool targetReached;
 
-		public RoutedNPC(Route route) : base(route[0].Parent)
+		public RoutedNPC(Route route, Map map) : base(route[0], map)
 		{
 			this.route = route;
 			TargetReached += RoutedNPC_TargetReached;
-			WalkTo(route.GetTarget().Parent);
+			WalkTo(route.GetTarget());
 		}
 
-		private void RoutedNPC_TargetReached(BasicTile target)
+		private void RoutedNPC_TargetReached(Node target)
 		{
 			pause = route.GetDuration();
 			route.TargetReached();
@@ -40,7 +40,7 @@ namespace StealthyGame.Engine.GameObjects.NPCs
 			}
 			else if(targetReached)
 			{
-				WalkTo(route.GetTarget().Parent);
+				WalkTo(route.GetTarget());
 				pause = 0;
 				paused = 0;
 				targetReached = false;

@@ -69,13 +69,13 @@ namespace StealthyGame.Engine
 						switch (o.Type)
 						{
 							case "WayPoint":
-								wayPoints.Add(new WayPoint(map.GetTile((Index2)o.Position / BasicTile.Size).PathfindingNode, o.Properties.GetPropertyAsFloat("Duration"), o.Properties.GetPropertyAsInt("Index")));
+								wayPoints.Add(new WayPoint(map.GetNode((Index2)o.Position / BasicTile.Size), o.Properties.GetPropertyAsFloat("Duration"), o.Properties.GetPropertyAsInt("Index")));
 								break;
 							default:
 								throw new NotSupportedException("Unknown Type " + o.Type);
 						}
 					}
-					followed.Add(new RoutedNPC(new Route(true, wayPoints.ToArray())));
+					followed.Add(new RoutedNPC(new Route(true, wayPoints.ToArray()), map));
 					npcs.Add(followed.Last());
 					follower.Add(new Light((Index2)followed.Last().Position, 50, 0.5f, Color.Red));
 					map.hope.AddLight(follower.Last());
@@ -86,7 +86,7 @@ namespace StealthyGame.Engine
 						switch (o.Type)
 						{
 							case "Spawn":
-								npcs.Add(new WanderingNPC(map.GetTile((Index2)o.Position / BasicTile.Size), o.Properties.GetPropertyAsFloat("Tempo")));
+								npcs.Add(new WanderingNPC(map.GetNode((Index2)o.Position / BasicTile.Size), map, o.Properties.GetPropertyAsFloat("Tempo")));
 								break;
 							default:
 								throw new NotSupportedException("Unknown Type " + o.Type);

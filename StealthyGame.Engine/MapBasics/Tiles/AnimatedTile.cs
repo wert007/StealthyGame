@@ -9,7 +9,7 @@ namespace StealthyGame.Engine.MapBasics.Tiles
 {
 	public class AnimatedTile : BasicTile
 	{
-		public AnimatedTile(string name, Index3 index, float drawOrder) : base(name, index, drawOrder)
+		public AnimatedTile(string name, Index2 index) : base(name, index)
 		{
 		}
 	}

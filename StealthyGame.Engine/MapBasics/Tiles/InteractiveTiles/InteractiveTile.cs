@@ -17,7 +17,7 @@ namespace StealthyGame.Engine.MapBasics.Tiles.InteractiveTiles
 		public bool InteractionDone => currentDuration <= 0;
 		public Animation2D CurrentAnimation => Animations.GetCurrent();
 
-		public InteractiveTile(string name, Index3 index, float drawOrder) : base(name, index, drawOrder)
+		public InteractiveTile(string name, Index2 index) : base(name, index)
 		{
 			durationOfInteraction = 1f;
 			Animations = new AnimationCollection("idle");
@@ -63,7 +63,7 @@ namespace StealthyGame.Engine.MapBasics.Tiles.InteractiveTiles
 
 		public void Draw(SpriteBatch batch, Color color)
 		{
-			batch.Draw(Animations, new Rectangle(Position.X, Position.Y, Size, Size), color, 0, Vector2.Zero, SpriteEffects.None, DrawOrder);
+			batch.Draw(Animations, new Rectangle(Position.X, Position.Y, Size, Size), color);
 		}
 	}
 }
