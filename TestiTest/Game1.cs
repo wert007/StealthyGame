@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using StealthyGame.Engine;
 using StealthyGame.Engine.DataTypes;
 using StealthyGame.Engine.Debug;
+using StealthyGame.Engine.Debug.Console;
 using StealthyGame.Engine.Debug.UI;
 using StealthyGame.Engine.Dialogs;
 using StealthyGame.Engine.GameMechanics.Phases;
@@ -14,6 +15,9 @@ using StealthyGame.Engine.UI.DataTypes;
 using StealthyGame.Engine.UI.Engine;
 using StealthyGame.Engine.View;
 using StealthyGame.Engine.View.Lighting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using TestiTest.GameMechanics.Phases;
 using TestiTest.GameMechanics.Phases.Containers;
 
@@ -30,13 +34,15 @@ namespace TestiTest
 		PhaseManager phaseManager;
 		bool freeze;
 		RenderTarget2D gameContent;
+		Queue<RenderTarget2D> lastFrames;
 		Rectangle render;
 		KeyboardManager keyboardManager;
-		ClassTree classTree;
-		ClassTreeControl classTreeControl;
+		ConsoleControl consoleControl;
 		int width;
 		int height;
-		ScrollBar scrollBar;
+		private readonly int MaxSavedFrames = 80;
+		int currentLastFrame = 0;
+		bool playLoop = false;
 
 		public Game1()
 		{
@@ -44,6 +50,13 @@ namespace TestiTest
 			graphics.GraphicsProfile = GraphicsProfile.HiDef;
 
 			Content.RootDirectory = "Content";
+			Window.TextInput += Window_TextInput;
+		}
+
+		private void Window_TextInput(object sender, TextInputEventArgs e)
+		{
+			keyboardManager.TextInput(sender, e);
+			Control.TextInput(sender, e);
 		}
 
 		protected override void Initialize()
@@ -57,20 +70,27 @@ namespace TestiTest
 			phaseManager = new PhaseManager(new GamePhase(gc));
 
 			gameContent = new RenderTarget2D(GraphicsDevice, width, height);
+			lastFrames = new Queue<RenderTarget2D>();
 			render = new Rectangle(0, 0, width, height);
 
 			FontManager.Initialize(Content);
 			Control.Initialize(width, height);
-
+			
 			keyboardManager = new KeyboardManager();
 
-			classTree = new ClassTree();
-			classTree.SetRoot(this);
-
-
-
+			consoleControl = new ConsoleControl(null);
+			InGameConsole.TextReceived += (txt) =>
+			{
+				Console.WriteLine(txt);
+			};
+			InGameConsole.AddCommand(new ConsoleCommand("loop", ConsoleLoop));
 
 			base.Initialize();
+		}
+
+		private void ConsoleLoop(object[] args)
+		{
+			playLoop = !playLoop;
 		}
 
 		protected override void LoadContent()
@@ -79,36 +99,42 @@ namespace TestiTest
 
 			pix = Content.Load<Texture2D>("Pixel");
 			DrawHelper.Pixel = pix;
-			classTreeControl = new ClassTreeControl(null, classTree, Content.Load<Texture2D>("arrow"));
-			scrollBar = new ScrollBar(null, Orientation.Vertical);
-			scrollBar.HorizontalAlignment = HorizontalAlignment.Right;
-
 
 			phaseManager.Load(Content);
-
 		}
 
 		protected override void Update(GameTime time)
 		{
-
-
-
-			classTreeControl.Update(time);
-
 			keyboardManager.Update(time);
-			if (keyboardManager.IsKeyPressed(Keys.F))
-				freeze = !freeze;
-			//if (Keyboard.GetState().IsKeyDown(Keys.I))
-			//	DebugSpriteBatch.DrawPathfinding = !DebugSpriteBatch.DrawPathfinding;
-			//if (Keyboard.GetState().IsKeyDown(Keys.O))
-			//	DebugSpriteBatch.DrawPathfindingNeighbours = !DebugSpriteBatch.DrawPathfindingNeighbours;
+			if (!consoleControl.Focused)
+			{
+				if (keyboardManager.IsKeyPressed(Keys.F))
+				{
+					InGameConsole.Log("Freeze");
+					freeze = !freeze;
+				}
+				if (keyboardManager.IsKeyPressed(Keys.L))
+				{
+					InGameConsole.Log("Loop");
+					playLoop = !playLoop;
 
-			//IsMouseVisible = false;
+				}
+			}
+			if(keyboardManager.IsCtrlKeyPressed(Keys.C))
+			{
+				if (consoleControl.Focused)
+					consoleControl.Unfocus();
+				else
+					consoleControl.Focus();
+			}
+			IsMouseVisible = false;
+
 			if (freeze)
 			{
 				IsMouseVisible = true;
 				return;
 			}
+
 
 			phaseManager.Update(time);
 
@@ -131,12 +157,38 @@ namespace TestiTest
 			}
 			batch.Begin();
 			batch.Draw(gameContent, render, freeze ? Color.Gray : Color.White);
+			if(!freeze)
+				lastFrames.Enqueue(CopyRenderTarget(gameContent));
+			if (lastFrames.Count > MaxSavedFrames)
+			{
+				lastFrames.Dequeue().Dispose();
+			}
+			if (playLoop && time.TotalGameTime.Ticks % 3 == 0)
+			{
+				currentLastFrame = (currentLastFrame + 1) % lastFrames.Count;
+			}
 			if (freeze)
-				classTreeControl.Draw(batch);
-			scrollBar.Draw(batch);
+			{
+				if(playLoop)
+				{
+					batch.Draw(lastFrames.ElementAt(currentLastFrame), Vector2.Zero, Color.White);
+				}
+			}
+			consoleControl.Draw(batch);
 			batch.End();
 
 			base.Draw(time);
+		}
+
+
+
+		private RenderTarget2D CopyRenderTarget(RenderTarget2D gameContent)
+		{
+			RenderTarget2D result = new RenderTarget2D(gameContent.GraphicsDevice, gameContent.Width, gameContent.Height);
+			Color[] data = new Color[gameContent.Width * gameContent.Height];
+			gameContent.GetData(data);
+			result.SetData(data);
+			return result;
 		}
 	}
 }

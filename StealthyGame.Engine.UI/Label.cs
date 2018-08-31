@@ -37,7 +37,7 @@ namespace StealthyGame.Engine.UI.Basics
 			HorizontalAlignment = HorizontalAlignment.Left;
 		}
 
-		public override void Draw(SpriteBatch batch)
+		protected override void _Draw(SpriteBatch batch)
 		{
 			batch.DrawString(Font.SpriteFont, Content, new Vector2(AbsoluteX, AbsoluteY), Color);
 		}

@@ -10,7 +10,7 @@ namespace StealthyGame.Engine.Input
 {
 	public class KeyboardManager
 	{
-		
+		KeyboardState lastKeyboardState;
 		Dictionary<Keys, KeyData> keyData;
 		const int MinMillisecondsPressed =   20;
 		const int MaxMillisecondsPressed =  400;
@@ -22,8 +22,8 @@ namespace StealthyGame.Engine.Input
 
 		public void Update(GameTime time)
 		{
-			KeyboardState keyboardState = Keyboard.GetState();
-			UpdateKeyData(keyboardState.GetPressedKeys(), time);
+			lastKeyboardState = Keyboard.GetState();
+			UpdateKeyData(lastKeyboardState.GetPressedKeys(), time);
 		}
 
 		private void UpdateKeyData(Keys[] keys, GameTime time)
@@ -56,9 +56,21 @@ namespace StealthyGame.Engine.Input
 			if (result)
 			{
 				keyData[key] = keyData[key].Pressed();
-				Console.WriteLine(keyData[key].MillisecondsDown + " " + keyData[key].IsPressed);
+				//Console.WriteLine(keyData[key].MillisecondsDown + " " + keyData[key].IsPressed);
 			}
 			return result; 
+		}
+
+		public void TextInput(object sender, TextInputEventArgs e)
+		{
+		}
+
+		public bool IsCtrlKeyPressed(Keys key)
+		{
+			if (lastKeyboardState.IsKeyDown(Keys.LeftControl) ||
+				lastKeyboardState.IsKeyDown(Keys.RightControl))
+				return IsKeyPressed(key);
+			return false;
 		}
 	}
 

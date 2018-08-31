@@ -28,7 +28,7 @@ namespace StealthyGame.Engine.UI
 			MinHeight = 20;
 		}
 
-		public override void Draw(SpriteBatch batch)
+		protected override void _Draw(SpriteBatch batch)
 		{
 			batch.DrawFilledRectangle(new Rectangle(AbsoluteX, AbsoluteY, Width, Height), Color.LightCoral);
 			switch (Orientation)

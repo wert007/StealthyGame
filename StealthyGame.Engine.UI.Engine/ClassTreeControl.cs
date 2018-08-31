@@ -58,7 +58,7 @@ namespace StealthyGame.Engine.UI.Engine
 			VerticalAlignment = VerticalAlignment.Top;
 		}
 
-		public override void Draw(SpriteBatch batch)
+		protected override void _Draw(SpriteBatch batch)
 		{
 			name.Draw(batch);
 			icon.Draw(batch);

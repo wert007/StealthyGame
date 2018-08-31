@@ -22,7 +22,7 @@ namespace StealthyGame.Engine.UI.Basics
 			HorizontalAlignment = HorizontalAlignment.Left;
 		}
 
-		public override void Draw(SpriteBatch batch)
+		protected override void _Draw(SpriteBatch batch)
 		{
 			batch.Draw(texture, new Vector2(AbsoluteX, AbsoluteY), Color.White);
 		}

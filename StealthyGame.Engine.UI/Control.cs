@@ -14,6 +14,7 @@ namespace StealthyGame.Engine.UI
 	{
 		public static int RenderWidth { get; private set; }
 		public static int RenderHeight { get; private set; }
+		public static List<Control> allControls;
 
 		private int? maxHeight;
 		private int? maxWidth;
@@ -32,11 +33,13 @@ namespace StealthyGame.Engine.UI
 		public VerticalAlignment VerticalAlignment { get; set; }
 		public bool Hovered { get; private set; }
 		public bool IsClickable { get; set; }
+		public bool Focused { get; private set; }
+		public bool Visible { get; set; }
 
 		public delegate void OnClickHandler(MouseState mouseState);
 		public event OnClickHandler Clicked;
 
-		public abstract void Draw(SpriteBatch batch);
+		protected abstract void _Draw(SpriteBatch batch);
 		protected abstract void _Update(GameTime time);
 
 		public Control(Control parent)
@@ -46,6 +49,12 @@ namespace StealthyGame.Engine.UI
 			HorizontalAlignment = HorizontalAlignment.Stretch;
 			VerticalAlignment = VerticalAlignment.Stretch;
 			Parent = parent;
+			Visible = true;
+
+
+			if (allControls == null)
+				allControls = new List<Control>();
+			allControls.Add(this);
 		}
 
 		public void Update(GameTime time)
@@ -65,7 +74,18 @@ namespace StealthyGame.Engine.UI
 					Clicked?.Invoke(mouseState);
 				}
 			}
+			var keyboardState = Keyboard.GetState();
+			if (keyboardState.IsKeyDown(Keys.Enter))
+				_TextInput(keyboardState, new TextInputEventArgs((char)13, Keys.Enter));
+
 			_Update(time);
+		}
+
+		public void Draw(SpriteBatch batch)
+		{
+			if (!Visible)
+				return;
+			_Draw(batch);
 		}
 
 		private bool IsMouseOver(MouseState mouseState)
@@ -77,6 +97,29 @@ namespace StealthyGame.Engine.UI
 
 		protected virtual void OnClick(MouseState mouseState)
 		{ }
+
+		public static void TextInput(object sender, TextInputEventArgs e)
+		{
+			foreach (var control in allControls.Where(c=> c.Focused))
+			{
+				control._TextInput(sender, e);
+			}
+		}
+
+		protected virtual void _TextInput(object sender, TextInputEventArgs e)
+		{
+
+		}
+
+		public virtual void Focus()
+		{
+			Focused = true;
+		}
+
+		public virtual void Unfocus()
+		{
+			Focused = false;
+		}
 
 		public static void Initialize(int width, int height)
 		{

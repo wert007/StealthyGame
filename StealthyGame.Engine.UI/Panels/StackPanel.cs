@@ -37,7 +37,7 @@ namespace StealthyGame.Engine.UI.Panels
 			children.Add(child);
 		}
 
-		public override void Draw(SpriteBatch batch)
+		protected override void _Draw(SpriteBatch batch)
 		{
 			foreach (var child in children)
 			{
