@@ -19,10 +19,12 @@ namespace StealthyGame.Engine.View.Lighting
 		Map map;
 		public RenderTarget2D renderTarget;
 		RenderTargetBinding[] oldRenderTargets;
+		List<AnimatedTileLighting> animatedTileLightings;
 
 		public Lightmap(Map map)
 		{
 			this.map = map;
+			animatedTileLightings = new List<AnimatedTileLighting>();
 		}
 
 		public void LoadTileSets(TileSetManager tileSetManager, GraphicsDevice graphicsDevice)
@@ -38,10 +40,30 @@ namespace StealthyGame.Engine.View.Lighting
 				TileSet shadowTileSet = TileSet.Load(path, graphicsDevice);
 				tileSetsShadow.AddTileSet(shadowTileSet);
 			}
+			for (int x = 0; x < map.TileSize.X; x++)
+			{
+				for (int y = 0; y < map.TileSize.Y; y++)
+				{
+					foreach (var layer in map.Layers)
+					{
+						if (layer.IsInteractive(x, y))
+							animatedTileLightings.Add(new AnimatedTileLighting(layer.GetInteractiveAt(new DataTypes.Index2(x, y))));
+					}
+				}
+			}
+		}
+
+		public void Update(GameTime time)
+		{
+			foreach (var tile in animatedTileLightings)
+			{
+				tile.Update(time);
+			}
 		}
 
 		public void Draw(SpriteBatch batch, Matrix cam, Rectangle areaOfInfluence)
 		{
+			renderTarget?.Dispose();
 			renderTarget = new RenderTarget2D(batch.GraphicsDevice, areaOfInfluence.Width, areaOfInfluence.Height);
 			oldRenderTargets = batch.GraphicsDevice.GetRenderTargets();
 			batch.GraphicsDevice.SetRenderTarget(null);
@@ -76,10 +98,10 @@ namespace StealthyGame.Engine.View.Lighting
 
 
 					actualData = tileSetsMap.ShortenIndex(data[i]) + 1;
-					if(tileSet.IsAnimation(actualData))
+					if(tileSetsMap.IsAnimation(data[i]))
 					{
-						AnimatedTileLighting atl = new AnimatedTileLighting();
-						
+						var tile = animatedTileLightings.FirstOrDefault(t => t.Index == new DataTypes.Index2((i % map.TileSize.X), (i / map.TileSize.X)));
+						batch.Draw(tile.Current(), new Rectangle(x - areaOfInfluence.X, y - areaOfInfluence.Y, 16, 16), Color.White);
 						continue;
 					}
 					sourceRectangle = tileSetsShadow.GetSourceRectangle(actualData);
@@ -91,6 +113,8 @@ namespace StealthyGame.Engine.View.Lighting
 			batch.GraphicsDevice.SetRenderTarget(null);
 			batch.GraphicsDevice.SetRenderTargets(oldRenderTargets);
 			batch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, cam);
+			using (FileStream fs = new FileStream("obstacles.png", FileMode.Create))
+				renderTarget.SaveAsPng(fs, renderTarget.Width, renderTarget.Height);
 		}
 
 		public Texture2D ToTexture2D(GraphicsDevice graphicsDevice)

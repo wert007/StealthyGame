@@ -127,7 +127,6 @@ namespace TestiTest
 				GraphicsDevice.Clear(Color.Black);
 				phaseManager.Draw(batch, time);
 				GraphicsDevice.SetRenderTarget(null);
-				//renderTarget.Dispose();
 				render = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 			}
 			batch.Begin();

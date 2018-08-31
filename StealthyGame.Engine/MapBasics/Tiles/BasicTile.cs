@@ -30,6 +30,12 @@ namespace StealthyGame.Engine.MapBasics.Tiles
 			Animations = null;
 		}
 
+		public virtual void Update(GameTime time)
+		{
+			if(Animations != null)
+				Animations.Update(time);
+		}
+
 		public void AddProperties(TiledProperties properties) => Properties += properties;
 
 

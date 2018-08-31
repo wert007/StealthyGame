@@ -25,7 +25,7 @@ namespace TestiTest.GameMechanics.Phases
 		{
 			cam = new Camera(container.GraphicsDevice.Viewport);
 			w = new MyWorld(cam);
-			w.Load(@".\Content\Level\Maps\map.xml", container.GraphicsDevice);
+			w.Load(@".\Content\Level\Maps\smallRoom.xml", container.GraphicsDevice);
 			cam.Follow = w.npcs[0];
 			followedNPC = 0;
 			debug = false;

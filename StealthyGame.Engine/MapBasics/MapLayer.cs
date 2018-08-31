@@ -68,6 +68,7 @@ namespace StealthyGame.Engine.MapBasics
 				{
 					TiledProperties properties = result.tileSets.GetProperties(result.data[i]);
 					result.animatedOrInteractiveTiles.Add(BasicTile.LoadTile(interactive, animated, properties, new Index2(x, y)));
+					continue;
 				}
 				Color[] data = result.tileSets.GetData(result.data[i]);
 				if (data == null)
@@ -122,14 +123,18 @@ namespace StealthyGame.Engine.MapBasics
 		internal void Draw(SpriteBatch batch)
 		{
 			batch.Draw(Prerendered, Vector2.Zero, Color.White);
+			foreach (var tile in animatedOrInteractiveTiles)
+			{
+				if (tile is InteractiveTile interactive)
+					interactive.Draw(batch, Color.White);
+			}
 		}
 
 		internal void Update(GameTime time)
 		{
 			foreach (var tile in animatedOrInteractiveTiles)
 			{
-				if(tile is InteractiveTile interactive)
-					interactive.Update(time);
+				tile.Update(time);
 			}
 		}
 	}

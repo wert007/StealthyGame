@@ -16,24 +16,24 @@ namespace StealthyGame.Engine.Helper
 
 		public static Color GetPixel(this Color[] data, int x, int y, int width) => data[y * width + x];
 
-		public static Texture2D GaussianBlur(this Texture2D origin, int radius)
+		public static Texture2D GaussianBlur(this Texture2D origin, int sigma)
 		{
+			int maskSize = 3 * sigma ;
 			Texture2D result = new Texture2D(origin.GraphicsDevice, origin.Width, origin.Height);
 			Color[] data = new Color[origin.Width * origin.Height];
 			origin.GetData(data);
 			Color[] resultData = new Color[origin.Width * origin.Height];
-			int maskSize = (radius - 1) / 2;
-			int[,] mask = Mask(maskSize);
-			int maskSum = MaskSum(mask);
+			float[,] mask = Mask(sigma);
+			float maskSum = MaskSum(mask) * 255; // 1
 			for (int x = maskSize; x < origin.Width - maskSize; x++)
 			{
 				for (int y = maskSize; y < origin.Height - maskSize; y++)
 				{
 					Color cur = Color.TransparentBlack;
-					int r = 0;
-					int g = 0;
-					int b = 0;
-					int a = 0;
+					float r = 0;
+					float g = 0;
+					float b = 0;
+					float a = 0;
 					for (int xOff = -maskSize; xOff <= maskSize; xOff++)
 					{
 						for (int yOff = -maskSize; yOff <= maskSize; yOff++)
@@ -53,9 +53,9 @@ namespace StealthyGame.Engine.Helper
 			return result;
 		}
 
-		private static int MaskSum(int[,] mask)
+		private static float MaskSum(float[,] mask)
 		{
-			int sum = 0;
+			float sum = 0;
 			for (int x = 0; x < mask.GetLength(0); x++)
 			{
 				for (int y = 0; y < mask.GetLength(1); y++)
@@ -66,31 +66,21 @@ namespace StealthyGame.Engine.Helper
 			return sum;
 		}
 
-		private static int[,] Mask(int size)
+		private static float[,] Mask(int sigma)
 		{
-			float[,] tmpResult = new float[2 * size + 1, 2 * size + 1];
-			for (int x = -size; x <= size; x++)
+			float[,] tmpResult = new float[6 * sigma+ 1, 6 * sigma + 1];
+			for (int x = -3 * sigma; x <= 3 * sigma; x++)
 			{
-				for (int y = -size; y <= size; y++)
+				for (int y = -3 * sigma; y <= 3 * sigma; y++)
 				{
-					 tmpResult[x + size, y + size] = Foo(x, y, 2 * size + 1);
+					tmpResult[x + 3 * sigma, y + 3 * sigma] = Foo(x, y, sigma);
 				}
 			}
-			float min = tmpResult[0, 0];
-			int[,] result = new int[tmpResult.GetLength(0), tmpResult.GetLength(1)];
-			for (int x = 0; x < tmpResult.GetLength(0); x++)
-			{
-				for (int y = 0; y < tmpResult.GetLength(1); y++)
-				{
-					result[x, y] = (int)Math.Round(tmpResult[x, y] / min);
-				}
-			}
-			return result;
+			return tmpResult;
 		}
 
-		private static float Foo(int x, int y, float r)
+		private static float Foo(int x, int y, float sigma)
 		{
-			float sigma = r / 3f;
 			return (1f / (MathHelper.TwoPi * sigma * sigma)) * (float)Math.Pow(Math.E, -((x * x + y * y) / 2 * sigma * sigma));
 		}
 		

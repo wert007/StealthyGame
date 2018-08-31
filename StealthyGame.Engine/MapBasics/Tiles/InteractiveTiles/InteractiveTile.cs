@@ -39,7 +39,7 @@ namespace StealthyGame.Engine.MapBasics.Tiles.InteractiveTiles
 
 		}
 
-		public void Update(GameTime time)
+		public override void Update(GameTime time)
 		{
 
 			Animations.Update(time);

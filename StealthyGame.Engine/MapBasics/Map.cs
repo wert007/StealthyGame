@@ -313,12 +313,12 @@ namespace StealthyGame.Engine.MapBasics
 			}
 			BasicTile.SetTileSize(tilesize);
 
-			hope.LoadTileSets(ts);
-
 			this.width = width;
 			this.height = height;
 			this.ObjectGroups = objectGroups.ToArray();
 			this.Layers = layers.ToArray();
+			hope.LoadTileSets(ts);
+
 			nodes = new Node[width, height];
 
 			for (int x = 0; x < width; x++)
@@ -353,7 +353,7 @@ namespace StealthyGame.Engine.MapBasics
 
 		public void Draw(SpriteBatch batch, Matrix cam)
 		{
-			hope.CalculateLightmap(batch, cam, PixelSize, new Color(51, 51, 51));
+		   hope.CalculateLightmap(batch, cam, PixelSize, new Color(51, 51, 51));
 			for (int i = 0; i < Layers.Length; i++)
 			{
 				Layers[i].Draw(batch);

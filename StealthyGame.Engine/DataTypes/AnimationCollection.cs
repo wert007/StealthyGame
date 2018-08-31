@@ -26,9 +26,9 @@ namespace StealthyGame.Engine.DataTypes
 		public void Play(string name)
 		{
 			current = GetByName(name);
-			current.Reset();
 			if (current == null)
 				Console.WriteLine("No animation named " + name);
+			current.Reset();
 			AnimationChanged?.Invoke(name);
 		}
 

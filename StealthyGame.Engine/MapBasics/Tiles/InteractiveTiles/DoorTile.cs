@@ -12,11 +12,12 @@ namespace StealthyGame.Engine.MapBasics.Tiles.InteractiveTiles
 	{
 		protected float timeStayOpen;
 		protected float currentDuration;
+		//Use some State Construct to make go through open Doors more convenient ^^
 
 		public DoorTile(string name, Index2 index) : base(name, index)
 		{
 			durationOfInteraction = 0.3f;
-			timeStayOpen = 1f;
+			timeStayOpen = 5.1f;
 			currentDuration = 0;
 		}
 

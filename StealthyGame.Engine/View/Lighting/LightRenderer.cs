@@ -32,6 +32,7 @@ namespace StealthyGame.Engine.View.Lighting
 		Rectangle influenceArea;
 		Lightmap lightmap;
 		GraphicsDevice graphicsDevice;
+		Color[] textureData;
 
 		public LightRenderer(GraphicsDevice graphicsDevice, Map map)
 		{
@@ -61,9 +62,11 @@ namespace StealthyGame.Engine.View.Lighting
 			renderSize = tempRender.Value;
 			influenceArea = CalculateInfluenceArea();
 			obstacles = GrabObstacles(batch, cam);
+			texture?.Dispose();
 			texture = new Texture2D(graphicsDevice, renderSize.Width, renderSize.Height);
-			var res = new FieldOfView().DoSomething(lights.ToArray(), ambient, obstacles, renderSize, influenceArea, 2);
-			texture.SetData(res);
+			textureData = new FieldOfView().DoSomething(lights.ToArray(), ambient, obstacles, renderSize, influenceArea, 2);
+			texture.SetData(textureData);
+			//texture = texture.GaussianBlur(3);
 		}
 
 		private Rectangle? CalculateRenderView(Index2 mapSize)
@@ -98,12 +101,12 @@ namespace StealthyGame.Engine.View.Lighting
 
 		private Rectangle CalculateInfluenceArea()
 		{
-			CollisionBox renderBox = new CollisionBox(renderSize);
-			var nearByLights = lights;// lights.Where(l => renderBox.Collide(new CollisionCircle(l.Area)));
-			int minX = (int)Math.Min(nearByLights.Min(l => l.Position.X) * 0.95f, renderSize.X);
-			int minY = (int)Math.Min(nearByLights.Min(l => l.Position.Y) * 0.95f, renderSize.Y);
-			int maxX = (int)Math.Max(nearByLights.Max(l => l.Position.X) * 1.05f, renderSize.Right);
-			int maxY = (int)Math.Max(nearByLights.Max(l => l.Position.Y) * 1.05f, renderSize.Bottom);
+			//CollisionBox renderBox = new CollisionBox(renderSize);
+			//var nearByLights = lights;// lights.Where(l => renderBox.Collide(new CollisionCircle(l.Area)));
+			int minX = (int)Math.Min(lights.Min(l => l.Position.X) * 0.95f, renderSize.X);
+			int minY = (int)Math.Min(lights.Min(l => l.Position.Y) * 0.95f, renderSize.Y);
+			int maxX = (int)Math.Max(lights.Max(l => l.Position.X) * 1.05f, renderSize.Right);
+			int maxY = (int)Math.Max(lights.Max(l => l.Position.Y) * 1.05f, renderSize.Bottom);
 
 			return new Rectangle(minX, minY, maxX - minX, maxY - minY);
 		}
