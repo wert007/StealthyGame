@@ -18,6 +18,7 @@ using StealthyGame.Engine.View.Lighting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TestiTest.Console;
 using TestiTest.GameMechanics.Phases;
 using TestiTest.GameMechanics.Phases.Containers;
 
@@ -32,17 +33,16 @@ namespace TestiTest
 		SpriteBatch batch;
 		Texture2D pix;
 		PhaseManager phaseManager;
-		bool freeze;
 		RenderTarget2D gameContent;
 		Queue<RenderTarget2D> lastFrames;
 		Rectangle render;
-		KeyboardManager keyboardManager;
+		KeyboardManager gameKeyboardManager;
+		KeyboardManager debugKeyboardManager;
 		ConsoleControl consoleControl;
 		int width;
 		int height;
 		private readonly int MaxSavedFrames = 80;
 		int currentLastFrame = 0;
-		bool playLoop = false;
 
 		public Game1()
 		{
@@ -55,7 +55,8 @@ namespace TestiTest
 
 		private void Window_TextInput(object sender, TextInputEventArgs e)
 		{
-			keyboardManager.TextInput(sender, e);
+			gameKeyboardManager.TextInput(sender, e);
+			debugKeyboardManager.TextInput(sender, e);
 			Control.TextInput(sender, e);
 		}
 
@@ -76,22 +77,21 @@ namespace TestiTest
 			FontManager.Initialize(Content);
 			Control.Initialize(width, height);
 			
-			keyboardManager = new KeyboardManager();
+			gameKeyboardManager = new KeyboardManager();
+			debugKeyboardManager = new KeyboardManager();
 
 			consoleControl = new ConsoleControl(null);
-			InGameConsole.TextReceived += (txt) =>
-			{
-				Console.WriteLine(txt);
-			};
-			InGameConsole.AddCommand(new ConsoleCommand("loop", ConsoleLoop));
+
+			InGameConsole.AddCommand(new ConsoleCommand("loop", ConsoleCommands.ConsoleLoop));
+			InGameConsole.AddCommand(new ConsoleCommand("freeze", ConsoleCommands.ConsoleFreeze));
+			InGameConsole.AddCommand(new ConsoleCommand("inspect", ConsoleCommands.ConsoleInspect, new Parameter("object", true, true, ParameterType.String)));
+
+			ConsoleCommands.ClassTree = new ClassTree();
+			ConsoleCommands.ClassTree.SetRoot(this);
 
 			base.Initialize();
 		}
 
-		private void ConsoleLoop(object[] args)
-		{
-			playLoop = !playLoop;
-		}
 
 		protected override void LoadContent()
 		{
@@ -105,22 +105,22 @@ namespace TestiTest
 
 		protected override void Update(GameTime time)
 		{
-			keyboardManager.Update(time);
+			debugKeyboardManager.Update(time);
 			if (!consoleControl.Focused)
 			{
-				if (keyboardManager.IsKeyPressed(Keys.F))
-				{
-					InGameConsole.Log("Freeze");
-					freeze = !freeze;
-				}
-				if (keyboardManager.IsKeyPressed(Keys.L))
-				{
-					InGameConsole.Log("Loop");
-					playLoop = !playLoop;
-
-				}
+				gameKeyboardManager.Update(time);
 			}
-			if(keyboardManager.IsCtrlKeyPressed(Keys.C))
+			if (gameKeyboardManager.IsKeyPressed(Keys.F))
+			{
+				ConsoleCommands.FreezeGame = !ConsoleCommands.FreezeGame;
+			}
+			if (gameKeyboardManager.IsKeyPressed(Keys.L))
+			{
+				ConsoleCommands.PlayLoop = !ConsoleCommands.PlayLoop;
+
+			}
+			if (debugKeyboardManager.IsCtrlKeyPressed(Keys.C) || 
+				(!consoleControl.Focused && debugKeyboardManager.IsCharPressed('/')))
 			{
 				if (consoleControl.Focused)
 					consoleControl.Unfocus();
@@ -128,8 +128,11 @@ namespace TestiTest
 					consoleControl.Focus();
 			}
 			IsMouseVisible = false;
+			debugKeyboardManager.EndUpdate();
+			gameKeyboardManager.EndUpdate();
 
-			if (freeze)
+
+			if (ConsoleCommands.FreezeGame)
 			{
 				IsMouseVisible = true;
 				return;
@@ -146,7 +149,7 @@ namespace TestiTest
 
 			GraphicsDevice.Clear(new Color(51, 51, 51));
 			render = new Rectangle(200, 0, GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 80);
-			if (!freeze)
+			if (!ConsoleCommands.FreezeGame)
 			{
 
 				GraphicsDevice.SetRenderTarget(gameContent);
@@ -156,20 +159,20 @@ namespace TestiTest
 				render = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 			}
 			batch.Begin();
-			batch.Draw(gameContent, render, freeze ? Color.Gray : Color.White);
-			if(!freeze)
+			batch.Draw(gameContent, render, Color.White);
+			if(!ConsoleCommands.FreezeGame)
 				lastFrames.Enqueue(CopyRenderTarget(gameContent));
 			if (lastFrames.Count > MaxSavedFrames)
 			{
 				lastFrames.Dequeue().Dispose();
 			}
-			if (playLoop && time.TotalGameTime.Ticks % 3 == 0)
+			if (ConsoleCommands.PlayLoop && time.TotalGameTime.Ticks % 3 == 0)
 			{
 				currentLastFrame = (currentLastFrame + 1) % lastFrames.Count;
 			}
-			if (freeze)
+			if (ConsoleCommands.FreezeGame)
 			{
-				if(playLoop)
+				if(ConsoleCommands.PlayLoop)
 				{
 					batch.Draw(lastFrames.ElementAt(currentLastFrame), Vector2.Zero, Color.White);
 				}

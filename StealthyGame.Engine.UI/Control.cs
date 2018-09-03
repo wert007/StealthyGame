@@ -16,8 +16,11 @@ namespace StealthyGame.Engine.UI
 		public static int RenderHeight { get; private set; }
 		public static List<Control> allControls;
 
+		//TODO: Differentiate more between Margin and RelativeX/RelativeY
+		//			When is used what? And why? Make it more obvious to the user.
 		private int? maxHeight;
 		private int? maxWidth;
+		public Thickness Margin { get; set; }
 		public int MaxWidth { get { return GetMaxWidth(); } }
 		public int MinWidth { get; set; }
 		public int MaxHeight { get { return GetMaxHeight(); } }
@@ -50,6 +53,7 @@ namespace StealthyGame.Engine.UI
 			VerticalAlignment = VerticalAlignment.Stretch;
 			Parent = parent;
 			Visible = true;
+			Margin = new Thickness();
 
 
 			if (allControls == null)
@@ -137,7 +141,7 @@ namespace StealthyGame.Engine.UI
 				case HorizontalAlignment.Right:
 					return MinWidth;
 				case HorizontalAlignment.Stretch:
-					return MaxWidth;
+					return MaxWidth - Margin.HorizontalSum(); ;
 				default:
 					throw new NotImplementedException();
 			}
@@ -152,7 +156,7 @@ namespace StealthyGame.Engine.UI
 				case VerticalAlignment.Bottom:
 					return MinHeight;
 				case VerticalAlignment.Stretch:
-					return MaxHeight;
+					return MaxHeight - Margin.VertivalSum();
 				default:
 					throw new NotImplementedException();
 			}
@@ -171,7 +175,7 @@ namespace StealthyGame.Engine.UI
 					case HorizontalAlignment.Right:
 						return Parent.GetAbsoluteX() + Parent.Width - Width - RelativeX;
 					case HorizontalAlignment.Stretch:
-						return Parent.GetAbsoluteX();
+						return Parent.GetAbsoluteX() + Margin.Left;
 					default:
 						throw new NotImplementedException();
 				}
@@ -187,7 +191,7 @@ namespace StealthyGame.Engine.UI
 					case HorizontalAlignment.Right:
 						return RenderWidth - Width - RelativeX;
 					case HorizontalAlignment.Stretch:
-						return 0;
+						return Margin.Left;
 					default:
 						throw new NotImplementedException();
 				}
@@ -207,7 +211,7 @@ namespace StealthyGame.Engine.UI
 					case VerticalAlignment.Bottom:
 						return Parent.GetAbsoluteY() + Parent.Height - Height - RelativeY;
 					case VerticalAlignment.Stretch:
-						return Parent.GetAbsoluteY();
+						return Parent.GetAbsoluteY() + Margin.Top;
 					default:
 						throw new NotImplementedException();
 				}
@@ -223,7 +227,7 @@ namespace StealthyGame.Engine.UI
 					case VerticalAlignment.Bottom:
 						return RenderHeight - Height - RelativeY;
 					case VerticalAlignment.Stretch:
-						return 0;
+						return Margin.Top;
 					default:
 						throw new NotImplementedException();
 				}
@@ -235,8 +239,8 @@ namespace StealthyGame.Engine.UI
 			if (maxHeight.HasValue)
 				return maxHeight.Value;
 			if (Parent == null)
-				return RenderHeight;
-			return Parent.MaxHeight;
+				return RenderHeight - Margin.VertivalSum();
+			return Parent.MaxHeight - Margin.VertivalSum();
 		}
 
 		private int GetMaxWidth()
@@ -244,8 +248,8 @@ namespace StealthyGame.Engine.UI
 			if (maxWidth.HasValue)
 				return maxWidth.Value;
 			if (Parent == null)
-				return RenderWidth;
-			return Parent.MaxWidth;
+				return RenderWidth - Margin.HorizontalSum();
+			return Parent.MaxWidth- Margin.HorizontalSum();
 		}
 
 		protected void SetMaxHeight(params Control[] controls)

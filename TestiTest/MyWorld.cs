@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StealthyGame.Engine.MapBasics;
 using TestiTest.GameObjects.NPCs;
+using StealthyGame.Engine.Debug.Console;
 
 namespace TestiTest
 {
@@ -39,7 +40,7 @@ namespace TestiTest
 				switch (type)
 				{
 					default:
-						Console.WriteLine("Unknown Type: " + type);
+						InGameConsole.Log("Unknown Type: " + type, Color.Yellow);
 						return false;
 				}
 			}

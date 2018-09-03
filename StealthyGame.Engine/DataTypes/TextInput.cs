@@ -24,8 +24,10 @@ namespace StealthyGame.Engine.DataTypes
 
 		public void Add(TextInputEventArgs e)
 		{
+			
 			this.textInputEventArgs.Add(e);
 			if (e.Character != 13 &&
+				e.Character != 8 &&
 				e.Character >= 1 &&
 				e.Character <= 31)
 				return;
@@ -34,14 +36,11 @@ namespace StealthyGame.Engine.DataTypes
 			{
 				case '\b': //DEL
 					if (TypedText.Length > 0)
-					{
 						TypedText = TypedText.Remove(TypedText.Length - 1);
-						if(e.Key == Keys.LeftControl ||
-							e.Key == Keys.RightControl)
-						{
-							TypedText = TypedText.Remove(TypedText.LastIndexOf(' '));
-						}
-					}
+					break;
+				case '\t': //TAB
+					int c = TypedText.Length % 4;
+					TypedText += new string(' ', 4 - c);
 					break;
 				case '\r': //ENTER
 					EnterPressed?.Invoke(TypedText);
@@ -54,6 +53,12 @@ namespace StealthyGame.Engine.DataTypes
 					TypedText += e.Character;
 					break;
 			}
+		}
+
+		public void SetText(string text)
+		{
+			ClearText();
+			TypedText = text;
 		}
 
 		public void ClearText()

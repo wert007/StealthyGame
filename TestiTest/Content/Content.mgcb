@@ -51,3 +51,17 @@
 /processorParam:TextureFormat=Compressed
 /build:fonts/arial11.spritefont
 
+#begin fonts/couriernew14.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/couriernew14.spritefont
+
+#begin fonts/couriernew16.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:fonts/couriernew16.spritefont
+

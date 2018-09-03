@@ -45,6 +45,7 @@
     <StartupObject>TestiTest.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Console\ConsoleCommands.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameMechanics\Phases\Containers\GameContainer.cs" />
     <Compile Include="GameMechanics\Phases\GamePhase.cs" />
@@ -144,7 +145,16 @@
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="app.config" />
     <None Include="app.manifest" />
+    <None Include="Content\fonts\arial11.spritefont">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Content\fonts\arial16.spritefont" />
+    <None Include="Content\fonts\couriernew14.spritefont">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\fonts\couriernew16.spritefont">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

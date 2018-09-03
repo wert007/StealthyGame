@@ -49,14 +49,15 @@
     <Compile Include="DataTypes\FontManager.cs" />
     <Compile Include="DataTypes\HorizontalAlignment.cs" />
     <Compile Include="DataTypes\Orientation.cs" />
+    <Compile Include="DataTypes\Thickness.cs" />
     <Compile Include="DataTypes\VerticalAlignment.cs" />
-    <Compile Include="Icon.cs" />
-    <Compile Include="Label.cs" />
+    <Compile Include="Basics\Icon.cs" />
+    <Compile Include="Basics\Label.cs" />
     <Compile Include="Panels\StackPanel.cs" />
     <Compile Include="Panels\StackPanelItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScrollBar.cs" />
-    <Compile Include="TextField.cs" />
+    <Compile Include="Basics\ScrollBar.cs" />
+    <Compile Include="Basics\TextField.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -55,6 +55,8 @@
     <Compile Include="DataTypes\Index3.cs" />
     <Compile Include="DataTypes\TextInput.cs" />
     <Compile Include="Debug\Console\ConsoleCommand.cs" />
+    <Compile Include="Debug\Console\ConsoleMessage.cs" />
+    <Compile Include="Debug\Console\Parameter.cs" />
     <Compile Include="Debug\Renderer\DebugCollection.cs" />
     <Compile Include="Debug\Renderer\DebugLight.cs" />
     <Compile Include="Debug\Renderer\DebugNPC.cs" />
@@ -90,6 +92,7 @@
     <Compile Include="Helper\GeometricsHelper.cs" />
     <Compile Include="Helper\LightHelper.cs" />
     <Compile Include="Helper\RandomHelper.cs" />
+    <Compile Include="Helper\TextHelper.cs" />
     <Compile Include="Helper\VectorHelper.cs" />
     <Compile Include="Input\KeyboardManager.cs" />
     <Compile Include="MapBasics\Tiles\AnimatedTile.cs" />

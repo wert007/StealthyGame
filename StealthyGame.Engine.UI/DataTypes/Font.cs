@@ -12,9 +12,13 @@ namespace StealthyGame.Engine.UI.DataTypes
 	{
 		public string Name { get; }
 		public int Size { get; }
+		public int PixelHeight => SpriteFont.LineSpacing;
 		public SpriteFont SpriteFont { get; }
-		public static Font Arial16 { get { return new Font("Arial", 16); } }
-		public static Font Arial11 { get { return new Font("Arial", 11); } }
+
+		public static Font Arial16 { get; } = new Font("Arial", 16);
+		public static Font Arial11 { get; } = new Font("Arial", 11);
+		public static Font CourierNew16 { get; } = new Font("CourierNew", 16);
+		public static Font CourierNew14 { get; } = new Font("CourierNew", 14);
 
 		public Font(string name, int size)
 		{
@@ -30,7 +34,7 @@ namespace StealthyGame.Engine.UI.DataTypes
 
 		public override bool Equals(object obj)
 		{
-			if(obj is Font font)
+			if (obj is Font font)
 			{
 				return Name.Equals(font.Name) &&
 					Size.Equals(font.Size);

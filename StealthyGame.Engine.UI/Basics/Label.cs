@@ -13,7 +13,7 @@ namespace StealthyGame.Engine.UI.Basics
 	{
 		public string Content { get; set; }
 		public Font Font { get; set; }
-		public Color Color { get; set; }
+		public Color TextColor { get; set; }
 
 		public Label(Control parent) : base(parent) 
 		{
@@ -29,7 +29,7 @@ namespace StealthyGame.Engine.UI.Basics
 
 		protected void Initialize()
 		{
-			Color = Color.Black;
+			TextColor = Color.Black;
 			Font = Font.Arial11;
 			MinWidth = (int)Font.SpriteFont.MeasureString(Content).X;
 			MinHeight = (int)Font.SpriteFont.MeasureString(Content).Y;
@@ -39,7 +39,7 @@ namespace StealthyGame.Engine.UI.Basics
 
 		protected override void _Draw(SpriteBatch batch)
 		{
-			batch.DrawString(Font.SpriteFont, Content, new Vector2(AbsoluteX, AbsoluteY), Color);
+			batch.DrawString(Font.SpriteFont, Content, new Vector2(AbsoluteX, AbsoluteY), TextColor);
 		}
 
 		protected override void _Update(GameTime time)
