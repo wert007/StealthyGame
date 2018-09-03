@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.Debug.UI;
+using StealthyGame.Engine.Input;
 using StealthyGame.Engine.UI.Basics;
 using StealthyGame.Engine.UI.DataTypes;
 using StealthyGame.Engine.UI.Panels;
@@ -64,10 +65,10 @@ namespace StealthyGame.Engine.UI.Engine
 			icon.Draw(batch);
 		}
 
-		protected override void _Update(GameTime time)
+		protected override void _Update(GameTime time, KeyboardManager keyboardManager)
 		{
-			icon.Update(time);
-			name.Update(time);
+			name.Update(time, keyboardManager);
+			icon.Update(time, keyboardManager);
 		}
 	}
 }

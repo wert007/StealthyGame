@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using StealthyGame.Engine.DataTypes;
 using StealthyGame.Engine.Debug;
 using StealthyGame.Engine.Debug.Console;
 using StealthyGame.Engine.Helper;
+using StealthyGame.Engine.Input;
 using StealthyGame.Engine.UI.Basics;
 using StealthyGame.Engine.UI.DataTypes;
 
@@ -79,8 +81,16 @@ namespace StealthyGame.Engine.UI
 			}
 		}
 
-		protected override void _Update(GameTime time)
+		protected override void _Update(GameTime time, KeyboardManager keyboardManager)
 		{
+			if(keyboardManager.IsKeyPressed(Keys.Up))
+			{
+				input.Text = InGameConsole.GetPreviousTyped();
+			}
+			else if (keyboardManager.IsKeyPressed(Keys.Down))
+			{ 
+				input.Text = InGameConsole.GetNextTyped();
+			}
 		}
 	}
 }

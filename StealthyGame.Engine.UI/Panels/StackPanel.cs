@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StealthyGame.Engine.Input;
 using StealthyGame.Engine.UI.DataTypes;
 
 namespace StealthyGame.Engine.UI.Panels
@@ -45,11 +46,11 @@ namespace StealthyGame.Engine.UI.Panels
 			}
 		}
 
-		protected override void _Update(GameTime time)
+		protected override void _Update(GameTime time, KeyboardManager keyboardManager)
 		{
-			for(int i = 0; i < children.Count; i++)
+			for (int i = 0; i < children.Count; i++)
 			{
-				children[i].Update(time);
+				children[i].Update(time, keyboardManager);
 			}
 		}
 	}

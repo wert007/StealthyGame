@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using StealthyGame.Engine.Input;
 using StealthyGame.Engine.UI.DataTypes;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace StealthyGame.Engine.UI
 		public event OnClickHandler Clicked;
 
 		protected abstract void _Draw(SpriteBatch batch);
-		protected abstract void _Update(GameTime time);
+		protected abstract void _Update(GameTime time, KeyboardManager keyboardManager);
 
 		public Control(Control parent)
 		{
@@ -61,7 +62,7 @@ namespace StealthyGame.Engine.UI
 			allControls.Add(this);
 		}
 
-		public void Update(GameTime time)
+		public void Update(GameTime time, KeyboardManager keyboardManager)
 		{
 			var mouseState = Mouse.GetState();
 			Hovered = IsMouseOver(mouseState);
@@ -78,11 +79,10 @@ namespace StealthyGame.Engine.UI
 					Clicked?.Invoke(mouseState);
 				}
 			}
-			var keyboardState = Keyboard.GetState();
-			if (keyboardState.IsKeyDown(Keys.Enter))
-				_TextInput(keyboardState, new TextInputEventArgs((char)13, Keys.Enter));
+			if(keyboardManager.IsKeyPressed(Keys.Enter))
+				_TextInput(keyboardManager, new TextInputEventArgs((char)13, Keys.Enter));
 
-			_Update(time);
+			_Update(time, keyboardManager);
 		}
 
 		public void Draw(SpriteBatch batch)

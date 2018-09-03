@@ -80,18 +80,28 @@ namespace TestiTest
 			gameKeyboardManager = new KeyboardManager();
 			debugKeyboardManager = new KeyboardManager();
 
+			InGameConsole.Init();
+
 			consoleControl = new ConsoleControl(null);
 
+			InGameConsole.AddCommand(new ConsoleCommand("exit", ConsoleExit));
 			InGameConsole.AddCommand(new ConsoleCommand("loop", ConsoleCommands.ConsoleLoop));
 			InGameConsole.AddCommand(new ConsoleCommand("freeze", ConsoleCommands.ConsoleFreeze));
-			InGameConsole.AddCommand(new ConsoleCommand("inspect", ConsoleCommands.ConsoleInspect, new Parameter("object", true, true, ParameterType.String)));
+			InGameConsole.AddCommand(new ConsoleCommand("inspect", ConsoleCommands.ConsoleInspect, 
+				new Parameter("object", "o", true, true, ParameterType.File),
+				new Parameter("reset", "r", false, true, ParameterType.Boolean),
+				new Parameter("current", "c", false, true, ParameterType.Boolean)));
 
 			ConsoleCommands.ClassTree = new ClassTree();
-			ConsoleCommands.ClassTree.SetRoot(this);
+			ConsoleCommands.ClassTree.SetRoot(this, "game1");
 
 			base.Initialize();
 		}
 
+		private void ConsoleExit(ParameterValue[] args)
+		{
+			Exit();
+		}
 
 		protected override void LoadContent()
 		{
@@ -130,7 +140,7 @@ namespace TestiTest
 			IsMouseVisible = false;
 			debugKeyboardManager.EndUpdate();
 			gameKeyboardManager.EndUpdate();
-
+			consoleControl.Update(time, debugKeyboardManager);
 
 			if (ConsoleCommands.FreezeGame)
 			{
