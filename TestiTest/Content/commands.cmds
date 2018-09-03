@@ -1,0 +1,50 @@
+﻿cmd:
+    name: inspect
+    callback: ConsoleInspect
+
+    parameter:
+        name: object
+        shortName: o
+        optional: true
+        type: string
+    parameter:
+        name: reset
+        shortName: r
+        optional: true
+        type: bool
+    parameter:
+        name: current
+        shortName: c
+        optional: true
+        type: bool
+    
+    example:
+        usingparameter: object
+        line: /inspect -o game1
+        explanation: Shows the fields and properties of an object 'game1'
+
+    example:
+        usingparameter: reset
+        line: /inspect -r
+        exp: Heyyy
+        exp: So here do you have your explanation of the RESET function
+        exp: Should be obv shouldn't it?
+        exp: <c:f00>Some frightening red text. buh! //Currently there are only Complete colored Lines, but will change eventually
+
+cmd:
+    name: freeze
+
+    parameter:
+        name: value
+        shortName: v
+        optional: true
+        type: int
+
+cmd:
+    name: loop
+
+    parameter:
+        name: value
+        shortName: v
+        optional: true
+        type: int

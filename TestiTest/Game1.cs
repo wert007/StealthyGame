@@ -5,6 +5,7 @@ using StealthyGame.Engine;
 using StealthyGame.Engine.DataTypes;
 using StealthyGame.Engine.Debug;
 using StealthyGame.Engine.Debug.Console;
+using StealthyGame.Engine.Debug.Console.Parser;
 using StealthyGame.Engine.Debug.UI;
 using StealthyGame.Engine.Dialogs;
 using StealthyGame.Engine.GameMechanics.Phases;
@@ -43,6 +44,7 @@ namespace TestiTest
 		int height;
 		private readonly int MaxSavedFrames = 80;
 		int currentLastFrame = 0;
+		ConsoleMessage[] msg;
 
 		public Game1()
 		{
@@ -84,13 +86,21 @@ namespace TestiTest
 
 			consoleControl = new ConsoleControl(null);
 
-			InGameConsole.AddCommand(new ConsoleCommand("exit", ConsoleExit));
-			InGameConsole.AddCommand(new ConsoleCommand("loop", ConsoleCommands.ConsoleLoop));
-			InGameConsole.AddCommand(new ConsoleCommand("freeze", ConsoleCommands.ConsoleFreeze));
-			InGameConsole.AddCommand(new ConsoleCommand("inspect", ConsoleCommands.ConsoleInspect, 
-				new Parameter("object", "o", true, true, ParameterType.File),
-				new Parameter("reset", "r", false, true, ParameterType.Boolean),
-				new Parameter("current", "c", false, true, ParameterType.Boolean)));
+			Parser.Parse(@".\Content\commands.cmds", typeof(ConsoleCommands));
+			//InGameConsole.AddCommand(new ConsoleCommand("exit", ConsoleExit));
+			//InGameConsole.AddCommand(new ConsoleCommand("loop", ConsoleCommands.ConsoleLoop));
+			//InGameConsole.AddCommand(new ConsoleCommand("freeze", ConsoleCommands.ConsoleFreeze));
+			//InGameConsole.AddCommand(new ConsoleCommand("inspect", ConsoleCommands.ConsoleInspect, 
+			//	new Parameter("object", "o", true, true, ParameterType.File),
+			//	new Parameter("reset", "r", false, true, ParameterType.Boolean),
+			//	new Parameter("current", "c", false, true, ParameterType.Boolean)));
+			msg = new ConsoleMessage[5];
+			msg[0] = new ConsoleMessage(string.Empty, Color.White, Color.Blue);
+			msg[1] = new ConsoleMessage(string.Empty, Color.White, Color.Blue);
+			msg[2] = new ConsoleMessage("\t\t\t\t\t\tHeyyy", Color.White, Color.Blue);
+			msg[3] = new ConsoleMessage(string.Empty, Color.White, Color.Blue);
+			msg[4] = new ConsoleMessage(string.Empty, Color.White, Color.Blue);
+			InGameConsole.Log(msg);
 
 			ConsoleCommands.ClassTree = new ClassTree();
 			ConsoleCommands.ClassTree.SetRoot(this, "game1");
@@ -141,6 +151,23 @@ namespace TestiTest
 			debugKeyboardManager.EndUpdate();
 			gameKeyboardManager.EndUpdate();
 			consoleControl.Update(time, debugKeyboardManager);
+
+			if (time.TotalGameTime.Ticks % 5 == 0)
+			{
+				for (int i = 0; i < msg.Length; i++)
+				{ 
+					if (msg[i].BackgroundColor == Color.Blue)
+					{
+						msg[i].BackgroundColor = Color.Yellow;
+						msg[i].Color = Color.Black;
+					}
+					else
+					{
+						msg[i].BackgroundColor = Color.Blue;
+						msg[i].Color = Color.White;
+					}
+				}
+			}
 
 			if (ConsoleCommands.FreezeGame)
 			{
