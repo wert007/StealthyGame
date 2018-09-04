@@ -45,10 +45,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\StealthyGame.Engine.UI\StealthyGame.Engine.UI.Core.csproj">
-      <Project>{dc4c99d8-12f1-49a7-be4c-7f07e5a3eb4f}</Project>
-      <Name>StealthyGame.Engine.UI.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\StealthyGame.Engine\StealthyGame.Engine.csproj">
       <Project>{93634a5e-419d-4b74-9b4c-fd7d25c4e4c5}</Project>
       <Name>StealthyGame.Engine</Name>

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace StealthyGame.Engine.Debug.Console
+namespace StealthyGame.Engine.GameDebug.Console
 {
 	public struct Parameter
 	{

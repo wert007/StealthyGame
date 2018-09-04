@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StealthyGame.Engine.Debug.UI
+namespace StealthyGame.Engine.GameDebug.UI
 {
 	public class ClassTree
 	{

@@ -1,5 +1,5 @@
-﻿using StealthyGame.Engine.Debug.Console;
-using StealthyGame.Engine.Debug.UI;
+﻿using StealthyGame.Engine.GameDebug.Console;
+using StealthyGame.Engine.GameDebug.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;

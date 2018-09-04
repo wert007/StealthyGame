@@ -9,7 +9,7 @@ using StealthyGame.Engine.Geometrics;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.View.Lighting;
 
-namespace StealthyGame.Engine.Debug
+namespace StealthyGame.Engine.GameDebug
 {
 	public class DebugLight : IDebugObject
 	{

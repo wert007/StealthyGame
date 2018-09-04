@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using StealthyGame.Engine.Debug;
+using StealthyGame.Engine.GameDebug;
 using StealthyGame.Engine.GameMechanics.Phases;
 using StealthyGame.Engine.View;
 using System;
@@ -50,7 +50,7 @@ namespace TestiTest.GameMechanics.Phases
 			if (debug)
 			{
 				batch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, cam.Transform);
-				DebugSpriteBatch.Draw(batch);
+				DebugRenderer.Draw(batch);
 				batch.End();
 			}
 

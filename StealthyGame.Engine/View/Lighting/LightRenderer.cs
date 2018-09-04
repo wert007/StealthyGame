@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.DataTypes;
-using StealthyGame.Engine.Debug;
+using StealthyGame.Engine.GameDebug;
 using StealthyGame.Engine.GameObjects.Collisionables;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.MapBasics;

@@ -22,6 +22,11 @@ namespace StealthyGame.Engine.Input
 			keyData = new Dictionary<Keys, KeyData>();
 		}
 
+		public Keys[] GetPressedKeys()
+		{
+			return keyData.Keys.ToArray();
+		}
+
 		public void Update(GameTime time)
 		{
 			lastKeyboardState = Keyboard.GetState();

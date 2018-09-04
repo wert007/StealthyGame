@@ -9,7 +9,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StealthyGame.Engine.Debug.Console
+namespace StealthyGame.Engine.GameDebug.Console
 {
 	public static class InGameConsole
 	{

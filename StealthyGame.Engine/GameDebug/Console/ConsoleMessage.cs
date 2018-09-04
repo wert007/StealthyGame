@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StealthyGame.Engine.Debug.Console
+namespace StealthyGame.Engine.GameDebug.Console
 {
-	public class ConsoleMessage
+	public struct ConsoleMessage
 	{
 		public string Message { get; set; }
 		public Color Color { get; set; } 

@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace StealthyGame.Engine.Debug.Console
+namespace StealthyGame.Engine.GameDebug.Console
 {
 	public struct ConsoleCommand
 	{

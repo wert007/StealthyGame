@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.MapBasics;
 
-namespace StealthyGame.Engine.Debug
+namespace StealthyGame.Engine.GameDebug
 {
-	public static class DebugSpriteBatch
+	public static class DebugRenderer
 	{
 		private static Map map;
 		private static Dictionary<Type, DebugCollection> drawables;
@@ -16,7 +16,7 @@ namespace StealthyGame.Engine.Debug
 
 		public static void SetMap(Map map)
 		{
-			DebugSpriteBatch.map = map;
+			DebugRenderer.map = map;
 		}
 
 		public static void AddDebugObject(IDebugObject debugNPC)

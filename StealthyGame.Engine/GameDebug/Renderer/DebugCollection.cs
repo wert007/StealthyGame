@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace StealthyGame.Engine.Debug
+namespace StealthyGame.Engine.GameDebug
 {
 	internal class DebugCollection
 	{

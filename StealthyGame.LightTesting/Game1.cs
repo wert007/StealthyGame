@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StealthyGame.Engine;
 using StealthyGame.Engine.DataTypes;
-using StealthyGame.Engine.Debug;
+using StealthyGame.Engine.GameDebug;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.View.Lighting;
 using StealthyGame.Engine.View.Lighting.LightStorages.Lightmaps;
@@ -98,8 +98,8 @@ namespace StealthyGame.LightTesting
 			Obstacle obst = new Obstacle(new Index2(90, 50), 3, 3);
 			obst.Update(shape);
 
-			DebugSpriteBatch.AddDebugObject(new DebugObstacle(obstacle, Color.DarkGray));
-			DebugSpriteBatch.AddDebugObject(new DebugObstacle(obst, Color.Blue));
+			DebugRenderer.AddDebugObject(new DebugObstacle(obstacle, Color.DarkGray));
+			DebugRenderer.AddDebugObject(new DebugObstacle(obst, Color.Blue));
 			//smap.AddObstacle(obstacle);
 			//smap.AddObstacle(obst);
 			smap.AddObstacles(heightmap);
@@ -176,7 +176,7 @@ namespace StealthyGame.LightTesting
 			spriteBatch.End();
 
 			spriteBatch.Begin();
-			DebugSpriteBatch.Draw(spriteBatch);
+			DebugRenderer.Draw(spriteBatch);
 			spriteBatch.End();
 
 			base.Draw(gameTime);

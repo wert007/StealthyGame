@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StealthyGame.Engine.Debug.Console.Parser
+namespace StealthyGame.Engine.GameDebug.Console.Parser
 {
 	public class Parser
 	{

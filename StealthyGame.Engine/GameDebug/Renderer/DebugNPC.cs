@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.GameObjects.NPCs;
 using StealthyGame.Engine.Helper;
 
-namespace StealthyGame.Engine.Debug
+namespace StealthyGame.Engine.GameDebug
 {
 	internal class DebugNPC : IDebugObject
 	{

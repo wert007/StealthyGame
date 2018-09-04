@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using StealthyGame.Engine.DataTypes;
-using StealthyGame.Engine.Debug;
+using StealthyGame.Engine.GameDebug;
 using StealthyGame.Engine.Geometrics;
 using StealthyGame.Engine.View.Lighting;
 using System;
@@ -25,7 +25,7 @@ namespace StealthyGame.Engine.View
 			for (int i = 0; i < smallerLights.Length; i++)
 			{
 				smallerLights[i] = new Light(lights[i].Position * scale, (short)(lights[i].Radius * scale), lights[i].Brightness, lights[i].Color);
-				DebugSpriteBatch.AddDebugObjectSingleCall(new DebugLight(lights[i], Color.AliceBlue));
+				DebugRenderer.AddDebugObjectSingleCall(new DebugLight(lights[i], Color.AliceBlue));
 			}
 			Index2[][] pointsToCheck = new Index2[lights.Length][];
 			for (int i = 0; i < smallerLights.Length; i++)

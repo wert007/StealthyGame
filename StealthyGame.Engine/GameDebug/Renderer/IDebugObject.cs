@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace StealthyGame.Engine.Debug
+namespace StealthyGame.Engine.GameDebug
 {
 	public interface IDebugObject
 	{
