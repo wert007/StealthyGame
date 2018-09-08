@@ -19,7 +19,7 @@ namespace StealthyGame.Engine.GameDebug.Console.Parser
 
 			string commandName = string.Empty;
 			MethodInfo commandCallback = null;
-			List<Parameter> commandParameters = new List<Parameter>();
+			List<IParameter> commandParameters = new List<IParameter>();
 			List<CommandExample> commandExamples = new List<CommandExample>();
 
 			string parameterName = string.Empty;
@@ -66,17 +66,22 @@ namespace StealthyGame.Engine.GameDebug.Console.Parser
 								case "parameter":
 									state = ParserState.Parameter;
 									break;
+								case "metaParameter":
+									state = ParserState.MetaParameter;
+									break;
 								case "example":
 									state = ParserState.Example;
 									break;
 								case "cmd":
 									result.Add(new ConsoleCommand(commandName, commandCallback, commandParameters.ToArray()));
+									commandParameters.Clear();
 									state = ParserState.Command;
 									break;
 								default:
 									throw new NotImplementedException("Didn't expect " + type + " here.");
 							}
 							break;
+						case ParserState.MetaParameter:
 						case ParserState.Parameter:
 							type = currentLine.Remove(currentLine.IndexOf(':'));
 							value = currentLine.Substring(currentLine.IndexOf(':') + 1).Trim();
@@ -112,21 +117,40 @@ namespace StealthyGame.Engine.GameDebug.Console.Parser
 										case "float":
 											parameterType = ParameterType.Float;
 											break;
+										case "command":
+											parameterType = ParameterType.Command;
+											break;
 										default:
-											throw new NotSupportedException("No ParameterType named " + pType + ". Try bool, string, file, int, or float");
+											throw new NotSupportedException("No ParameterType named " + pType + ". Try bool, string, file, command, int, or float");
 									}
 									break;
 								case "parameter":
-									commandParameters.Add(new Parameter(parameterName, parameterShortName, parameterHasValue, parameterIsOptional, parameterType));
+									if (state == ParserState.Parameter)
+										commandParameters.Add(new Parameter(parameterName, parameterShortName, parameterHasValue, parameterIsOptional, parameterType));
+									else if (state == ParserState.MetaParameter)
+										commandParameters.Add(new MetaParameter(parameterName, parameterShortName, parameterIsOptional, parameterType));
+									else
+										throw new NotSupportedException("Wrong State at this point..");
 									state = ParserState.Parameter; //Just to make it obvious
 									break;
 								case "example":
-									commandParameters.Add(new Parameter(parameterName, parameterShortName, parameterHasValue, parameterIsOptional, parameterType));
+									if (state == ParserState.Parameter)
+										commandParameters.Add(new Parameter(parameterName, parameterShortName, parameterHasValue, parameterIsOptional, parameterType));
+									else if (state == ParserState.MetaParameter)
+										commandParameters.Add(new MetaParameter(parameterName, parameterShortName, parameterIsOptional, parameterType));
+									else
+										throw new NotSupportedException("Wrong State at this point..");
 									state = ParserState.Example;
 									break;
 								case "cmd":
-									commandParameters.Add(new Parameter(parameterName, parameterShortName, parameterHasValue, parameterIsOptional, parameterType));
+									if (state == ParserState.Parameter)
+										commandParameters.Add(new Parameter(parameterName, parameterShortName, parameterHasValue, parameterIsOptional, parameterType));
+									else if (state == ParserState.MetaParameter)
+										commandParameters.Add(new MetaParameter(parameterName, parameterShortName, parameterIsOptional, parameterType));
+									else
+										throw new NotSupportedException("Wrong State at this point..");
 									result.Add(new ConsoleCommand(commandName, commandCallback, commandParameters.ToArray()));
+									commandParameters.Clear();
 									state = ParserState.Command;
 									break;
 								default:
@@ -162,6 +186,7 @@ namespace StealthyGame.Engine.GameDebug.Console.Parser
 								case "cmd":
 									commandExamples.Add(new CommandExample(exampleLine, exampleText, exampleParameterNames.ToArray()));
 									result.Add(new ConsoleCommand(commandName, commandCallback, commandParameters.ToArray(), commandExamples.ToArray()));
+									commandParameters.Clear();
 									exampleText = string.Empty;
 									state = ParserState.Command;
 									break;
@@ -196,6 +221,7 @@ namespace StealthyGame.Engine.GameDebug.Console.Parser
 		FileLoad,
 		Command,
 		Parameter,
-		Example
+		Example,
+		MetaParameter
 	}
 }

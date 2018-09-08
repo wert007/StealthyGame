@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.GameObjects.NPCs;
 using StealthyGame.Engine.Helper;
+using StealthyGame.Engine.Renderer;
 
 namespace StealthyGame.Engine.GameDebug
 {
@@ -19,13 +20,13 @@ namespace StealthyGame.Engine.GameDebug
 		public Color? ShowVelocity { get; set; }
 		public Color? ShowAcceleration { get; set; }
 
-		public void Draw(SpriteBatch batch)
+		public void Draw(Renderer2D renderer)
 		{
-			batch.DrawFilledRectangle(new Rectangle((int)nPC.Position.X, (int)nPC.Position.Y, (int)nPC.Size.X, (int)nPC.Size.Y), color);
+			renderer.DrawFilledRectangle(new Rectangle((int)nPC.Position.X, (int)nPC.Position.Y, (int)nPC.Size.X, (int)nPC.Size.Y), color);
 			if (ShowVelocity.HasValue)
-				batch.DrawVector(nPC.Velocity, nPC.Center, ShowVelocity.Value, 2);
+				renderer.DrawVector(nPC.Velocity, nPC.Center, ShowVelocity.Value, 2);
 			if (ShowAcceleration.HasValue)
-				batch.DrawVector(nPC.Acceleration, nPC.Center, ShowAcceleration.Value, 1);
+				renderer.DrawVector(nPC.Acceleration, nPC.Center, ShowAcceleration.Value, 1);
 		}
 	}
 }

@@ -11,7 +11,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 	public struct ConsoleCommand
 	{
 		public string Name { get; private set; }
-		Parameter[] parameters;
+		IParameter[] parameters;
 		CommandExample[] examples;
 		//Action<ParameterValue[]> callback;
 		MethodInfo callback;
@@ -22,7 +22,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 		static string CommandRegex => @"[a-zA-Z][a-zA-Z_0-9]*";
 
 
-		public ConsoleCommand(string name, MethodInfo callback, params Parameter[] parameters)
+		public ConsoleCommand(string name, MethodInfo callback, params IParameter[] parameters)
 		{
 			if (!System.Text.RegularExpressions.Regex.IsMatch(name, CommandRegex))
 				throw new ArgumentException("InGameConsole: " + name + " is no valid CommandName. Should only start with letters (a-z, A-Z) and only use letters, numbers and _ afterwards.");
@@ -31,9 +31,13 @@ namespace StealthyGame.Engine.GameDebug.Console
 			this.callback = callback;
 			examples = new CommandExample[0];
 			necessaryParameters = parameters.Count(c => !c.IsOptional);
+			if(parameters.Length > 1 && parameters.Count(p => p is MetaParameter) >= 1)
+			{
+				throw new ArgumentException("MetaParameter may be the only one in a list of parameters!");
+			}
 		}
 
-		public ConsoleCommand(string name, MethodInfo callback, Parameter[] parameters, CommandExample[] examples) : this(name, callback, parameters)
+		public ConsoleCommand(string name, MethodInfo callback, IParameter[] parameters, CommandExample[] examples) : this(name, callback, parameters)
 		{
 			this.examples = examples;
 		}
@@ -51,26 +55,33 @@ namespace StealthyGame.Engine.GameDebug.Console
 				line = line.Trim('-');
 				for (int i = 0; i < parameters.Length; i++)
 				{
-					for (int j = 0; j < parameters[i].Names.Length; j++)
+					if (parameters[i] is Parameter)
 					{
-						if (line.StartsWith(parameters[i].Names[j]))
+						for (int j = 0; j < parameters[i].Names.Length; j++)
 						{
-							if (parameters[i].HasValue)
+							if (line.StartsWith(parameters[i].Names[j]))
 							{
-								line = line.Substring(parameters[i].Names[j].Length + 1);
-								if (parameters[i].Type == ParameterType.String ||
-									parameters[i].Type == ParameterType.File)
+								if (parameters[i].HasValue)
 								{
-									var match = System.Text.RegularExpressions.Regex.Match(line, Parameter.String);
+									line = line.Substring(parameters[i].Names[j].Length + 1);
+									if (parameters[i].Type == ParameterType.String ||
+										parameters[i].Type == ParameterType.File)
+									{
+										var match = System.Text.RegularExpressions.Regex.Match(line, Parameter.String);
+
+									}
+									else
+										line = line.Substring(line.IndexOf(' '));
 
 								}
-								else
-									line = line.Substring(line.IndexOf(' '));
-
 							}
+							else if (!parameters[i].IsOptional)
+								return false;
 						}
-						else if (!parameters[i].IsOptional)
-							return false;
+					}
+					else
+					{
+						
 					}
 				}
 				return true;
@@ -87,69 +98,77 @@ namespace StealthyGame.Engine.GameDebug.Console
 
 				if (!line.Contains(' ') && necessaryParameters <= 0)
 				{
-					callback.Invoke(null, new object[0]);
+					callback.Invoke(null, new object[1] { new ParameterValue[0] });
 					return;
 				}
-				line = line.Substring(line.IndexOf('-'));
-				line = line.Trim('-');
-				for (int i = 0; i < parameters.Length; i++)
+				if (line.Contains('-'))
 				{
-					for (int j = 0; j < parameters[i].Names.Length; j++)
+					line = line.Substring(line.IndexOf('-'));
+					line = line.Trim('-');
+					for (int i = 0; i < parameters.Length; i++)
 					{
-						if (line.StartsWith(parameters[i].Names[j]))
+						for (int j = 0; j < parameters[i].Names.Length; j++)
 						{
-							if (parameters[i].HasValue)
+							if (line.StartsWith(parameters[i].Names[j]))
 							{
-								line = line.Substring(parameters[i].Names[j].Length + 1);
-								string parameter;
-								Match match;
-								switch (parameters[i].Type)
+								if (parameters[i].HasValue)
 								{
-									case ParameterType.String:
-										match = System.Text.RegularExpressions.Regex.Match(line, Parameter.String);
-										parameter = match.Value;
-										args.Add(new ParameterValue(parameters[i], parameter));
-										break;
-									case ParameterType.File:
-										match = System.Text.RegularExpressions.Regex.Match(line, Parameter.File);
-										parameter = match.Value;
-										args.Add(new ParameterValue(parameters[i], parameter.Trim('\'')));
-										break;
-									case ParameterType.Integer:
-										match = System.Text.RegularExpressions.Regex.Match(line, Parameter.Integer);
-										parameter = match.Value;
-										if (int.TryParse(parameter, out int parsedInt))
-											args.Add(new ParameterValue(parameters[i], parsedInt));
-										else
-											throw new ArgumentException();
-										break;
-									case ParameterType.Float:
-										match = System.Text.RegularExpressions.Regex.Match(line, Parameter.Float);
-										parameter = match.Value;
-										if (float.TryParse(parameter, out float parsedFloat))
-											args.Add(new ParameterValue(parameters[i], parsedFloat));
-										else
-											throw new ArgumentException();
-										break;
-									case ParameterType.Boolean:
-										throw new Exception("Something went wrong: ParameterType Boolean implicits no Value; Parameter.HasValue can not be true!");
-									default:
-										throw new NotImplementedException();
+									line = line.Substring(parameters[i].Names[j].Length + 1);
+									string parameter;
+									Match match;
+									switch (parameters[i].Type)
+									{
+										case ParameterType.String:
+											match = System.Text.RegularExpressions.Regex.Match(line, Parameter.String);
+											parameter = match.Value;
+											args.Add(new ParameterValue(parameters[i], parameter));
+											break;
+										case ParameterType.File:
+											match = System.Text.RegularExpressions.Regex.Match(line, Parameter.File);
+											parameter = match.Value;
+											args.Add(new ParameterValue(parameters[i], parameter.Trim('\'')));
+											break;
+										case ParameterType.Integer:
+											match = System.Text.RegularExpressions.Regex.Match(line, Parameter.Integer);
+											parameter = match.Value;
+											if (int.TryParse(parameter, out int parsedInt))
+												args.Add(new ParameterValue(parameters[i], parsedInt));
+											else
+												throw new ArgumentException();
+											break;
+										case ParameterType.Float:
+											match = System.Text.RegularExpressions.Regex.Match(line, Parameter.Float);
+											parameter = match.Value;
+											if (float.TryParse(parameter, out float parsedFloat))
+												args.Add(new ParameterValue(parameters[i], parsedFloat));
+											else
+												throw new ArgumentException();
+											break;
+										case ParameterType.Boolean:
+											throw new Exception("Something went wrong: ParameterType Boolean implicits no Value; Parameter.HasValue can not be true!");
+										default:
+											throw new NotImplementedException();
+									}
+									line = line.Substring(match.Index + match.Length);
 								}
-								line = line.Substring(match.Index + match.Length);
-							}
-							else
-							{
-								args.Add(new ParameterValue(parameters[i], true));
-							}
+								else
+								{
+									args.Add(new ParameterValue(parameters[i], true));
+								}
 
+							}
+							else if (!parameters[i].IsOptional)
+								throw new ArgumentException();
 						}
-						else if (!parameters[i].IsOptional)
-							throw new ArgumentException();
 					}
 				}
+				else
+				{
+					line = line.Substring(line.IndexOf(' ')).Trim();
+					args.Add(new ParameterValue(parameters.FirstOrDefault(p => p is MetaParameter), line));
+				}
 			}
-			callback.Invoke(null, args.Cast<object>().ToArray());
+			callback.Invoke(null, new object[1] { args.ToArray() });
 		}
 
 		public void PrintExamples()

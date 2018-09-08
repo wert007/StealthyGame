@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using StealthyGame.Engine.GameDebug;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.Input;
+using StealthyGame.Engine.Renderer;
 using StealthyGame.Engine.UI.DataTypes;
 using System;
 using System.Collections.Generic;
@@ -22,13 +23,14 @@ namespace StealthyGame.Engine.GameDebug.Renderer
 			this.keyboard = keyboard;
 		}
 
-		public void Draw(SpriteBatch batch)
+		public void Draw(Renderer2D renderer)
 		{
 			Keys[] keys = keyboard.GetPressedKeys();
 			for (int i = 0; i < keys.Length; i++)
 			{
-				batch.DrawFilledRectangle(new Rectangle(0, Font.Arial16.PixelHeight * i, 100, Font.Arial16.PixelHeight), Color.Red);
-				batch.DrawString(Font.Arial16.SpriteFont, keys[i].ToString(), new Vector2(0, Font.Arial16.PixelHeight * i), Color.White);
+				//batch.DrawFilledRectangle(new Rectangle(0, Font.Arial16.PixelHeight * i, 100, Font.Arial16.PixelHeight), Color.Red);
+				renderer.Draw(Font.Arial16, keys[i].ToString(), new Vector2(0, Font.Arial16.PixelHeight * i), Color.White);
+				
 			}
 		}
 	}

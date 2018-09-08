@@ -5,59 +5,81 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.MapBasics;
+using StealthyGame.Engine.Renderer;
 
 namespace StealthyGame.Engine.GameDebug
 {
 	public static class DebugRenderer
 	{
 		private static Map map;
-		private static Dictionary<Type, DebugCollection> drawables;
-		private static Dictionary<Type, DebugCollection> drawablesSingleCall;
+		private static Dictionary<Type, DebugCollection> drawablesWorld;
+		private static Dictionary<Type, DebugCollection> drawablesScreen;
+		private static Dictionary<Type, DebugCollection> drawablesWorldSingleCall;
 
 		public static void SetMap(Map map)
 		{
 			DebugRenderer.map = map;
 		}
 
-		public static void AddDebugObject(IDebugObject debugNPC)
+		public static void AddDebugObjectWorld(IDebugObject debugNPC)
 		{
-			if (drawables == null)
-				drawables = new Dictionary<Type, DebugCollection>();
-			if (!drawables.ContainsKey(debugNPC.GetType()))
-				drawables.Add(debugNPC.GetType(), new DebugCollection());
-			drawables[debugNPC.GetType()].Add(debugNPC);
+			if (drawablesWorld == null)
+				drawablesWorld = new Dictionary<Type, DebugCollection>();
+			if (!drawablesWorld.ContainsKey(debugNPC.GetType()))
+				drawablesWorld.Add(debugNPC.GetType(), new DebugCollection());
+			drawablesWorld[debugNPC.GetType()].Add(debugNPC);
 		}
 
-		public static void AddDebugObjectSingleCall(IDebugObject debugObject)
+		public static void AddDebugObjectScreen(IDebugObject debugObject)
 		{
-			if (drawablesSingleCall == null)
-				drawablesSingleCall = new Dictionary<Type, DebugCollection>();
-			if (!drawablesSingleCall.ContainsKey(debugObject.GetType()))
-				drawablesSingleCall.Add(debugObject.GetType(), new DebugCollection());
-			drawablesSingleCall[debugObject.GetType()].Add(debugObject);
+			if (drawablesScreen == null)
+				drawablesScreen = new Dictionary<Type, DebugCollection>();
+			if (!drawablesScreen.ContainsKey(debugObject.GetType()))
+				drawablesScreen.Add(debugObject.GetType(), new DebugCollection());
+			drawablesScreen[debugObject.GetType()].Add(debugObject);
+		}
+
+		public static void AddDebugObjectWorldSingleCall(IDebugObject debugObject)
+		{
+			if (drawablesWorldSingleCall == null)
+				drawablesWorldSingleCall = new Dictionary<Type, DebugCollection>();
+			if (!drawablesWorldSingleCall.ContainsKey(debugObject.GetType()))
+				drawablesWorldSingleCall.Add(debugObject.GetType(), new DebugCollection());
+			drawablesWorldSingleCall[debugObject.GetType()].Add(debugObject);
 		}
 
 		public static void VisibilityOfType(Type type, bool visible)
 		{
-			drawables[type].Visible = visible;
-			drawablesSingleCall[type].Visible = visible;
+			drawablesWorld[type].Visible = visible;
+			drawablesWorldSingleCall[type].Visible = visible;
 		}
 
-
-		public static void Draw(SpriteBatch batch)
+		public static void DrawWorld(Renderer2D renderer)
 		{
-			if (drawables != null)
-				foreach (var drawable in drawables)
+			if (drawablesWorld != null)
+				foreach (var drawable in drawablesWorld)
 				{
-					drawable.Value.Draw(batch);
+					drawable.Value.Draw(renderer);
 				}
-			if (drawablesSingleCall != null)
+			if (drawablesWorldSingleCall != null)
 			{
-				foreach (var drawable in drawablesSingleCall)
+				foreach (var drawable in drawablesWorldSingleCall)
 				{
-					drawable.Value.Draw(batch);
+					drawable.Value.Draw(renderer);
 				}
-				drawablesSingleCall.Clear();
+				drawablesWorldSingleCall.Clear();
+			}
+
+		}
+
+		public static void DrawScreen(Renderer2D renderer)
+		{
+			if (drawablesScreen != null)
+			{
+				foreach (var drawable in drawablesScreen)
+				{
+					drawable.Value.Draw(renderer);
+				}
 			}
 		}
 	}

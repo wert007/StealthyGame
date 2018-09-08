@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using StealthyGame.Engine.Renderer;
 
 namespace StealthyGame.Engine.GameMechanics.Phases
 {
@@ -34,9 +35,9 @@ namespace StealthyGame.Engine.GameMechanics.Phases
 			GetCurrentPhase().Update(time);
 		}
 
-		public void Draw(SpriteBatch batch, GameTime time)
+		public void Draw(Renderer2D renderer, GameTime time)
 		{
-			GetCurrentPhase().Draw(batch, time);
+			GetCurrentPhase().Draw(renderer, time);
 		}
 	}
 }

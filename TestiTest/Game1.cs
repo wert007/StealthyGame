@@ -13,7 +13,6 @@ using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.Input;
 using StealthyGame.Engine.UI;
 using StealthyGame.Engine.UI.DataTypes;
-using StealthyGame.Engine.UI.Engine;
 using StealthyGame.Engine.View;
 using StealthyGame.Engine.View.Lighting;
 using System;
@@ -22,6 +21,8 @@ using System.Linq;
 using TestiTest.Console;
 using TestiTest.GameMechanics.Phases;
 using TestiTest.GameMechanics.Phases.Containers;
+using StealthyGame.Engine.GameDebug.Renderer;
+using StealthyGame.Engine.Renderer;
 
 namespace TestiTest
 {
@@ -40,6 +41,9 @@ namespace TestiTest
 		KeyboardManager gameKeyboardManager;
 		KeyboardManager debugKeyboardManager;
 		ConsoleControl consoleControl;
+		DebugKeyPressed gameKeyboardDisplay;
+
+		Renderer2D renderer;
 
 		int width;
 		int height;
@@ -82,14 +86,18 @@ namespace TestiTest
 			gameKeyboardManager = new KeyboardManager();
 			debugKeyboardManager = new KeyboardManager();
 
+			gameKeyboardDisplay = new DebugKeyPressed(gameKeyboardManager);
+			DebugRenderer.AddDebugObjectScreen(gameKeyboardDisplay);
+
 			InGameConsole.Init();
 
 			consoleControl = new ConsoleControl(null);
 
-			Parser.Parse(@".\Content\commands.cmds", typeof(ConsoleCommands));
+			Parser.Parse(@".\Content\stdCommands.cmds", typeof(StealthyGame.Engine.GameDebug.Console.ConsoleCommands));
+			Parser.Parse(@".\Content\commands.cmds", typeof(Console.ConsoleCommands));
 
-			ConsoleCommands.ClassTree = new ClassTree();
-			ConsoleCommands.ClassTree.SetRoot(this, "game1");
+			Console.ConsoleCommands.ClassTree = new ClassTree();
+			Console.ConsoleCommands.ClassTree.SetRoot(this, "game1");
 
 			base.Initialize();
 		}
@@ -102,9 +110,10 @@ namespace TestiTest
 		protected override void LoadContent()
 		{
 			batch = new SpriteBatch(GraphicsDevice);
+			renderer = new Renderer2D(batch);
 
-			pix = Content.Load<Texture2D>("Pixel");
-			DrawHelper.Pixel = pix;
+			//pix = Content.Load<Texture2D>("Pixel");
+			//DrawHelper.Pixel = pix;
 
 			phaseManager.Load(Content);
 		}
@@ -118,11 +127,11 @@ namespace TestiTest
 			}
 			if (gameKeyboardManager.IsKeyPressed(Keys.F))
 			{
-				ConsoleCommands.FreezeGame = !ConsoleCommands.FreezeGame;
+				Console.ConsoleCommands.FreezeGame = !Console.ConsoleCommands.FreezeGame;
 			}
 			if (gameKeyboardManager.IsKeyPressed(Keys.L))
 			{
-				ConsoleCommands.PlayLoop = !ConsoleCommands.PlayLoop;
+				Console.ConsoleCommands.PlayLoop = !Console.ConsoleCommands.PlayLoop;
 
 			}
 			if (debugKeyboardManager.IsCtrlKeyPressed(Keys.C) || 
@@ -138,7 +147,7 @@ namespace TestiTest
 			gameKeyboardManager.EndUpdate();
 			consoleControl.Update(time, debugKeyboardManager);
 			
-			if (ConsoleCommands.FreezeGame)
+			if (Console.ConsoleCommands.FreezeGame)
 			{
 				IsMouseVisible = true;
 				return;
@@ -155,35 +164,35 @@ namespace TestiTest
 
 			GraphicsDevice.Clear(new Color(51, 51, 51));
 			render = new Rectangle(200, 0, GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 80);
-			if (!ConsoleCommands.FreezeGame)
+			if (!Console.ConsoleCommands.FreezeGame)
 			{
 
 				GraphicsDevice.SetRenderTarget(gameContent);
 				GraphicsDevice.Clear(Color.Black);
-				phaseManager.Draw(batch, time);
+				phaseManager.Draw(renderer, time);
 				GraphicsDevice.SetRenderTarget(null);
 				render = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 			}
-			batch.Begin();
-			batch.Draw(gameContent, render, Color.White);
-			if(!ConsoleCommands.FreezeGame)
+			renderer.Begin();
+			renderer.Draw(gameContent, render, Color.White);
+			if(!Console.ConsoleCommands.FreezeGame)
 				lastFrames.Enqueue(CopyRenderTarget(gameContent));
 			if (lastFrames.Count > MaxSavedFrames)
 			{
 				lastFrames.Dequeue().Dispose();
 			}
-			if (ConsoleCommands.PlayLoop && time.TotalGameTime.Ticks % 3 == 0)
+			if (Console.ConsoleCommands.PlayLoop && time.TotalGameTime.Ticks % 3 == 0)
 			{
 				currentLastFrame = (currentLastFrame + 1) % lastFrames.Count;
 			}
-			if (ConsoleCommands.FreezeGame)
+			if (Console.ConsoleCommands.FreezeGame)
 			{
-				if(ConsoleCommands.PlayLoop)
+				if(Console.ConsoleCommands.PlayLoop)
 				{
 					batch.Draw(lastFrames.ElementAt(currentLastFrame), Vector2.Zero, Color.White);
 				}
 			}
-			consoleControl.Draw(batch);
+			consoleControl.Draw(renderer);
 			batch.End();
 
 			base.Draw(time);

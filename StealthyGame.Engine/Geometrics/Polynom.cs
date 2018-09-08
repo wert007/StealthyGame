@@ -164,13 +164,5 @@ namespace StealthyGame.Engine.Geometrics
 				result = rand.NextIndex2(Min, Max);
 			return result;
 		}
-
-		public void Draw(SpriteBatch batch)
-		{
-			foreach (var p in All)
-			{
-				batch.Draw(DrawHelper.Pixel, p, Color.Red);
-			}
-		}
 	}
 }

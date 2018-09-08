@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.DataTypes;
 using StealthyGame.Engine.Input;
+using StealthyGame.Engine.Renderer;
 using StealthyGame.Engine.UI.DataTypes;
 
 namespace StealthyGame.Engine.UI.Basics
@@ -45,9 +46,9 @@ namespace StealthyGame.Engine.UI.Basics
 			textInput.Add(e);
 		}
 
-		protected override void _Draw(SpriteBatch batch)
+		protected override void _Draw(Renderer2D renderer)
 		{
-			batch.DrawString(Font.SpriteFont, textInput.TypedText, new Vector2(AbsoluteX, AbsoluteY), TextColor);
+			renderer.Draw(Font, textInput.TypedText, new Vector2(AbsoluteX, AbsoluteY), TextColor);
 		}
 
 		protected override void _Update(GameTime time, KeyboardManager keyboardManager)

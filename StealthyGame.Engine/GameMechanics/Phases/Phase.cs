@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using StealthyGame.Engine.Renderer;
 
 namespace StealthyGame.Engine.GameMechanics.Phases
 {
@@ -25,7 +26,7 @@ namespace StealthyGame.Engine.GameMechanics.Phases
 
 		public abstract void Update(GameTime time);
 
-		public abstract void Draw(SpriteBatch batch, GameTime time);
+		public abstract void Draw(Renderer2D renderer, GameTime time);
 
 		public Phase CreateNextPhase(PhaseContainer container)
 		{

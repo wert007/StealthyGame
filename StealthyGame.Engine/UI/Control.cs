@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StealthyGame.Engine.Input;
+using StealthyGame.Engine.Renderer;
 using StealthyGame.Engine.UI.DataTypes;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace StealthyGame.Engine.UI
 		public delegate void OnClickHandler(MouseState mouseState);
 		public event OnClickHandler Clicked;
 
-		protected abstract void _Draw(SpriteBatch batch);
+		protected abstract void _Draw(Renderer2D renderer);
 		protected abstract void _Update(GameTime time, KeyboardManager keyboardManager);
 
 		public Control(Control parent)
@@ -85,11 +86,11 @@ namespace StealthyGame.Engine.UI
 			_Update(time, keyboardManager);
 		}
 
-		public void Draw(SpriteBatch batch)
+		public void Draw(Renderer2D renderer)
 		{
 			if (!Visible)
 				return;
-			_Draw(batch);
+			_Draw(renderer);
 		}
 
 		private bool IsMouseOver(MouseState mouseState)

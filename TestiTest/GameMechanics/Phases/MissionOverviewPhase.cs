@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.GameMechanics.Phases;
+using StealthyGame.Engine.Renderer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace TestiTest.GameMechanics.Phases
 		{
 		}
 
-		public override void Draw(SpriteBatch batch, GameTime time)
+		public override void Draw(Renderer2D renderer, GameTime time)
 		{
 			throw new NotImplementedException();
 		}

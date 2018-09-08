@@ -4,6 +4,7 @@ using StealthyGame.Engine.DataTypes;
 using StealthyGame.Engine.MapBasics.Tiled;
 using StealthyGame.Engine.MapBasics.Tiles;
 using StealthyGame.Engine.MapBasics.Tiles.InteractiveTiles;
+using StealthyGame.Engine.Renderer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -120,13 +121,13 @@ namespace StealthyGame.Engine.MapBasics
 			return tileSets.GetProperties(data[i]);
 		}
 
-		internal void Draw(SpriteBatch batch)
+		internal void Draw(Renderer2D renderer)
 		{
-			batch.Draw(Prerendered, Vector2.Zero, Color.White);
+			renderer.Draw(Prerendered, Vector2.Zero, Color.White);
 			foreach (var tile in animatedOrInteractiveTiles)
 			{
 				if (tile is InteractiveTile interactive)
-					interactive.Draw(batch, Color.White);
+					interactive.Draw(renderer, Color.White);
 			}
 		}
 

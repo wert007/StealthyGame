@@ -6,6 +6,7 @@ using StealthyGame.Engine.GameObjects.Collisionables;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.MapBasics;
 using StealthyGame.Engine.MapBasics.Tiles;
+using StealthyGame.Engine.Renderer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -48,20 +49,20 @@ namespace StealthyGame.Engine.View.Lighting
 			lightmap.LoadTileSets(tileSetManager, graphicsDevice);
 		}
 
-		private bool[,] GrabObstacles(SpriteBatch batch, Matrix cam)
+		private bool[,] GrabObstacles(Renderer2D renderer, Matrix cam)
 		{
-			lightmap.Draw(batch, cam, new Rectangle(influenceArea.X / 2, influenceArea.Y / 2, influenceArea.Width / 2, influenceArea.Height / 2));
+			lightmap.Draw(renderer, cam, new Rectangle(influenceArea.X / 2, influenceArea.Y / 2, influenceArea.Width / 2, influenceArea.Height / 2));
 			return lightmap.GetObstacles();
 		}
 
-		public void CalculateLightmap(SpriteBatch batch, Matrix cam, Index2 mapSize, Color ambient)
+		public void CalculateLightmap(Renderer2D renderer, Matrix cam, Index2 mapSize, Color ambient)
 		{
 			var tempRender = CalculateRenderView(mapSize);
 			if (!tempRender.HasValue)
 				return;
 			renderSize = tempRender.Value;
 			influenceArea = CalculateInfluenceArea();
-			obstacles = GrabObstacles(batch, cam);
+			obstacles = GrabObstacles(renderer, cam);
 			texture?.Dispose();
 			texture = new Texture2D(graphicsDevice, renderSize.Width, renderSize.Height);
 			textureData = new FieldOfView().DoSomething(lights.ToArray(), ambient, obstacles, renderSize, influenceArea, 2);
@@ -111,10 +112,10 @@ namespace StealthyGame.Engine.View.Lighting
 			return new Rectangle(minX, minY, maxX - minX, maxY - minY);
 		}
 
-		public void Draw(SpriteBatch batch)
+		public void Draw(Renderer2D renderer)
 		{
 			if(texture != null)
-				batch.Draw(texture, renderSize, Color.White);
+				renderer.Draw(texture, renderSize, Color.White);
 		}
 
 		public void AddLayer(MapLayer layer)

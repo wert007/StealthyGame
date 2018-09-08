@@ -7,6 +7,7 @@ using StealthyGame.Engine.DataTypes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.Helper;
+using StealthyGame.Engine.Renderer;
 
 namespace StealthyGame.Engine.MapBasics.Tiles.InteractiveTiles
 {
@@ -61,9 +62,9 @@ namespace StealthyGame.Engine.MapBasics.Tiles.InteractiveTiles
 			Animations.Play(name);
 		}
 
-		public void Draw(SpriteBatch batch, Color color)
+		public void Draw(Renderer2D renderer, Color color)
 		{
-			batch.Draw(Animations, new Rectangle(Position.X, Position.Y, Size, Size), color);
+			renderer.Draw(Animations, new Rectangle(Position.X, Position.Y, Size, Size), color);
 		}
 	}
 }

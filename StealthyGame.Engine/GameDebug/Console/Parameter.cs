@@ -2,7 +2,47 @@
 
 namespace StealthyGame.Engine.GameDebug.Console
 {
-	public struct Parameter
+	public interface IParameter
+	{
+		ParameterType Type { get; }
+		bool IsOptional { get; }
+		bool HasValue { get; }
+		string[] Names { get; }
+	}
+
+	public struct MetaParameter : IParameter
+	{
+		public string[] Names { get; private set; }
+		public bool HasValue { get; private set; } 
+		public bool IsOptional { get; private set; }
+		public ParameterType Type { get; private set; }
+
+		public MetaParameter(string name, bool isOptional, ParameterType type)
+		{
+			Names = new string[1] { name };
+			HasValue = true;
+			IsOptional = isOptional;
+			Type = type;
+		}
+
+		public MetaParameter(string name, string shortName, bool isOptional, ParameterType type)
+		{
+			Names = new string[2] { name, shortName };
+			HasValue = true;
+			IsOptional = isOptional;
+			Type = type;
+		}
+
+		public MetaParameter(string[] names, bool isOptional, ParameterType type)
+		{
+			Names = names;
+			HasValue = true;
+			IsOptional = isOptional;
+			Type = type;
+		}
+	}
+
+	public struct Parameter : IParameter
 	{
 		public static string Regex => "-" + CommandRegex + "( (" + Number + "|" + File + "|" + String + "))?";
 
@@ -48,10 +88,10 @@ namespace StealthyGame.Engine.GameDebug.Console
 
 	public struct ParameterValue
 	{
-		public Parameter Parameter { get; private set; }
+		public IParameter Parameter { get; private set; }
 		public object Value { get; private set; }
 
-		public ParameterValue(Parameter parameter, object value)
+		public ParameterValue(IParameter parameter, object value)
 		{
 			Parameter = parameter;
 			Value = value;
@@ -96,6 +136,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 		File,
 		Integer,
 		Float,
-		Boolean
+		Boolean,
+		Command
 	}
 }

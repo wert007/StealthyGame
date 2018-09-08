@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.Input;
+using StealthyGame.Engine.Renderer;
 using StealthyGame.Engine.UI.DataTypes;
 
 namespace StealthyGame.Engine.UI
@@ -29,16 +30,16 @@ namespace StealthyGame.Engine.UI
 			MinHeight = 20;
 		}
 
-		protected override void _Draw(SpriteBatch batch)
+		protected override void _Draw(Renderer2D renderer)
 		{
-			batch.DrawFilledRectangle(new Rectangle(AbsoluteX, AbsoluteY, Width, Height), Color.LightCoral);
+			renderer.DrawFilledRectangle(new Rectangle(AbsoluteX, AbsoluteY, Width, Height), Color.LightCoral);
 			switch (Orientation)
 			{
 				case Orientation.Vertical:
-					batch.DrawFilledRectangle(new Rectangle(AbsoluteX, (int)(AbsoluteY + RenderHeight * ValuePercent - 0.2f * Height), Width, (int)(0.2f * Height)), Color.Coral);
+					renderer.DrawFilledRectangle(new Rectangle(AbsoluteX, (int)(AbsoluteY + RenderHeight * ValuePercent - 0.2f * Height), Width, (int)(0.2f * Height)), Color.Coral);
 					break;
 				case Orientation.Horizontal:
-					batch.DrawFilledRectangle(new Rectangle((int)(AbsoluteX + RenderWidth * ValuePercent), AbsoluteY, (int)(0.2f * (Width - 0.2f * Width)), Height), Color.Coral);
+					renderer.DrawFilledRectangle(new Rectangle((int)(AbsoluteX + RenderWidth * ValuePercent), AbsoluteY, (int)(0.2f * (Width - 0.2f * Width)), Height), Color.Coral);
 					break;
 				default:
 					throw new NotImplementedException();

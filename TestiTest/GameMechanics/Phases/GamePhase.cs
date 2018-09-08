@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StealthyGame.Engine.GameDebug;
 using StealthyGame.Engine.GameMechanics.Phases;
+using StealthyGame.Engine.Renderer;
 using StealthyGame.Engine.View;
 using System;
 using System.Collections.Generic;
@@ -32,26 +33,22 @@ namespace TestiTest.GameMechanics.Phases
 		}
 
 
-		public override void Draw(SpriteBatch batch, GameTime time)
+		public override void Draw(Renderer2D renderer, GameTime time)
 		{
-			batch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, cam.Transform);
-			w.map.Draw(batch, cam.Transform);
-			//batch.End();
-			//batch.Begin(SpriteSortMode.Deferred, new BlendState()
-			//{
-			//	ColorSourceBlend = Blend.DestinationColor,
-			//	ColorDestinationBlend = Blend.Zero,
-			//	ColorBlendFunction = BlendFunction.Add
-			//}, null, null, null, null, cam.Tranform);
-			//w.map.Lightmap.Draw(batch);
-			batch.End();
+			renderer.Begin(cam.Transform);
+			w.map.Draw(renderer, cam.Transform);
+			renderer.End();
 
 
 			if (debug)
 			{
-				batch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, null, null, null, cam.Transform);
-				DebugRenderer.Draw(batch);
-				batch.End();
+				renderer.Begin(cam.Transform);
+				DebugRenderer.DrawWorld(renderer);
+				renderer.End();
+
+				renderer.Begin();
+				DebugRenderer.DrawScreen(renderer);
+				renderer.End();
 			}
 
 		}

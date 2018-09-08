@@ -16,6 +16,7 @@ using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.MapBasics.Tiles.InteractiveTiles;
 using StealthyGame.Engine.View.Lighting;
 using Microsoft.Xna.Framework.Input;
+using StealthyGame.Engine.Renderer;
 
 namespace StealthyGame.Engine.MapBasics
 {
@@ -351,18 +352,18 @@ namespace StealthyGame.Engine.MapBasics
 			}
 		}
 
-		public void Draw(SpriteBatch batch, Matrix cam)
+		public void Draw(Renderer2D renderer, Matrix cam)
 		{
-		   hope.CalculateLightmap(batch, cam, PixelSize, new Color(51, 51, 51));
+		   hope.CalculateLightmap(renderer, cam, PixelSize, new Color(51, 51, 51));
 			for (int i = 0; i < Layers.Length; i++)
 			{
-				Layers[i].Draw(batch);
+				Layers[i].Draw(renderer);
 			}
-			batch.End();
-			batch.Begin(SpriteSortMode.Deferred, LightHelper.Multiply, null, null, null, null, cam);
-			hope.Draw(batch);
-			batch.End();
-			batch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, cam);
+			renderer.End();
+			renderer.Begin(LightHelper.Multiply, cam);
+			hope.Draw(renderer);
+			renderer.End();
+			renderer.Begin(cam);
 			
 
 		}

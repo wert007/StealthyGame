@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
+using StealthyGame.Engine.Renderer;
 
 namespace StealthyGame.Engine.GameDebug
 {
@@ -21,13 +22,13 @@ namespace StealthyGame.Engine.GameDebug
 		}
 		
 
-		internal void Draw(SpriteBatch batch)
+		internal void Draw(Renderer2D renderer)
 		{
 			if (!Visible)
 				return;
 			foreach (var obj in objects)
 			{
-				obj.Draw(batch);
+				obj.Draw(renderer);
 			}
 		}
 	}

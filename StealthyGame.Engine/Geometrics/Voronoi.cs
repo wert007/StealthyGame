@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.DataTypes;
 using StealthyGame.Engine.Helper;
+using StealthyGame.Engine.Renderer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,12 +34,12 @@ namespace StealthyGame.Engine.Geometrics
 			this.areas = areas.ToArray();
 		}
 
-		public void FunDraw(SpriteBatch batch)
+		public void FunDraw(Renderer2D renderer)
 		{
 			foreach (var area in areas)
 			{
 				Color c = random.NextColor();
-				batch.DrawFilledPolygon(area, c);
+				renderer.DrawFilledPolygon(area, c);
 			}
 		}
 

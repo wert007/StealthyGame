@@ -35,6 +35,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 			width = 0;
 			height = 0;
 			typedIndex = 0;
+			
 		}
 
 		public static void Log(string message)
@@ -121,26 +122,6 @@ namespace StealthyGame.Engine.GameDebug.Console
 				cmd.Invoke(text);
 				intend = false;
 			}
-			else if (text.StartsWith("/help "))
-			{
-				string commandName = text.Substring(text.IndexOf(' ')).Trim();
-				var cmd = commands.FirstOrDefault(c => c.Name == commandName);
-				if (cmd.Name == null)
-					Log("No Command named " + commandName, Color.Red);
-				else 
-					cmd.PrintExamples();
-			}
-			else if (text == "/help")
-			{
-				intend = true;
-				intendation = 1;
-				foreach (var cmd in commands)
-				{
-					Log(cmd.Name);
-				}
-				Log("Type /help <command> to see examples of the usage.");
-				intend = false;
-			}
 			else if(!string.IsNullOrWhiteSpace(text.Trim('/')))
 			{
 				Log("Typed:", Color.Red);
@@ -162,6 +143,11 @@ namespace StealthyGame.Engine.GameDebug.Console
 		{
 			typedIndex = Math.Max (typedIndex - 1, 0);
 			return lastTyped[typedIndex];
+		}
+
+		internal static ConsoleCommand[] GetCommands()
+		{
+			return commands.ToArray();
 		}
 	}
 }

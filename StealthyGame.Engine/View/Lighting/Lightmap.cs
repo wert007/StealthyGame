@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.MapBasics;
 using StealthyGame.Engine.MapBasics.Tiles;
+using StealthyGame.Engine.Renderer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -61,17 +62,17 @@ namespace StealthyGame.Engine.View.Lighting
 			}
 		}
 
-		public void Draw(SpriteBatch batch, Matrix cam, Rectangle areaOfInfluence)
+		public void Draw(Renderer2D renderer, Matrix cam, Rectangle areaOfInfluence)
 		{
 			renderTarget?.Dispose();
-			renderTarget = new RenderTarget2D(batch.GraphicsDevice, areaOfInfluence.Width, areaOfInfluence.Height);
-			oldRenderTargets = batch.GraphicsDevice.GetRenderTargets();
-			batch.GraphicsDevice.SetRenderTarget(null);
-			batch.GraphicsDevice.SetRenderTarget(renderTarget);
-			batch.GraphicsDevice.Clear(Color.TransparentBlack);
+			renderTarget = new RenderTarget2D(renderer.GraphicsDevice, areaOfInfluence.Width, areaOfInfluence.Height);
+			oldRenderTargets = renderer.GraphicsDevice.GetRenderTargets();
+			renderer.GraphicsDevice.SetRenderTarget(null);
+			renderer.GraphicsDevice.SetRenderTarget(renderTarget);
+			renderer.GraphicsDevice.Clear(Color.TransparentBlack);
 			
-			batch.End();
-			batch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, null);
+			renderer.End();
+			renderer.Begin();
 			int x;
 			int y;
 			int[] data;
@@ -101,18 +102,18 @@ namespace StealthyGame.Engine.View.Lighting
 					if(tileSetsMap.IsAnimation(data[i]))
 					{
 						var tile = animatedTileLightings.FirstOrDefault(t => t.Index == new DataTypes.Index2((i % map.TileSize.X), (i / map.TileSize.X)));
-						batch.Draw(tile.Current(), new Rectangle(x - areaOfInfluence.X, y - areaOfInfluence.Y, 16, 16), Color.White);
+						renderer.Draw(tile.Current(), new Rectangle(x - areaOfInfluence.X, y - areaOfInfluence.Y, 16, 16), Color.White);
 						continue;
 					}
 					sourceRectangle = tileSetsShadow.GetSourceRectangle(actualData);
 
-					batch.Draw(tileSet.Texture, new Rectangle(x - areaOfInfluence.X, y - areaOfInfluence.Y, 16, 16), sourceRectangle, Color.White); //16  //
+					renderer.Draw(tileSet.Texture, new Rectangle(x - areaOfInfluence.X, y - areaOfInfluence.Y, 16, 16), sourceRectangle, Color.White); //16  //
 				}
 			}
-			batch.End();
-			batch.GraphicsDevice.SetRenderTarget(null);
-			batch.GraphicsDevice.SetRenderTargets(oldRenderTargets);
-			batch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, cam);
+			renderer.End();
+			renderer.GraphicsDevice.SetRenderTarget(null);
+			renderer.GraphicsDevice.SetRenderTargets(oldRenderTargets);
+			renderer.Begin(cam);
 			using (FileStream fs = new FileStream("obstacles.png", FileMode.Create))
 				renderTarget.SaveAsPng(fs, renderTarget.Width, renderTarget.Height);
 		}

@@ -11,6 +11,7 @@ using StealthyGame.Engine.GameDebug;
 using StealthyGame.Engine.GameDebug.Console;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.Input;
+using StealthyGame.Engine.Renderer;
 using StealthyGame.Engine.UI.Basics;
 using StealthyGame.Engine.UI.DataTypes;
 
@@ -66,17 +67,17 @@ namespace StealthyGame.Engine.UI
 			base.Unfocus();
 		}
 
-		protected override void _Draw(SpriteBatch batch)
+		protected override void _Draw(Renderer2D renderer)
 		{
-			batch.DrawFilledRectangle(new Rectangle(AbsoluteX, AbsoluteY, Width, Height), new Color(Color.Black, 0.7f));
-			input.Draw(batch);
-			label.Draw(batch);
+			renderer.DrawFilledRectangle(new Rectangle(AbsoluteX, AbsoluteY, Width, Height), new Color(Color.Black, 0.7f));
+			input.Draw(renderer);
+			label.Draw(renderer);
 			int yDif = input.Font.PixelHeight;
 			foreach (var msg in InGameConsole.MessagesToPrint())
 			{
 				if (msg.HasBackground)
-					batch.DrawFilledRectangle(new Rectangle(AbsoluteX, AbsoluteY + yDif, Width, Font.CourierNew14.PixelHeight), msg.BackgroundColor);
-				batch.DrawString(Font.CourierNew14.SpriteFont, msg.Message, new Vector2(AbsoluteX, AbsoluteY + yDif), msg.Color);
+					renderer.DrawFilledRectangle(new Rectangle(AbsoluteX, AbsoluteY + yDif, Width, Font.CourierNew14.PixelHeight), msg.BackgroundColor);
+				renderer.Draw(Font.CourierNew14, msg.Message, new Vector2(AbsoluteX, AbsoluteY + yDif), msg.Color);
 				yDif += Font.CourierNew14.PixelHeight;
 			}
 		}

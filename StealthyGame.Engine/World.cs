@@ -43,7 +43,7 @@ namespace StealthyGame.Engine
 			{
 				string type = npc.Name.Split(' ')[1];
 				LoadNPC(type, npc.Objects);
-				DebugRenderer.AddDebugObject(new DebugNPC(npcs.Last(), Color.Blue)
+				DebugRenderer.AddDebugObjectWorld(new DebugNPC(npcs.Last(), Color.Blue)
 				{
 					ShowVelocity = Color.CornflowerBlue,
 					ShowAcceleration = Color.IndianRed,

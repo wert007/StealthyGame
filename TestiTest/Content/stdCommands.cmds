@@ -1,0 +1,26 @@
+﻿//example for help command
+cmd:
+	name: help
+	callback: Help
+
+	metaParameter:
+		name: command
+		shortName: c
+		optional: true
+		type: command
+
+cmd:
+	name: size
+	callback: Size
+	
+	parameter:
+		name: xPosition
+		shortName: x
+		optional: true
+		type: int
+
+	parameter:
+		name: yPosition
+		shortName: y
+		optional: true
+		type: int
