@@ -40,6 +40,40 @@ cmd:
 		optional: true
 		type: int
 
+cmd:
+	name: filter
+	callback: Filter
+
+	parameter:
+		name: level
+		shortName: l
+		optional: true
+		type: int
+	
+	parameter:
+		name: toggle
+		shortName: t
+		optional: true
+		type: string
+
+	example:
+		usingparameter: level
+		line: /filter -l 0
+		exp: Only Messages may be displayed.
+		line: /filter -l 1
+		exp: Messages and Warnings may be displayed
+		line: /filter -l 2
+		exp: Everthing except Terminating Errors may be displayed
+		line: /filter -l 3
+		exp: Everthing will be displayed
+
+	example:
+		usingparameter: toggle
+		line: /filter -t w
+		exp: The displaying of Warnings is toggled.
+		exp: You can use m, w, e, or t as well as
+		exp: Message, Warning, Error, TerminatingError
+
 cmd: 
 	name: fm
 	callback: FileManager
@@ -65,3 +99,18 @@ cmd:
 	example:
 		line: There is a terrible Bug in my Parser.. He doesnt like end of Files...
 		exp: <c:0ff>This really stinks
+
+cmd:
+	name: save
+	callback: Save
+
+	parameter:
+		name: gif
+		optional: true
+		type: file
+
+	example:
+		line: /save -gif 'C:/MyDirectory/My/File/
+		line: /save -gif './gif/'
+		exp: Saves the last 80-ish Frames in a Folder which you may turn in a Gif.
+		exp: May use relative as well as absolute Paths

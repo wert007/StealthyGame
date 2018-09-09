@@ -69,7 +69,7 @@ namespace TestiTest.Console
 			}
 			if (target == null)
 			{
-				GameConsole.Log("No object named " + obj + " is a child of the " + current.ClassName + " class.");
+				GameConsole.Error("No object named " + obj + " is a child of the " + current.ClassName + " class.");
 				return;
 			}
 			current = target;

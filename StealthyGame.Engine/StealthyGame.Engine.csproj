@@ -64,6 +64,7 @@
     <Compile Include="GameDebug\GameConsole\CommandExample.cs" />
     <Compile Include="GameDebug\GameConsole\ConsoleCommand.cs" />
     <Compile Include="GameDebug\GameConsole\ConsoleMessage.cs" />
+    <Compile Include="GameDebug\GameConsole\GameConsole.cs" />
     <Compile Include="GameDebug\GameConsole\Parameter.cs" />
     <Compile Include="GameDebug\GameConsole\Parser\Parser.cs" />
     <Compile Include="GameDebug\GameConsole\StdConsoleCommands.cs" />
@@ -73,7 +74,6 @@
     <Compile Include="GameDebug\Renderer\DebugNPC.cs" />
     <Compile Include="GameDebug\Renderer\DebugRenderer.cs" />
     <Compile Include="GameDebug\Renderer\IDebugObject.cs" />
-    <Compile Include="GameDebug\GameConsole\InGameConsole.cs" />
     <Compile Include="GameDebug\DataStructures\ClassTree.cs" />
     <Compile Include="GameMechanics\Phases\Phase.cs" />
     <Compile Include="GameMechanics\Phases\PhaseContainer.cs" />

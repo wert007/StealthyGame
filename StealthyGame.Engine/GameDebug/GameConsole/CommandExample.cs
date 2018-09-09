@@ -9,21 +9,31 @@ namespace StealthyGame.Engine.GameDebug.Console
 {
 	public struct CommandExample
 	{
-		private string line;
-		private string explanation;
+		private string formatted;
 		private string[] usedParameters;
 
-		public CommandExample(string line, string explanation, string[] usedParameters)
+		public CommandExample(string formatted, string[] usedParameters)
 		{
-			this.line = line;
-			this.explanation = explanation;
+			this.formatted = formatted;
 			this.usedParameters = usedParameters;
 		}
 
 		public void Print()
 		{
-			GameConsole.Log("\t" + line, Color.LightGray);
-			GameConsole.Log(ConsoleMessage.Parse(explanation));
+			foreach (var line in formatted.Split('\n'))
+			{
+				if (line.Length <= 0)
+					continue;
+				if (line[0] == 'l')
+				{
+					GameConsole.Log("\t" + line.Substring(1), Color.LightGray);
+				}
+				else if (line[0] == 'e')
+				{
+					GameConsole.Log(ConsoleMessage.Parse(line.Substring(1) + "\n"));
+				}
+				else throw new NotSupportedException();
+			}
 		}
 	}
 }

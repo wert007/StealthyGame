@@ -1,5 +1,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StealthyGame.Engine.GameDebug.Console;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace StealthyGame.Engine.DataTypes
 		{
 			current = GetByName(name);
 			if (current == null)
-				Console.WriteLine("No animation named " + name);
+				GameConsole.Error("No animation named " + name);
 			current.Reset();
 			AnimationChanged?.Invoke(name);
 		}

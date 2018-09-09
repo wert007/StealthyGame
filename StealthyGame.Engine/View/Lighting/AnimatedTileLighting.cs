@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.DataTypes;
+using StealthyGame.Engine.GameDebug.Console;
 using StealthyGame.Engine.MapBasics.Tiles;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace StealthyGame.Engine.View.Lighting
 			animations = new AnimationCollection(tile.Animations.StartAnimation + "shadow");
 			if (array.Length <= 0)
 			{
-				Console.WriteLine("Warning: No shadow animations found.");
+				GameConsole.Warning("Warning: No shadow animations found.");
 				return;
 			}
 			animations.AddAnimations(array);

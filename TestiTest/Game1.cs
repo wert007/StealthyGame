@@ -23,6 +23,7 @@ using TestiTest.GameMechanics.Phases;
 using TestiTest.GameMechanics.Phases.Containers;
 using StealthyGame.Engine.GameDebug.Renderer;
 using StealthyGame.Engine.Renderer;
+using System.IO;
 
 namespace TestiTest
 {
@@ -33,14 +34,12 @@ namespace TestiTest
 	{
 		GraphicsDeviceManager graphics;
 		SpriteBatch batch;
-		Texture2D pix;
 		PhaseManager phaseManager;
 		RenderTarget2D gameContent;
 		Queue<RenderTarget2D> lastFrames;
 		Rectangle render;
 		KeyboardManager debugKeyboardManager;
 		ConsoleControl consoleControl;
-		DebugKeyPressed gameKeyboardDisplay;
 		UpdateContainer updateContainer;
 		Renderer2D renderer;
 
@@ -94,6 +93,15 @@ namespace TestiTest
 			Parser.Parse(@".\Content\stdCommands.cmds", typeof(StdConsoleCommands));
 			Parser.Parse(@".\Content\commands.cmds", typeof(ConsoleCommands));
 			StdConsoleCommands.ExitCalled += () => Exit();
+			StdConsoleCommands.SaveFrames += (dir) =>
+			{
+				for (int i = 0; i < lastFrames.Count; i++)
+				{
+					RenderTarget2D cur = lastFrames.ElementAt(i);
+					using (FileStream fs = new FileStream(Path.Combine(dir, (i + 1).ToString() + ".png"), FileMode.CreateNew))
+						cur.SaveAsPng(fs, cur.Width, cur.Height);
+				}
+			};
 
 			ConsoleCommands.ClassTree = new ClassTree();
 			ConsoleCommands.ClassTree.SetRoot(this, "game1");

@@ -31,6 +31,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 
 		static int messagesOnScreen;
 		public static int WaitingMessages => waiting.Count;
+		public static MessageType ShownMessages { get; set; }
 
 		public static void Init()
 		{
@@ -46,10 +47,13 @@ namespace StealthyGame.Engine.GameDebug.Console
 			typedIndex = 0;
 			suggestionIndex = -1;
 			messagesOnScreen = 0;
+			ShownMessages = MessageType.All;
 		}
 
 		private static void Enqueue(ConsoleMessage consoleMessage)
 		{
+			if (!ShownMessages.HasFlag(consoleMessage.Type))
+				return;
 			if(output.Count - messagesOnScreen >= height)
 			{
 				waiting.Enqueue(consoleMessage);
@@ -75,14 +79,8 @@ namespace StealthyGame.Engine.GameDebug.Console
 		{
 			int deletableMessages = Math.Min(messagesOnScreen, output.Count - height);
 			for (int i = 0; i < deletableMessages; i++)
-			{
 				output.Dequeue();
-
-			}
 			messagesOnScreen -= deletableMessages;
-//			while (output.Count > height)
-			{
-			}
 		}
 
 		public static void Log(string message)
@@ -108,8 +106,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 				+ message)
 				.Sanitize(), color, background));
 		}
-
-		//TODO: Optimize (Dequeue once and not everytime)
+		
 		public static void Log(ConsoleMessage[] consoleMessages)
 		{
 			foreach (var consoleMessage in consoleMessages)
@@ -117,13 +114,27 @@ namespace StealthyGame.Engine.GameDebug.Console
 				Log(consoleMessage);
 			}
 		}
-
-		//TODO: Optimize (BackroundColor = Transparent??)
+		
 		public static void Log(ConsoleMessage consoleMessage)
 		{
 			if (intend)
 				consoleMessage.Intend(intendation);
 			Enqueue(consoleMessage);
+		}
+
+		public static void Warning(string message)
+		{
+			Log(new ConsoleMessage(message, MessageType.Warning));
+		}
+
+		public static void Error(string message, Color color, Color background)
+		{
+			Log(new ConsoleMessage(message, color, background, MessageType.Error));
+		}
+
+		public static void Error(string message)
+		{
+			Log(new ConsoleMessage(message, MessageType.Error));
 		}
 
 		public static void SetBufferSize(Index2 size)
@@ -136,6 +147,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 		{
 			commands.Add(command);
 		}
+
 		public static IEnumerable<ConsoleMessage> MessagesToPrint()
 		{
 			messagesOnScreen = output.Count;
@@ -155,7 +167,6 @@ namespace StealthyGame.Engine.GameDebug.Console
 
 		public static void SendText(string text)
 		{
-			System.Console.WriteLine("Enter received.");
 			if(text == string.Empty)
 			{
 				for (int i = 0; i < height && waiting.Count >0; i++)
@@ -177,9 +188,9 @@ namespace StealthyGame.Engine.GameDebug.Console
 			}
 			else if(!string.IsNullOrWhiteSpace(text.Trim('/')))
 			{
-				Log("Typed:", Color.Red);
-				Log("\t" + text, Color.Red, new Color(Color.DarkGray,0.7f)); //0.7f should be in ConsoleControl
-				Log("Couldn't match to any command", Color.Red);
+				Error("Typed:");
+				Error("\t" + text, Color.Red, Color.DarkGray); //0.7f should be in ConsoleControl
+				Error("Couldn't match to any command");
 			}
 			TextReceived?.Invoke(text);
 		}

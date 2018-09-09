@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using StealthyGame.Engine.GameDebug.Console;
 using StealthyGame.Engine.MapBasics;
 using StealthyGame.Engine.MapBasics.Tiles;
 using StealthyGame.Engine.MapBasics.Tiles.InteractiveTiles;
@@ -91,7 +92,7 @@ namespace StealthyGame.Engine.GameObjects.NPCs
 			}
 			if (path.IsFailure)
 			{
-				Console.WriteLine("ERROR: NOT POSSIBLE TO REACH");
+				GameConsole.Error("ERROR: NOT POSSIBLE TO REACH");
 			}
 			else
 				NextTile = path.Next();

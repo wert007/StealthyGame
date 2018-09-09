@@ -36,7 +36,6 @@ namespace StealthyGame.Engine.GameDebug.Console.Parser
 					string currentLine = reader.ReadLine();
 					currentLine = Sanitize(currentLine);
 					if (string.IsNullOrWhiteSpace(currentLine)) continue;
-					System.Console.WriteLine(state + ": " + currentLine);
 
 					switch (state)
 					{
@@ -111,8 +110,7 @@ namespace StealthyGame.Engine.GameDebug.Console.Parser
 		private static CommandExample? loadExample(StreamReader reader, string current, ParserState state, out ParserState newState)
 		{
 
-			string exampleLine = string.Empty;
-			string exampleText = string.Empty;
+			string exampleFormatted = string.Empty;
 			List<string> exampleParameterNames = new List<string>();
 			string currentLine = current;
 
@@ -132,24 +130,24 @@ namespace StealthyGame.Engine.GameDebug.Console.Parser
 				switch (type)
 				{
 					case "line":
-						exampleLine = value;
+						exampleFormatted += "l" + value + "\n";
 						break;
 					case "exp":
 					case "explanation":
-						exampleText += value + "\n";
+						exampleFormatted += "e" +  value + "\n";
 						break;
 					case "usingparameter":
 						exampleParameterNames.Add(value);
 						break;
 					case "parameter":
 						newState = ParserState.Parameter;
-						return new CommandExample(exampleLine, exampleText, exampleParameterNames.ToArray());
+						return new CommandExample(exampleFormatted, exampleParameterNames.ToArray());
 					case "example":
 						newState = ParserState.Example; //Just to make it obvious
-						return new CommandExample(exampleLine, exampleText, exampleParameterNames.ToArray());
+						return new CommandExample(exampleFormatted, exampleParameterNames.ToArray());
 					case "cmd":
 						newState = ParserState.Command;
-						return new CommandExample(exampleLine, exampleText, exampleParameterNames.ToArray());
+						return new CommandExample(exampleFormatted, exampleParameterNames.ToArray());
 					default:
 						throw new NotImplementedException("Didn't expect " + type + " here.");
 				}

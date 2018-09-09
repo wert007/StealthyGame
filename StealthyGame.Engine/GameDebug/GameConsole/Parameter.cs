@@ -33,7 +33,10 @@ namespace StealthyGame.Engine.GameDebug.Console
 
 		public Parameter(string name, string shortName, bool hasValue, bool isOptional, ParameterType type)
 		{
-			Names = new string[2] { name, shortName };
+			if (string.IsNullOrWhiteSpace(shortName))
+				Names = new string[1] { name };
+			else
+				Names = new string[2] { name, shortName };
 			HasValue = hasValue;
 			IsOptional = isOptional;
 			Type = type;
@@ -108,31 +111,31 @@ namespace StealthyGame.Engine.GameDebug.Console
 		public string GetAsString()
 		{
 			if (Parameter.Type != ParameterType.String)
-				GameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to String!", Color.Yellow);
+				GameConsole.Warning("Warning: Trying to Convert from " + Parameter.Type + " to String!");
 			return Value.ToString();
 		}
 		public string GetAsFile()
 		{
 			if (Parameter.Type != ParameterType.File)
-				GameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to File(String)!", Color.Yellow);
+				GameConsole.Warning("Warning: Trying to Convert from " + Parameter.Type + " to File(String)!");
 			return Value.ToString();
 		}
 		public int GetAsInt()
 		{
 			if (Parameter.Type != ParameterType.Integer)
-				GameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to Integer!", Color.Yellow);
+				GameConsole.Warning("Warning: Trying to Convert from " + Parameter.Type + " to Integer!");
 			return int.Parse(Value.ToString());
 		}
 		public float GetAsFloat()
 		{
 			if (Parameter.Type != ParameterType.Float)
-				GameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to Float!", Color.Yellow);
+				GameConsole.Warning("Warning: Trying to Convert from " + Parameter.Type + " to Float!");
 			return float.Parse(Value.ToString());
 		}
 		public bool GetAsBool()
 		{
 			if (Parameter.Type != ParameterType.Boolean)
-				GameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to Boolean!", Color.Yellow);
+				GameConsole.Warning("Warning: Trying to Convert from " + Parameter.Type + " to Boolean!");
 			return bool.Parse(Value.ToString());
 		}
 	}

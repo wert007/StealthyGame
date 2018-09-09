@@ -25,15 +25,13 @@ namespace StealthyGame.Engine.DataTypes
 		}
 
 		public void Add(TextInputEventArgs e)
-		{
-			
-			this.textInputEventArgs.Add(e);
+		{	
+			textInputEventArgs.Add(e);
 			if (e.Character != 13 &&
 				e.Character != 8 &&
 				e.Character >= 1 &&
 				e.Character <= 31)
 				return;
-			Console.WriteLine((int)e.Character + "; " + e.Key.ToString());
 			switch (e.Character)
 			{
 				case '\b': //DEL

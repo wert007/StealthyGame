@@ -93,7 +93,6 @@ namespace StealthyGame.Engine.Geometrics
 			if (Area != null)
 				return Area;
 			Index2 start = RandomPointInside();
-			Console.WriteLine(start);
 			List<Index2> result = new List<Index2>();
 			Stack<Index2> stack = new Stack<Index2>();
 			stack.Push(start);
