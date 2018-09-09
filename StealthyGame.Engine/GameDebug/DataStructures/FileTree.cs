@@ -10,10 +10,18 @@ namespace StealthyGame.Engine.GameDebug.DataStructures
 	public class FileTree
 	{
 		public FileTreeItem Root { get; set; }
+		public FileTreeItem Current { get; set; }
 
 		public FileTree()
 		{
 			Root = new FileTreeItem(".\\");
+			Current = Root;
+		}
+
+		public FileTree(string path)
+		{
+			Root = new FileTreeItem(path);
+			Current = Root;
 		}
 	}
 
@@ -54,6 +62,13 @@ namespace StealthyGame.Engine.GameDebug.DataStructures
 				result.Add(new FileTreeItem(fe));
 			}
 			Children = result.OrderBy(f => f.IsFile).ToArray();
+		}
+
+		public FileTreeItem[] GetChildren()
+		{
+			if (Children == null)
+				GenerateChildren();
+			return Children;
 		}
 	}
 }

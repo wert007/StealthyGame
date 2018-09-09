@@ -49,3 +49,19 @@ cmd:
 		shortName: l
 		optional: true
 		type: bool
+
+	parameter:
+		name: home
+		shortName: h
+		optional: true
+		type: file
+
+	parameter:
+		name: reset
+		shortName: r
+		optional: true
+		type: bool
+
+	example:
+		line: There is a terrible Bug in my Parser.. He doesnt like end of Files...
+		exp: <c:0ff>This really stinks

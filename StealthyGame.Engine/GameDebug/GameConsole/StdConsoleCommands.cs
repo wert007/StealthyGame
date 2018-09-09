@@ -11,7 +11,6 @@ namespace StealthyGame.Engine.GameDebug.Console
 	public static class StdConsoleCommands
 	{
 		public static FileTree FileTree { get; set; }
-		private static FileTreeItem current;
 
 		public delegate void ExitCalledEventHandler();
 		public static event ExitCalledEventHandler ExitCalled;
@@ -19,7 +18,6 @@ namespace StealthyGame.Engine.GameDebug.Console
 		public static void Init()
 		{
 			FileTree = new FileTree();
-			current = FileTree.Root;
 		}
 
 		public static void Help(ParameterValue[] args)
@@ -65,15 +63,21 @@ namespace StealthyGame.Engine.GameDebug.Console
 				switch (args[0].Parameter.Names[0])
 				{
 					case "list":
-						if (current == null)
-							current = FileTree.Root;
-						if (current.Children == null)
-							current.GenerateChildren();
-						GameConsole.Log(current.ShortName);
-						foreach (var child in current.Children.Reverse())
+						if (FileTree.Current.Children == null)
+							FileTree.Current.GenerateChildren();
+						GameConsole.Log(FileTree.Current.ShortName);
+						foreach (var child in FileTree.Current.Children)
 						{
 							GameConsole.Log("-\t" + child.ShortName);
 						}
+						break;
+					case "home":
+						FileTree = new FileTree(args[0].GetAsFile());
+						GameConsole.Log("Home set to " + FileTree.Root.ShortName);
+						break;
+					case "reset":
+						FileTree = new FileTree();
+						GameConsole.Log("Home (re-)set to " + FileTree.Root.ShortName);
 						break;
 					default:
 						throw new NotImplementedException();

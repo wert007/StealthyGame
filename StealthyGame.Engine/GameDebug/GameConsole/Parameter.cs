@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace StealthyGame.Engine.GameDebug.Console
@@ -13,7 +14,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 		public static string Integer => @"\d+";
 		public static string Float => @"(\d*\.\d+?|\d+f)";
 		public static string String => @"@?(.*)?";
-		public static string File => @"'[a-zA-Z_0-9\\:. ]+'";
+		public static string File => @"'[a-zA-Z_0-9\\\/:. ]+'";
 
 		public string[] Names { get; private set; }
 		public bool HasValue { get; private set; }
@@ -58,18 +59,15 @@ namespace StealthyGame.Engine.GameDebug.Console
 		{
 			switch (Type)
 			{
+				case ParameterType.Command:
+					return GameConsole.GetCommands().Select(c => c.Name);
 				case ParameterType.File:
-					GameConsole.Log("Not Implemented");
-					break;
+					return StdConsoleCommands.FileTree.Current.GetChildren().Select(f => f.ShortName);
 				case ParameterType.String:
 				case ParameterType.Integer:
 				case ParameterType.Float:
 					return lastValues.ConvertAll(o => o.ToString());
 				case ParameterType.Boolean:
-					GameConsole.Log("Doesn't have suggestions");
-					break;
-				case ParameterType.Command:
-					GameConsole.Log("Not Implemented");
 					break;
 				default:
 					throw new NotImplementedException();
