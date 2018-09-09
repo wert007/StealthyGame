@@ -40,7 +40,7 @@ namespace TestiTest
 				switch (type)
 				{
 					default:
-						InGameConsole.Log("Unknown Type: " + type, Color.Yellow);
+						GameConsole.Log("Unknown Type: " + type, Color.Yellow);
 						return false;
 				}
 			}

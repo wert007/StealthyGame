@@ -60,6 +60,7 @@
     <Compile Include="DataTypes\UI\Orientation.cs" />
     <Compile Include="DataTypes\UI\Thickness.cs" />
     <Compile Include="DataTypes\UI\VerticalAlignment.cs" />
+    <Compile Include="GameDebug\DataStructures\FileTree.cs" />
     <Compile Include="GameDebug\GameConsole\CommandExample.cs" />
     <Compile Include="GameDebug\GameConsole\ConsoleCommand.cs" />
     <Compile Include="GameDebug\GameConsole\ConsoleMessage.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="GameMechanics\Phases\Phase.cs" />
     <Compile Include="GameMechanics\Phases\PhaseContainer.cs" />
     <Compile Include="GameMechanics\Phases\PhaseManager.cs" />
+    <Compile Include="GameMechanics\Phases\UpdateContainer.cs" />
     <Compile Include="GameObjects\Collisionables\CollisionCircle.cs" />
     <Compile Include="GameObjects\NPCs\WanderingNPC.cs" />
     <Compile Include="Geometrics\Area.cs" />

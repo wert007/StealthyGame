@@ -30,9 +30,9 @@ namespace StealthyGame.Engine.GameMechanics.Phases
 			GetCurrentPhase().Load(content);
 		}
 
-		public void Update(GameTime time)
+		public void Update(UpdateContainer container)
 		{
-			GetCurrentPhase().Update(time);
+			GetCurrentPhase().Update(container);
 		}
 
 		public void Draw(Renderer2D renderer, GameTime time)

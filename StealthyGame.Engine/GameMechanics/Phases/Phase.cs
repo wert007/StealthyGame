@@ -24,7 +24,7 @@ namespace StealthyGame.Engine.GameMechanics.Phases
 
 		public abstract void Load(ContentManager content);
 
-		public abstract void Update(GameTime time);
+		public abstract void Update(UpdateContainer container);
 
 		public abstract void Draw(Renderer2D renderer, GameTime time);
 

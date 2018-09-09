@@ -182,6 +182,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 							}
 							else if (!parameters[i].IsOptional)
 								throw new ArgumentException();
+							//Total bullshit boy. like totally.
 						}
 					}
 				}
@@ -192,6 +193,11 @@ namespace StealthyGame.Engine.GameDebug.Console
 				}
 			}
 			callback.Invoke(null, new object[1] { args.ToArray() });
+		}
+
+		public override string ToString()
+		{
+			return "/" + Name;
 		}
 
 		public void PrintExamples()

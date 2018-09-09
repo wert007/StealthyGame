@@ -15,6 +15,7 @@ namespace TestiTest.Console
 		public static ClassTree ClassTree { get; set; }
 		private static ClassTreeItem current;
 
+
 		public static void ConsoleLoop(ParameterValue[] args)
 		{
 			PlayLoop = !PlayLoop;
@@ -29,7 +30,7 @@ namespace TestiTest.Console
 					current.GenerateChildren();
 				foreach (var child in current.Children)
 				{
-					InGameConsole.Log(child.ToString());
+					GameConsole.Log(child.ToString());
 				}
 			}
 			else if (args.Length == 1)
@@ -41,10 +42,10 @@ namespace TestiTest.Console
 						break;
 					case "reset":
 						current = ClassTree.GetRoot();
-						InGameConsole.Log("Current ClassTreeItem reset to root.");
+						GameConsole.Log("Current ClassTreeItem reset to root.");
 						break;
 					case "current":
-						InGameConsole.Log(current.ToString());
+						GameConsole.Log(current.ToString());
 						break;
 					default:
 						throw new NotImplementedException();
@@ -68,7 +69,7 @@ namespace TestiTest.Console
 			}
 			if (target == null)
 			{
-				InGameConsole.Log("No object named " + obj + " is a child of the " + current.ClassName + " class.");
+				GameConsole.Log("No object named " + obj + " is a child of the " + current.ClassName + " class.");
 				return;
 			}
 			current = target;
@@ -76,7 +77,7 @@ namespace TestiTest.Console
 				target.GenerateChildren();
 			foreach (var child in target.Children)
 			{
-				InGameConsole.Log(child.ToString());
+				GameConsole.Log(child.ToString());
 			}
 		}
 

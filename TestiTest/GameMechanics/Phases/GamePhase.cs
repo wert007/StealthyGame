@@ -57,19 +57,19 @@ namespace TestiTest.GameMechanics.Phases
 		{
 		}
 
-		public override void Update(GameTime time)
+		public override void Update(UpdateContainer container)
 		{
-			if (Keyboard.GetState().IsKeyDown(Keys.U))
+			if (container.Keyboard.IsKeyPressed(Keys.U))
 			{
 				followedNPC = (followedNPC + 1) % w.npcs.Count;
 				cam.Follow = w.npcs[followedNPC];
 			}
 
-			if (Keyboard.GetState().IsKeyDown(Keys.N))
+			if (container.Keyboard.IsKeyPressed(Keys.N))
 				debug = !debug;
 
-			w.Update(time);
-			cam.Update(time);
+			w.Update(container.Time);
+			cam.Update(container.Time);
 		}
 	}
 }

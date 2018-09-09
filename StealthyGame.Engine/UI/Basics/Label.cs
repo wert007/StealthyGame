@@ -13,7 +13,19 @@ namespace StealthyGame.Engine.UI.Basics
 {
 	public class Label : Control
 	{
-		public string Content { get; set; }
+		private string _content;
+		public string Content
+		{
+			get { return _content; }
+			set
+			{
+				_content = value;
+				if (Font == null)
+					return;
+				MinWidth = (int)(Font.SpriteFont.MeasureString(_content).X);
+				MinHeight = Font.PixelHeight;
+			}
+		}
 		public Font Font { get; set; }
 		public Color TextColor { get; set; }
 

@@ -40,6 +40,7 @@ namespace StealthyGame.Engine.UI
 		public bool IsClickable { get; set; }
 		public bool Focused { get; private set; }
 		public bool Visible { get; set; }
+		public Color Background { get; set; }
 
 		public delegate void OnClickHandler(MouseState mouseState);
 		public event OnClickHandler Clicked;
@@ -56,6 +57,7 @@ namespace StealthyGame.Engine.UI
 			Parent = parent;
 			Visible = true;
 			Margin = new Thickness();
+			Background = Color.TransparentBlack;
 
 
 			if (allControls == null)
@@ -90,6 +92,7 @@ namespace StealthyGame.Engine.UI
 		{
 			if (!Visible)
 				return;
+			renderer.DrawFilledRectangle(new Rectangle(AbsoluteX, AbsoluteY, Width, Height), Background);
 			_Draw(renderer);
 		}
 
@@ -142,7 +145,7 @@ namespace StealthyGame.Engine.UI
 				case HorizontalAlignment.Right:
 					return MinWidth;
 				case HorizontalAlignment.Stretch:
-					return MaxWidth - Margin.HorizontalSum(); ;
+					return MaxWidth;
 				default:
 					throw new NotImplementedException();
 			}
@@ -157,7 +160,7 @@ namespace StealthyGame.Engine.UI
 				case VerticalAlignment.Bottom:
 					return MinHeight;
 				case VerticalAlignment.Stretch:
-					return MaxHeight - Margin.VertivalSum();
+					return MaxHeight;
 				default:
 					throw new NotImplementedException();
 			}
@@ -240,8 +243,8 @@ namespace StealthyGame.Engine.UI
 			if (maxHeight.HasValue)
 				return maxHeight.Value;
 			if (Parent == null)
-				return RenderHeight - Margin.VertivalSum();
-			return Parent.MaxHeight - Margin.VertivalSum();
+				return RenderHeight - Margin.VerticalSum();
+			return Parent.MaxHeight - Margin.VerticalSum();
 		}
 
 		private int GetMaxWidth()

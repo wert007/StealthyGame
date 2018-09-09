@@ -22,8 +22,8 @@ namespace StealthyGame.Engine.GameDebug.Console
 
 		public void Print()
 		{
-			InGameConsole.Log("\t" + line, Color.LightGray);
-			InGameConsole.Log(ConsoleMessage.Parse(explanation));
+			GameConsole.Log("\t" + line, Color.LightGray);
+			GameConsole.Log(ConsoleMessage.Parse(explanation));
 		}
 	}
 }

@@ -17,6 +17,14 @@ cmd:
 		exp: Exits the Game via Game.Exit() or whatever you choose.
 
 cmd:
+	name: clear
+	callback: Clear
+
+	example:
+		line: /clear
+		exp: Clears the entire Console.
+
+cmd:
 	name: size
 	callback: Size
 
@@ -31,16 +39,13 @@ cmd:
 		shortName: y
 		optional: true
 		type: int
-		
-//cmd:
-//	name: fm
-//	link: filemanager
-//
-//cmd: 
-//	name: filemanager
-//
-//	parameter:
-//		name: home
-//		shortName: h
-//		optional: true
-//		type: file
+
+cmd: 
+	name: fm
+	callback: FileManager
+
+	parameter:
+		name: list
+		shortName: l
+		optional: true
+		type: bool

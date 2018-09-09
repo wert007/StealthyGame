@@ -42,7 +42,7 @@ namespace StealthyGame.Engine.UI.DataTypes
 			return Left + Right;
 		}
 
-		public int VertivalSum()
+		public int VerticalSum()
 		{
 			return Top + Bottom;
 		}

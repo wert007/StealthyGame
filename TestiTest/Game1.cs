@@ -38,11 +38,10 @@ namespace TestiTest
 		RenderTarget2D gameContent;
 		Queue<RenderTarget2D> lastFrames;
 		Rectangle render;
-		KeyboardManager gameKeyboardManager;
 		KeyboardManager debugKeyboardManager;
 		ConsoleControl consoleControl;
 		DebugKeyPressed gameKeyboardDisplay;
-
+		UpdateContainer updateContainer;
 		Renderer2D renderer;
 
 		int width;
@@ -61,7 +60,7 @@ namespace TestiTest
 
 		private void Window_TextInput(object sender, TextInputEventArgs e)
 		{
-			gameKeyboardManager.TextInput(sender, e);
+			updateContainer.TextInput(sender, e);
 			debugKeyboardManager.TextInput(sender, e);
 			Control.TextInput(sender, e);
 		}
@@ -83,16 +82,15 @@ namespace TestiTest
 			FontManager.Initialize(Content);
 			Control.Initialize(width, height);
 			
-			gameKeyboardManager = new KeyboardManager();
+			updateContainer = new UpdateContainer();
 			debugKeyboardManager = new KeyboardManager();
+			
 
-			gameKeyboardDisplay = new DebugKeyPressed(gameKeyboardManager);
-			DebugRenderer.AddDebugObjectScreen(gameKeyboardDisplay);
-
-			InGameConsole.Init();
+			GameConsole.Init();
 
 			consoleControl = new ConsoleControl(null);
 
+			StdConsoleCommands.Init();
 			Parser.Parse(@".\Content\stdCommands.cmds", typeof(StdConsoleCommands));
 			Parser.Parse(@".\Content\commands.cmds", typeof(ConsoleCommands));
 			StdConsoleCommands.ExitCalled += () => Exit();
@@ -103,18 +101,10 @@ namespace TestiTest
 			base.Initialize();
 		}
 
-		private void ConsoleExit(ParameterValue[] args)
-		{
-			Exit();
-		}
-
 		protected override void LoadContent()
 		{
 			batch = new SpriteBatch(GraphicsDevice);
 			renderer = new Renderer2D(batch);
-
-			//pix = Content.Load<Texture2D>("Pixel");
-			//DrawHelper.Pixel = pix;
 
 			phaseManager.Load(Content);
 		}
@@ -124,16 +114,15 @@ namespace TestiTest
 			debugKeyboardManager.Update(time);
 			if (!consoleControl.Focused)
 			{
-				gameKeyboardManager.Update(time);
+				updateContainer.Update(time);
 			}
-			if (gameKeyboardManager.IsKeyPressed(Keys.F))
+			if (updateContainer.Keyboard.IsKeyPressed(Keys.F))
 			{
-				Console.ConsoleCommands.FreezeGame = !Console.ConsoleCommands.FreezeGame;
+				ConsoleCommands.FreezeGame = !ConsoleCommands.FreezeGame;
 			}
-			if (gameKeyboardManager.IsKeyPressed(Keys.L))
+			if (updateContainer.Keyboard.IsKeyPressed(Keys.L))
 			{
-				Console.ConsoleCommands.PlayLoop = !Console.ConsoleCommands.PlayLoop;
-
+				ConsoleCommands.PlayLoop = !ConsoleCommands.PlayLoop;
 			}
 			if (debugKeyboardManager.IsCtrlKeyPressed(Keys.C) || 
 				(!consoleControl.Focused && debugKeyboardManager.IsCharPressed('/')))
@@ -145,17 +134,17 @@ namespace TestiTest
 			}
 			IsMouseVisible = false;
 			debugKeyboardManager.EndUpdate();
-			gameKeyboardManager.EndUpdate();
+			updateContainer.EndUpdate();
 			consoleControl.Update(time, debugKeyboardManager);
 			
-			if (Console.ConsoleCommands.FreezeGame)
+			if (ConsoleCommands.FreezeGame)
 			{
 				IsMouseVisible = true;
 				return;
 			}
 
 
-			phaseManager.Update(time);
+			phaseManager.Update(updateContainer);
 
 			base.Update(time);
 		}

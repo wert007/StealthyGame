@@ -11,11 +11,12 @@ using System.Threading.Tasks;
 
 namespace StealthyGame.Engine.GameDebug.Console
 {
-	public static class InGameConsole
+	public static class GameConsole
 	{
 		static List<string> lastTyped;
 		static List<string> suggestions;
-		static Queue<ConsoleMessage> toOutput;
+		static Queue<ConsoleMessage> output;
+		static Queue<ConsoleMessage> waiting;
 		static List<ConsoleCommand> commands;
 		public delegate void TextReceivedHandler(string text);
 		public static event TextReceivedHandler TextReceived;
@@ -28,10 +29,14 @@ namespace StealthyGame.Engine.GameDebug.Console
 		static int typedIndex;
 		static int suggestionIndex;
 
+		static int messagesOnScreen;
+		public static int WaitingMessages => waiting.Count;
+
 		public static void Init()
 		{
 			lastTyped = new List<string>();
-			toOutput = new Queue<ConsoleMessage>();
+			output = new Queue<ConsoleMessage>();
+			waiting = new Queue<ConsoleMessage>();
 			commands = new List<ConsoleCommand>();
 			suggestions = new List<string>();
 			intend = false;
@@ -40,43 +45,68 @@ namespace StealthyGame.Engine.GameDebug.Console
 			height = 0;
 			typedIndex = 0;
 			suggestionIndex = -1;
+			messagesOnScreen = 0;
+		}
+
+		private static void Enqueue(ConsoleMessage consoleMessage)
+		{
+			if(output.Count - messagesOnScreen >= height)
+			{
+				waiting.Enqueue(consoleMessage);
+			}
+			else
+			{
+				output.Enqueue(consoleMessage);
+			}
+			CleanOutput();
+		}
+
+		public static void Clear()
+		{
+			output.Clear();
+			waiting.Clear();
+			suggestions.Clear();
+			suggestionIndex = -1;
+			typedIndex = -1;
+			messagesOnScreen = 0;
+		}
+
+		private static void CleanOutput()
+		{
+			int deletableMessages = Math.Min(messagesOnScreen, output.Count - height);
+			for (int i = 0; i < deletableMessages; i++)
+			{
+				output.Dequeue();
+
+			}
+			messagesOnScreen -= deletableMessages;
+//			while (output.Count > height)
+			{
+			}
 		}
 
 		public static void Log(string message)
 		{
-			toOutput.Enqueue(new ConsoleMessage((
+			Enqueue(new ConsoleMessage((
 				(intend ? new string('\t', intendation) : string.Empty)
 				+ message)
 				.Sanitize()));
-			while (toOutput.Count > height)
-			{
-				toOutput.Dequeue();
-			}
 		}
 
 		public static void Log(string message, Color color)
 		{
-			toOutput.Enqueue(new ConsoleMessage((
+			Enqueue(new ConsoleMessage((
 				(intend ? new string('\t', intendation) : string.Empty)
 				+ message)
 				.Sanitize(), color));
-			while (toOutput.Count > height)
-			{
-				toOutput.Dequeue();
-			}
 		}
-
 
 		public static void Log(string message, Color color, Color background)
 		{
-			toOutput.Enqueue(new ConsoleMessage((
+			Enqueue(new ConsoleMessage((
 				(intend ? new string('\t', intendation) : string.Empty)
 				+ message)
 				.Sanitize(), color, background));
-			while (toOutput.Count > height)
-			{
-				toOutput.Dequeue();
-			}
 		}
 
 		//TODO: Optimize (Dequeue once and not everytime)
@@ -93,11 +123,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 		{
 			if (intend)
 				consoleMessage.Intend(intendation);
-			toOutput.Enqueue(consoleMessage);
-			while (toOutput.Count > height)
-			{
-				toOutput.Dequeue();
-			}
+			Enqueue(consoleMessage);
 		}
 
 		public static void SetBufferSize(Index2 size)
@@ -112,7 +138,8 @@ namespace StealthyGame.Engine.GameDebug.Console
 		}
 		public static IEnumerable<ConsoleMessage> MessagesToPrint()
 		{
-			return toOutput;
+			messagesOnScreen = output.Count;
+			return output;
 		}
 
 		public static void UpdateText(string text)
@@ -128,6 +155,15 @@ namespace StealthyGame.Engine.GameDebug.Console
 
 		public static void SendText(string text)
 		{
+			System.Console.WriteLine("Enter received.");
+			if(text == string.Empty)
+			{
+				for (int i = 0; i < height && waiting.Count >0; i++)
+				{
+					Enqueue(waiting.Dequeue());
+				}
+				return;
+			}
 			lastTyped.Add(text);
 			typedIndex = lastTyped.Count;
 			if (commands.Any(c => c.IsMatch(text)))
@@ -158,6 +194,8 @@ namespace StealthyGame.Engine.GameDebug.Console
 
 		public static string GetPreviousTyped()
 		{
+			if (lastTyped.Count <= 0)
+				return string.Empty;
 			typedIndex = Math.Max (typedIndex - 1, 0);
 			return lastTyped[typedIndex];
 		}

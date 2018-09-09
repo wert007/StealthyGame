@@ -117,5 +117,10 @@ namespace StealthyGame.Engine.GameDebug.Console
 		{
 			Message = (new string('\t', intendation) + Message).Sanitize();
 		}
+
+		public override string ToString()
+		{
+			return Message;
+		}
 	}
 }

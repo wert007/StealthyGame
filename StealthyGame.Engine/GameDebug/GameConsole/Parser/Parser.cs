@@ -99,13 +99,12 @@ namespace StealthyGame.Engine.GameDebug.Console.Parser
 					}
 				}
 			}
-			//May currently never be called
-			//if(addCommand)
+			//Empty FILES
 			result.Add(new ConsoleCommand(commandName, commandCallback, commandParameters.ToArray()));
 
 			foreach (var cmd in result)
 			{
-				InGameConsole.AddCommand(cmd);
+				GameConsole.AddCommand(cmd);
 			}
 		}
 

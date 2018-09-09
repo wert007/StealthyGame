@@ -28,7 +28,7 @@ namespace TestiTest.GameMechanics.Phases
 			throw new NotImplementedException();
 		}
 
-		public override void Update(GameTime time)
+		public override void Update(UpdateContainer container)
 		{
 			throw new NotImplementedException();
 		}

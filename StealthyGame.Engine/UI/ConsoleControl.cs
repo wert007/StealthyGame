@@ -21,14 +21,23 @@ namespace StealthyGame.Engine.UI
 	{
 		TextField input;
 		Label label;
+		Label waitingMessages;
 
 		public ConsoleControl(Control parent) : base(parent)
 		{
-			Margin = new Thickness(5);
+			Margin = new Thickness(15);
+			Background = new Color(Color.Black, 0.7f);
 
 			label = new Label(this, ">");
 			label.TextColor = Color.White;
 			label.Font = Font.CourierNew16;
+
+			waitingMessages = new Label(this);
+			waitingMessages.TextColor = Color.Wheat;
+			waitingMessages.Font = Font.Arial16;
+			waitingMessages.HorizontalAlignment = HorizontalAlignment.Center;
+			waitingMessages.VerticalAlignment = VerticalAlignment.Bottom;
+			waitingMessages.Background = new Color(Color.Black, 0.7f);
 
 			input = new TextField(this);
 			input.EnterPressed += TextReceived;
@@ -37,17 +46,17 @@ namespace StealthyGame.Engine.UI
 			input.Font = Font.CourierNew16;
 			input.Margin = new Thickness(label.Width, 0, 0, 0);
 			Unfocus();
-			InGameConsole.SetBufferSize(new Index2(0, (MaxHeight - Font.CourierNew16.PixelHeight) / Font.CourierNew14.PixelHeight));
+			GameConsole.SetBufferSize(new Index2(0, (MaxHeight - Font.CourierNew16.PixelHeight) / Font.CourierNew14.PixelHeight - 1));
 		}
 
 		private void TextUpdated(object sender, string text)
 		{
-			InGameConsole.UpdateText(text);
+			GameConsole.UpdateText(text);
 		}
 
 		private void TextReceived(object sender, string text)
 		{
-			InGameConsole.SendText(text);
+			GameConsole.SendText(text);
 			input.Clear();
 		}
 
@@ -58,6 +67,7 @@ namespace StealthyGame.Engine.UI
 			Visible = true;
 			input.Visible = true;
 			label.Visible = true;
+			waitingMessages.Visible = true;
 			input.Focus();
 			label.Focus();
 			base.Focus();
@@ -68,6 +78,7 @@ namespace StealthyGame.Engine.UI
 			Visible = false;
 			input.Visible = false;
 			label.Visible = false;
+			waitingMessages.Visible = false;
 			input.Unfocus();
 			label.Unfocus();
 			base.Unfocus();
@@ -75,11 +86,15 @@ namespace StealthyGame.Engine.UI
 
 		protected override void _Draw(Renderer2D renderer)
 		{
-			renderer.DrawFilledRectangle(new Rectangle(AbsoluteX, AbsoluteY, Width, Height), new Color(Color.Black, 0.7f));
 			input.Draw(renderer);
 			label.Draw(renderer);
+			if (GameConsole.WaitingMessages > 0)
+			{
+				waitingMessages.Content = "(" + GameConsole.WaitingMessages + ") Messages waiting. Press Enter to continue";
+				waitingMessages.Draw(renderer);
+			}
 			int yDif = input.Font.PixelHeight;
-			foreach (var msg in InGameConsole.MessagesToPrint())
+			foreach (var msg in GameConsole.MessagesToPrint())
 			{
 				if (msg.HasBackground)
 					renderer.DrawFilledRectangle(new Rectangle(AbsoluteX, AbsoluteY + yDif, Width, Font.CourierNew14.PixelHeight), msg.BackgroundColor);
@@ -90,17 +105,19 @@ namespace StealthyGame.Engine.UI
 
 		protected override void _Update(GameTime time, KeyboardManager keyboardManager)
 		{
+			if (!Focused)
+				return;
 			if(keyboardManager.IsKeyPressed(Keys.Up))
 			{
-				input.Text = InGameConsole.GetPreviousTyped();
+				input.Text = GameConsole.GetPreviousTyped();
 			}
 			else if (keyboardManager.IsKeyPressed(Keys.Down))
 			{ 
-				input.Text = InGameConsole.GetNextTyped();
+				input.Text = GameConsole.GetNextTyped();
 			}
 			else if (keyboardManager.IsKeyPressed(Keys.Tab))
 			{
-				input.Text = InGameConsole.GetNextSuggestion();
+				input.Text = GameConsole.GetNextSuggestion();
 			}
 		}
 	}

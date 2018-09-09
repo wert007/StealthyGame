@@ -59,17 +59,17 @@ namespace StealthyGame.Engine.GameDebug.Console
 			switch (Type)
 			{
 				case ParameterType.File:
-					InGameConsole.Log("Not Implemented");
+					GameConsole.Log("Not Implemented");
 					break;
 				case ParameterType.String:
 				case ParameterType.Integer:
 				case ParameterType.Float:
 					return lastValues.ConvertAll(o => o.ToString());
 				case ParameterType.Boolean:
-					InGameConsole.Log("Doesn't have suggestions");
+					GameConsole.Log("Doesn't have suggestions");
 					break;
 				case ParameterType.Command:
-					InGameConsole.Log("Not Implemented");
+					GameConsole.Log("Not Implemented");
 					break;
 				default:
 					throw new NotImplementedException();
@@ -110,31 +110,31 @@ namespace StealthyGame.Engine.GameDebug.Console
 		public string GetAsString()
 		{
 			if (Parameter.Type != ParameterType.String)
-				InGameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to String!", Color.Yellow);
+				GameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to String!", Color.Yellow);
 			return Value.ToString();
 		}
 		public string GetAsFile()
 		{
 			if (Parameter.Type != ParameterType.File)
-				InGameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to File(String)!", Color.Yellow);
+				GameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to File(String)!", Color.Yellow);
 			return Value.ToString();
 		}
 		public int GetAsInt()
 		{
 			if (Parameter.Type != ParameterType.Integer)
-				InGameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to Integer!", Color.Yellow);
+				GameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to Integer!", Color.Yellow);
 			return int.Parse(Value.ToString());
 		}
 		public float GetAsFloat()
 		{
 			if (Parameter.Type != ParameterType.Float)
-				InGameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to Float!", Color.Yellow);
+				GameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to Float!", Color.Yellow);
 			return float.Parse(Value.ToString());
 		}
 		public bool GetAsBool()
 		{
 			if (Parameter.Type != ParameterType.Boolean)
-				InGameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to Boolean!", Color.Yellow);
+				GameConsole.Log("Warning: Trying to Convert from " + Parameter.Type + " to Boolean!", Color.Yellow);
 			return bool.Parse(Value.ToString());
 		}
 	}
