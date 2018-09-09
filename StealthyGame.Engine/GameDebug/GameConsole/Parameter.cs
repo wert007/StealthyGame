@@ -1,55 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
 
 namespace StealthyGame.Engine.GameDebug.Console
 {
-	public interface IParameter
+	public class Parameter
 	{
-		ParameterType Type { get; }
-		bool IsOptional { get; }
-		bool HasValue { get; }
-		string[] Names { get; }
-	}
-
-	public struct MetaParameter : IParameter
-	{
-		public string[] Names { get; private set; }
-		public bool HasValue { get; private set; } 
-		public bool IsOptional { get; private set; }
-		public ParameterType Type { get; private set; }
-
-		public MetaParameter(string name, bool isOptional, ParameterType type)
-		{
-			Names = new string[1] { name };
-			HasValue = true;
-			IsOptional = isOptional;
-			Type = type;
-		}
-
-		public MetaParameter(string name, string shortName, bool isOptional, ParameterType type)
-		{
-			Names = new string[2] { name, shortName };
-			HasValue = true;
-			IsOptional = isOptional;
-			Type = type;
-		}
-
-		public MetaParameter(string[] names, bool isOptional, ParameterType type)
-		{
-			Names = names;
-			HasValue = true;
-			IsOptional = isOptional;
-			Type = type;
-		}
-	}
-
-	public struct Parameter : IParameter
-	{
-		public static string Regex => "-" + CommandRegex + "( (" + Number + "|" + File + "|" + String + "))?";
-
-
-		static string CommandRegex => @"[a-zA-Z][a-zA-Z_0-9]*";
-
 		//Stolen from my Slides-Project (github.com/wert007/Slides)
+		public static string Regex => "-" + Command + "( (" + Number + "|" + File + "|" + String + "))?";
+		public static string Command => @"[a-zA-Z][a-zA-Z_0-9]*";
 		public static string Number => @"(" + Float + "|" + Integer + ")";
 		public static string Integer => @"\d+";
 		public static string Float => @"(\d*\.\d+?|\d+f)";
@@ -60,6 +19,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 		public bool HasValue { get; private set; }
 		public bool IsOptional { get; private set; }
 		public ParameterType Type { get; private set; }
+		List<object> lastValues;
 
 		public Parameter(string name, bool hasValue, bool isOptional, ParameterType type)
 		{
@@ -67,6 +27,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 			HasValue = hasValue;
 			IsOptional = isOptional;
 			Type = type;
+			lastValues = new List<object>();
 		}
 
 		public Parameter(string name, string shortName, bool hasValue, bool isOptional, ParameterType type)
@@ -75,6 +36,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 			HasValue = hasValue;
 			IsOptional = isOptional;
 			Type = type;
+			lastValues = new List<object>();
 		}
 
 		public Parameter(string[] names, bool hasValue, bool isOptional, ParameterType type)
@@ -83,15 +45,63 @@ namespace StealthyGame.Engine.GameDebug.Console
 			HasValue = hasValue;
 			IsOptional = isOptional;
 			Type = type;
+			lastValues = new List<object>();
+		}
+
+		public ParameterValue CreateValue(object value)
+		{
+			lastValues.Add(value);
+			return new ParameterValue(this, value);
+		}
+
+		public IEnumerable<string> GetSuggestions(string text)
+		{
+			switch (Type)
+			{
+				case ParameterType.File:
+					InGameConsole.Log("Not Implemented");
+					break;
+				case ParameterType.String:
+				case ParameterType.Integer:
+				case ParameterType.Float:
+					return lastValues.ConvertAll(o => o.ToString());
+				case ParameterType.Boolean:
+					InGameConsole.Log("Doesn't have suggestions");
+					break;
+				case ParameterType.Command:
+					InGameConsole.Log("Not Implemented");
+					break;
+				default:
+					throw new NotImplementedException();
+			}
+			return new string[0];
+		}
+	}
+
+	public class MetaParameter : Parameter
+	{
+		public MetaParameter(string name, bool isOptional, ParameterType type)
+			: base(name, true, isOptional, type)
+		{
+		}
+
+		public MetaParameter(string name, string shortName, bool isOptional, ParameterType type)
+			: base(name, shortName, true, isOptional, type)
+		{
+		}
+
+		public MetaParameter(string[] names, bool isOptional, ParameterType type)
+			: base(names, true, isOptional, type)
+		{
 		}
 	}
 
 	public struct ParameterValue
 	{
-		public IParameter Parameter { get; private set; }
+		public Parameter Parameter { get; private set; }
 		public object Value { get; private set; }
 
-		public ParameterValue(IParameter parameter, object value)
+		public ParameterValue(Parameter parameter, object value)
 		{
 			Parameter = parameter;
 			Value = value;

@@ -93,11 +93,12 @@ namespace TestiTest
 
 			consoleControl = new ConsoleControl(null);
 
-			Parser.Parse(@".\Content\stdCommands.cmds", typeof(StealthyGame.Engine.GameDebug.Console.ConsoleCommands));
-			Parser.Parse(@".\Content\commands.cmds", typeof(Console.ConsoleCommands));
+			Parser.Parse(@".\Content\stdCommands.cmds", typeof(StdConsoleCommands));
+			Parser.Parse(@".\Content\commands.cmds", typeof(ConsoleCommands));
+			StdConsoleCommands.ExitCalled += () => Exit();
 
-			Console.ConsoleCommands.ClassTree = new ClassTree();
-			Console.ConsoleCommands.ClassTree.SetRoot(this, "game1");
+			ConsoleCommands.ClassTree = new ClassTree();
+			ConsoleCommands.ClassTree.SetRoot(this, "game1");
 
 			base.Initialize();
 		}

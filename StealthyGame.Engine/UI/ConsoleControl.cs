@@ -32,13 +32,19 @@ namespace StealthyGame.Engine.UI
 
 			input = new TextField(this);
 			input.EnterPressed += TextReceived;
+			input.TextTyped += TextUpdated;
 			input.TextColor = Color.White;
 			input.Font = Font.CourierNew16;
 			input.Margin = new Thickness(label.Width, 0, 0, 0);
 			Unfocus();
 			InGameConsole.SetBufferSize(new Index2(0, (MaxHeight - Font.CourierNew16.PixelHeight) / Font.CourierNew14.PixelHeight));
 		}
-		
+
+		private void TextUpdated(object sender, string text)
+		{
+			InGameConsole.UpdateText(text);
+		}
+
 		private void TextReceived(object sender, string text)
 		{
 			InGameConsole.SendText(text);
@@ -91,6 +97,10 @@ namespace StealthyGame.Engine.UI
 			else if (keyboardManager.IsKeyPressed(Keys.Down))
 			{ 
 				input.Text = InGameConsole.GetNextTyped();
+			}
+			else if (keyboardManager.IsKeyPressed(Keys.Tab))
+			{
+				input.Text = InGameConsole.GetNextSuggestion();
 			}
 		}
 	}

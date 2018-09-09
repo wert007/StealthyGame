@@ -14,28 +14,32 @@ namespace StealthyGame.Engine.GameDebug.Console
 	public static class InGameConsole
 	{
 		static List<string> lastTyped;
+		static List<string> suggestions;
 		static Queue<ConsoleMessage> toOutput;
 		static List<ConsoleCommand> commands;
 		public delegate void TextReceivedHandler(string text);
 		public static event TextReceivedHandler TextReceived;
+		public static event TextReceivedHandler TextUpdated;
 
 		static bool intend;
 		static int intendation;
 		static int height;
 		static int width;
 		static int typedIndex;
+		static int suggestionIndex;
 
 		public static void Init()
 		{
 			lastTyped = new List<string>();
 			toOutput = new Queue<ConsoleMessage>();
 			commands = new List<ConsoleCommand>();
+			suggestions = new List<string>();
 			intend = false;
 			intendation = 0;
 			width = 0;
 			height = 0;
 			typedIndex = 0;
-			
+			suggestionIndex = -1;
 		}
 
 		public static void Log(string message)
@@ -87,6 +91,8 @@ namespace StealthyGame.Engine.GameDebug.Console
 		//TODO: Optimize (BackroundColor = Transparent??)
 		public static void Log(ConsoleMessage consoleMessage)
 		{
+			if (intend)
+				consoleMessage.Intend(intendation);
 			toOutput.Enqueue(consoleMessage);
 			while (toOutput.Count > height)
 			{
@@ -107,6 +113,17 @@ namespace StealthyGame.Engine.GameDebug.Console
 		public static IEnumerable<ConsoleMessage> MessagesToPrint()
 		{
 			return toOutput;
+		}
+
+		public static void UpdateText(string text)
+		{
+			suggestionIndex = -1;
+			suggestions.Clear();
+			foreach (var cmd in commands)
+			{
+				suggestions.AddRange(cmd.GetSuggestions(text));
+			}
+			TextUpdated?.Invoke(text);
 		}
 
 		public static void SendText(string text)
@@ -143,6 +160,14 @@ namespace StealthyGame.Engine.GameDebug.Console
 		{
 			typedIndex = Math.Max (typedIndex - 1, 0);
 			return lastTyped[typedIndex];
+		}
+
+		public static string GetNextSuggestion()
+		{
+			if (suggestions.Count == 0)
+				return string.Empty;
+			suggestionIndex = (suggestionIndex + 1) % suggestions.Count;
+			return suggestions[suggestionIndex];
 		}
 
 		internal static ConsoleCommand[] GetCommands()

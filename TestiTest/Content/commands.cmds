@@ -17,6 +17,12 @@
         shortName: c
         optional: true
         type: bool
+
+    parameter:
+        name: load
+        shortName: l
+        optional: true
+        type: file
     
     example:
         usingparameter: object

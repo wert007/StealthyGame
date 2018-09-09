@@ -112,5 +112,10 @@ namespace StealthyGame.Engine.GameDebug.Console
 			}
 			return result.ToArray();
 		}
+
+		public void Intend(int intendation)
+		{
+			Message = (new string('\t', intendation) + Message).Sanitize();
+		}
 	}
 }

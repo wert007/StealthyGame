@@ -13,8 +13,10 @@ namespace StealthyGame.Engine.DataTypes
 		public string TypedText { get; private set; }
 		List<TextInputEventArgs> textInputEventArgs;
 
-		public delegate void EnterPressedEventHandler(string text);
-		public event EnterPressedEventHandler EnterPressed;
+		public delegate void TextEventHandler(string text);
+		public event TextEventHandler EnterPressed;
+		public event TextEventHandler TextChanged;
+		public event TextEventHandler TextTyped;
 
 		public TextInput()
 		{
@@ -53,18 +55,23 @@ namespace StealthyGame.Engine.DataTypes
 					TypedText += e.Character;
 					break;
 			}
+			TextChanged?.Invoke(TypedText);
+			TextTyped?.Invoke(TypedText);
 		}
 
 		public void SetText(string text)
 		{
-			ClearText();
+			TypedText = string.Empty;
+			textInputEventArgs.Clear();
 			TypedText = text;
+			TextChanged?.Invoke(TypedText);
 		}
 
 		public void ClearText()
 		{
 			TypedText = string.Empty;
 			textInputEventArgs.Clear();
+			TextChanged?.Invoke(TypedText);
 		}
 	}
 }

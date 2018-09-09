@@ -21,8 +21,10 @@ namespace StealthyGame.Engine.UI.Basics
 		public bool IsEmpty => Text.Length <= 0;
 
 		TextInput textInput;
-		public delegate void EnterPressedEventHandler(object sender, string text);
-		public event EnterPressedEventHandler EnterPressed;
+		public delegate void TextEventHandler(object sender, string text);
+		public event TextEventHandler EnterPressed;
+		public event TextEventHandler TextChanged;
+		public event TextEventHandler TextTyped;
 
 		public TextField(Control parent): base(parent)
 		{
@@ -31,6 +33,14 @@ namespace StealthyGame.Engine.UI.Basics
 			textInput.EnterPressed += (txt) =>
 			{
 				EnterPressed?.Invoke(this, txt);
+			};
+			textInput.TextChanged += (txt) =>
+			{
+				TextChanged?.Invoke(this, txt);
+			};
+			textInput.TextTyped += (txt) =>
+			{
+				TextTyped?.Invoke(this, txt);
 			};
 			TextColor = Color.Black;
 			Font = Font.Arial11;

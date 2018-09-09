@@ -11,7 +11,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 	public struct ConsoleCommand
 	{
 		public string Name { get; private set; }
-		IParameter[] parameters;
+		Parameter[] parameters;
 		CommandExample[] examples;
 		//Action<ParameterValue[]> callback;
 		MethodInfo callback;
@@ -22,7 +22,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 		static string CommandRegex => @"[a-zA-Z][a-zA-Z_0-9]*";
 
 
-		public ConsoleCommand(string name, MethodInfo callback, params IParameter[] parameters)
+		public ConsoleCommand(string name, MethodInfo callback, params Parameter[] parameters)
 		{
 			if (!System.Text.RegularExpressions.Regex.IsMatch(name, CommandRegex))
 				throw new ArgumentException("InGameConsole: " + name + " is no valid CommandName. Should only start with letters (a-z, A-Z) and only use letters, numbers and _ afterwards.");
@@ -37,7 +37,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 			}
 		}
 
-		public ConsoleCommand(string name, MethodInfo callback, IParameter[] parameters, CommandExample[] examples) : this(name, callback, parameters)
+		public ConsoleCommand(string name, MethodInfo callback, Parameter[] parameters, CommandExample[] examples) : this(name, callback, parameters)
 		{
 			this.examples = examples;
 		}
@@ -89,6 +89,29 @@ namespace StealthyGame.Engine.GameDebug.Console
 			return false;
 		}
 
+		internal IEnumerable<string> GetSuggestions(string text)
+		{
+			string line = text.Trim('/');
+			List<string> result = new List<string>();
+			if (line.Trim() == Name)
+			{
+				foreach (var p in parameters.OrderBy(p => p.IsOptional))
+				{
+					result.Add(text.Trim() + " -" + p.Names[0]);
+				}
+			}
+			else if (line.StartsWith(Name))
+			{
+				line = line.Substring(Name.Length + 1);
+				var parameter = parameters.Where(p => p.Names.Contains(line.Trim('-').Trim()));
+				if (parameter != null)
+					foreach (var para in parameter)
+						foreach (var sug in para.GetSuggestions(text))
+							result.Add(text.Trim() + " " + sug);
+			}
+			return result;
+		}
+
 		public void Invoke(string line)
 		{
 			List<ParameterValue> args = new List<ParameterValue>();
@@ -121,18 +144,18 @@ namespace StealthyGame.Engine.GameDebug.Console
 										case ParameterType.String:
 											match = System.Text.RegularExpressions.Regex.Match(line, Parameter.String);
 											parameter = match.Value;
-											args.Add(new ParameterValue(parameters[i], parameter));
+											args.Add(parameters[i].CreateValue(parameter));
 											break;
 										case ParameterType.File:
 											match = System.Text.RegularExpressions.Regex.Match(line, Parameter.File);
 											parameter = match.Value;
-											args.Add(new ParameterValue(parameters[i], parameter.Trim('\'')));
+											args.Add(parameters[i].CreateValue(parameter.Trim('\'')));
 											break;
 										case ParameterType.Integer:
 											match = System.Text.RegularExpressions.Regex.Match(line, Parameter.Integer);
 											parameter = match.Value;
 											if (int.TryParse(parameter, out int parsedInt))
-												args.Add(new ParameterValue(parameters[i], parsedInt));
+												args.Add(parameters[i].CreateValue(parsedInt));
 											else
 												throw new ArgumentException();
 											break;
@@ -140,7 +163,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 											match = System.Text.RegularExpressions.Regex.Match(line, Parameter.Float);
 											parameter = match.Value;
 											if (float.TryParse(parameter, out float parsedFloat))
-												args.Add(new ParameterValue(parameters[i], parsedFloat));
+												args.Add(parameters[i].CreateValue(parsedFloat));
 											else
 												throw new ArgumentException();
 											break;
@@ -153,7 +176,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 								}
 								else
 								{
-									args.Add(new ParameterValue(parameters[i], true));
+									args.Add(parameters[i].CreateValue(true));
 								}
 
 							}
@@ -165,7 +188,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 				else
 				{
 					line = line.Substring(line.IndexOf(' ')).Trim();
-					args.Add(new ParameterValue(parameters.FirstOrDefault(p => p is MetaParameter), line));
+					args.Add(parameters.FirstOrDefault(p => p is MetaParameter).CreateValue(line));
 				}
 			}
 			callback.Invoke(null, new object[1] { args.ToArray() });

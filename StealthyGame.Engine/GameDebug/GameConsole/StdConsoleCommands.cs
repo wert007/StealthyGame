@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 
 namespace StealthyGame.Engine.GameDebug.Console
 {
-	public static class ConsoleCommands
+	public static class StdConsoleCommands
 	{
+		public delegate void ExitCalledEventHandler();
+		public static event ExitCalledEventHandler ExitCalled;
+
 		public static void Help(ParameterValue[] args)
 		{
 			if(args.Length == 1)
@@ -28,6 +31,16 @@ namespace StealthyGame.Engine.GameDebug.Console
 				}
 				InGameConsole.Log("Type /help <command> to see examples of the usage.");
 			}
+		}
+
+		public static void Size(ParameterValue[] args)
+		{
+			InGameConsole.Log("Currently not implemented");
+		}
+
+		public static void Exit(ParameterValue[] args)
+		{
+			ExitCalled?.Invoke();	
 		}
 	}
 }

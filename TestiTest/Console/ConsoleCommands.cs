@@ -55,6 +55,8 @@ namespace TestiTest.Console
 
 		private static void ConsoleInspectObject(ParameterValue[] args)
 		{
+			if (current == null)
+				current = ClassTree.GetRoot();
 			string obj = args[0].GetAsString();
 			ClassTreeItem target = null;
 			if (current.Children == null)
@@ -66,7 +68,7 @@ namespace TestiTest.Console
 			}
 			if (target == null)
 			{
-				InGameConsole.Log("No object named " + obj + " is a child of the Game class.");
+				InGameConsole.Log("No object named " + obj + " is a child of the " + current.ClassName + " class.");
 				return;
 			}
 			current = target;

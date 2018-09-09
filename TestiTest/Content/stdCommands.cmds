@@ -1,5 +1,4 @@
-﻿//example for help command
-cmd:
+﻿cmd:
 	name: help
 	callback: Help
 
@@ -10,9 +9,17 @@ cmd:
 		type: command
 
 cmd:
+	name: exit
+	callback: Exit
+
+	example:
+		line: /exit
+		exp: Exits the Game via Game.Exit() or whatever you choose.
+
+cmd:
 	name: size
 	callback: Size
-	
+
 	parameter:
 		name: xPosition
 		shortName: x
@@ -24,3 +31,16 @@ cmd:
 		shortName: y
 		optional: true
 		type: int
+		
+//cmd:
+//	name: fm
+//	link: filemanager
+//
+//cmd: 
+//	name: filemanager
+//
+//	parameter:
+//		name: home
+//		shortName: h
+//		optional: true
+//		type: file
