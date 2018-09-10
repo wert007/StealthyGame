@@ -8,6 +8,20 @@
 		optional: true
 		type: command
 
+	example:
+		line: /help
+		exp: This is the help command. It might be your
+		exp: first step in discovering the console.
+		exp: As it displays all commands you might use.
+		exp: Yes, even help itself
+
+	example:
+		usingparameter: command
+		line: /help help
+		exp: Exactly what you just typed. 
+		exp: Try the other commands as well to discover
+		exp: what you can do with these.
+
 cmd:
 	name: exit
 	callback: Exit
@@ -39,6 +53,14 @@ cmd:
 		shortName: y
 		optional: true
 		type: int
+
+	example:
+		usingparameter: xPosition
+		usingparameter: yPosition
+		line: /size -x 50 -y 15
+		exp: Sets the size of the Console.
+		exp: Size is given in 'cells' (equals one letter)
+		exp: <c:0ff>Currently not Working
 
 cmd:
 	name: filter
@@ -97,8 +119,23 @@ cmd:
 		type: bool
 
 	example:
-		line: There is a terrible Bug in my Parser.. He doesnt like end of Files...
-		exp: <c:0ff>This really stinks
+		usingparameter: list
+		line: /fm -list
+		exp: Lists the directories and the files which
+		exp: are contained in the current directoy
+
+	example:
+		usingparameter: home
+		line: /fm -home 'C:/My/Home/Directory/'
+		line: /fm -home '.\..\Relative\Path\'
+		exp: With this you can set the current or home
+		exp: directory. Absolute and relative paths are Working
+
+	example:
+		usingparameter: reset
+		line: /fm -reset
+		exp: Sets the home or current directory to the 
+		exp: game directory.
 
 cmd:
 	name: save
@@ -110,7 +147,13 @@ cmd:
 		type: file
 
 	example:
+		usingparameter: gif
 		line: /save -gif 'C:/MyDirectory/My/File/
 		line: /save -gif './gif/'
 		exp: Saves the last 80-ish Frames in a Folder which you may turn in a Gif.
 		exp: May use relative as well as absolute Paths
+
+		
+	example:
+		line: There is a terrible Bug in my Parser.. He doesnt like end of Files...
+		exp: <c:0ff>This really stinks
