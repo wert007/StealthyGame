@@ -61,6 +61,11 @@
     <Compile Include="DataTypes\UI\Thickness.cs" />
     <Compile Include="DataTypes\UI\VerticalAlignment.cs" />
     <Compile Include="GameDebug\DataStructures\FileTree.cs" />
+    <Compile Include="GameDebug\DataStructures\Recorder.cs" />
+    <Compile Include="GameDebug\DataStructures\TimeManagement\FPSCounter.cs" />
+    <Compile Include="GameDebug\DataStructures\TimeManagement\TimeWatchCollection.cs" />
+    <Compile Include="GameDebug\DataStructures\TimeManagement\TimeWatchEntry.cs" />
+    <Compile Include="GameDebug\DataStructures\TimeManagement\TimeWatcher.cs" />
     <Compile Include="GameDebug\GameConsole\CommandExample.cs" />
     <Compile Include="GameDebug\GameConsole\ConsoleCommand.cs" />
     <Compile Include="GameDebug\GameConsole\ConsoleMessage.cs" />
@@ -69,6 +74,7 @@
     <Compile Include="GameDebug\GameConsole\Parser\Parser.cs" />
     <Compile Include="GameDebug\GameConsole\StdConsoleCommands.cs" />
     <Compile Include="GameDebug\Renderer\DebugCollection.cs" />
+    <Compile Include="GameDebug\Renderer\DebugFPS.cs" />
     <Compile Include="GameDebug\Renderer\DebugKeyPressed.cs" />
     <Compile Include="GameDebug\Renderer\DebugLight.cs" />
     <Compile Include="GameDebug\Renderer\DebugNPC.cs" />

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StealthyGame.Engine.GameDebug;
+using StealthyGame.Engine.GameMechanics.Phases;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.Input;
 using StealthyGame.Engine.Renderer;
@@ -23,15 +24,18 @@ namespace StealthyGame.Engine.GameDebug.Renderer
 			this.keyboard = keyboard;
 		}
 
-		public void Draw(Renderer2D renderer)
+		public void Draw(Renderer2D renderer, GameTime time)
 		{
 			Keys[] keys = keyboard.GetPressedKeys();
 			for (int i = 0; i < keys.Length; i++)
 			{
-				//batch.DrawFilledRectangle(new Rectangle(0, Font.Arial16.PixelHeight * i, 100, Font.Arial16.PixelHeight), Color.Red);
 				renderer.Draw(Font.Arial16, keys[i].ToString(), new Vector2(0, Font.Arial16.PixelHeight * i), Color.White);
 				
 			}
+		}
+
+		public void Update(UpdateContainer container)
+		{
 		}
 	}
 }

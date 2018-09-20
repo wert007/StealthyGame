@@ -23,6 +23,16 @@
 		exp: what you can do with these.
 
 cmd:
+	name: tw
+	callback: TimeWatcherCmd
+
+	parameter:
+		name: list
+		shortName: l
+		optional: true
+		type: bool
+
+cmd:
 	name: exit
 	callback: Exit
 

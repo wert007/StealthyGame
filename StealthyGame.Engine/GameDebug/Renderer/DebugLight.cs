@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StealthyGame.Engine.GameMechanics.Phases;
 using StealthyGame.Engine.Geometrics;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.Renderer;
@@ -24,10 +25,14 @@ namespace StealthyGame.Engine.GameDebug
 			this.color = color;
 		}
 
-		public void Draw(Renderer2D renderer)
+		public void Draw(Renderer2D renderer, GameTime time)
 		{
 			renderer.DrawCircle(circle, color, thickness);
 			renderer.DrawFilledRectangle(new Rectangle(circle.Center.X - 5, circle.Center.Y - 5, 10, 10), color);
+		}
+
+		public void Update(UpdateContainer container)
+		{
 		}
 	}
 }

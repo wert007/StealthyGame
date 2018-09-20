@@ -3,9 +3,11 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StealthyGame.Engine.GameDebug;
+using StealthyGame.Engine.GameDebug.DataStructures.TimeManagement;
 using StealthyGame.Engine.GameMechanics.Phases;
 using StealthyGame.Engine.Renderer;
 using StealthyGame.Engine.View;
+using System.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,18 +38,19 @@ namespace TestiTest.GameMechanics.Phases
 		public override void Draw(Renderer2D renderer, GameTime time)
 		{
 			renderer.Begin(cam.Transform);
+			TimeWatcher.Start("Map.Draw");
 			w.map.Draw(renderer, cam.Transform);
+			TimeWatcher.End();
 			renderer.End();
-
 
 			if (debug)
 			{
 				renderer.Begin(cam.Transform);
-				DebugRenderer.DrawWorld(renderer);
+				DebugRenderer.DrawWorld(renderer, time);
 				renderer.End();
 
 				renderer.Begin();
-				DebugRenderer.DrawScreen(renderer);
+				DebugRenderer.DrawScreen(renderer, time);
 				renderer.End();
 			}
 
@@ -59,6 +62,7 @@ namespace TestiTest.GameMechanics.Phases
 
 		public override void Update(UpdateContainer container)
 		{
+			DebugRenderer.Update(container);
 			if (container.Keyboard.IsKeyPressed(Keys.U))
 			{
 				followedNPC = (followedNPC + 1) % w.npcs.Count;
@@ -68,8 +72,12 @@ namespace TestiTest.GameMechanics.Phases
 			if (container.Keyboard.IsKeyPressed(Keys.N))
 				debug = !debug;
 
+			TimeWatcher.Start("World.Update");
 			w.Update(container.Time);
+			TimeWatcher.End();
+			TimeWatcher.Start("Camera.Update");
 			cam.Update(container.Time);
+			TimeWatcher.End();
 		}
 	}
 }

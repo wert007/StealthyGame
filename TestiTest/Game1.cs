@@ -24,6 +24,8 @@ using TestiTest.GameMechanics.Phases.Containers;
 using StealthyGame.Engine.GameDebug.Renderer;
 using StealthyGame.Engine.Renderer;
 using System.IO;
+using StealthyGame.Engine.GameDebug.DataStructures.TimeManagement;
+using StealthyGame.Engine.GameDebug.DataStructures;
 
 namespace TestiTest
 {
@@ -36,17 +38,16 @@ namespace TestiTest
 		SpriteBatch batch;
 		PhaseManager phaseManager;
 		RenderTarget2D gameContent;
-		Queue<RenderTarget2D> lastFrames;
 		Rectangle render;
 		KeyboardManager debugKeyboardManager;
 		ConsoleControl consoleControl;
 		UpdateContainer updateContainer;
 		Renderer2D renderer;
+		FPSCounter counter;
+		Recorder recorder;
 
 		int width;
 		int height;
-		private readonly int MaxSavedFrames = 80;
-		int currentLastFrame = 0;
 
 		public Game1()
 		{
@@ -55,6 +56,8 @@ namespace TestiTest
 
 			Content.RootDirectory = "Content";
 			Window.TextInput += Window_TextInput;
+		//	this.graphics.SynchronizeWithVerticalRetrace = true;
+			this.TargetElapsedTime = new System.TimeSpan(0, 0, 0, 0, 33); // 33ms = 30fps
 		}
 
 		private void Window_TextInput(object sender, TextInputEventArgs e)
@@ -75,15 +78,17 @@ namespace TestiTest
 			phaseManager = new PhaseManager(new GamePhase(gc));
 
 			gameContent = new RenderTarget2D(GraphicsDevice, width, height);
-			lastFrames = new Queue<RenderTarget2D>();
 			render = new Rectangle(0, 0, width, height);
+			recorder = new Recorder();
 
 			FontManager.Initialize(Content);
 			Control.Initialize(width, height);
 			
 			updateContainer = new UpdateContainer();
 			debugKeyboardManager = new KeyboardManager();
-			
+
+			counter = new FPSCounter(this);
+			DebugRenderer.AddDebugObjectScreen(new DebugFPS(counter));
 
 			GameConsole.Init();
 
@@ -93,15 +98,6 @@ namespace TestiTest
 			Parser.Parse(@".\Content\stdCommands.cmds", typeof(StdConsoleCommands));
 			Parser.Parse(@".\Content\commands.cmds", typeof(ConsoleCommands));
 			StdConsoleCommands.ExitCalled += () => Exit();
-			StdConsoleCommands.SaveFrames += (dir) =>
-			{
-				for (int i = 0; i < lastFrames.Count; i++)
-				{
-					RenderTarget2D cur = lastFrames.ElementAt(i);
-					using (FileStream fs = new FileStream(Path.Combine(dir, (i + 1).ToString() + ".png"), FileMode.CreateNew))
-						cur.SaveAsPng(fs, cur.Width, cur.Height);
-				}
-			};
 
 			ConsoleCommands.ClassTree = new ClassTree();
 			ConsoleCommands.ClassTree.SetRoot(this, "game1");
@@ -162,7 +158,7 @@ namespace TestiTest
 
 			GraphicsDevice.Clear(new Color(51, 51, 51));
 			render = new Rectangle(200, 0, GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 80);
-			if (!Console.ConsoleCommands.FreezeGame)
+			if (!ConsoleCommands.FreezeGame)
 			{
 
 				GraphicsDevice.SetRenderTarget(gameContent);
@@ -170,41 +166,18 @@ namespace TestiTest
 				phaseManager.Draw(renderer, time);
 				GraphicsDevice.SetRenderTarget(null);
 				render = new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
+				recorder.AddRecordEntry(new RecordEntry(gameContent, time));
 			}
 			renderer.Begin();
 			renderer.Draw(gameContent, render, Color.White);
-			if(!Console.ConsoleCommands.FreezeGame)
-				lastFrames.Enqueue(CopyRenderTarget(gameContent));
-			if (lastFrames.Count > MaxSavedFrames)
-			{
-				lastFrames.Dequeue().Dispose();
-			}
-			if (Console.ConsoleCommands.PlayLoop && time.TotalGameTime.Ticks % 3 == 0)
-			{
-				currentLastFrame = (currentLastFrame + 1) % lastFrames.Count;
-			}
-			if (Console.ConsoleCommands.FreezeGame)
-			{
-				if(Console.ConsoleCommands.PlayLoop)
-				{
-					batch.Draw(lastFrames.ElementAt(currentLastFrame), Vector2.Zero, Color.White);
-				}
-			}
+			if (ConsoleCommands.FreezeGame && ConsoleCommands.PlayLoop)
+				recorder.Draw(renderer, time);
 			consoleControl.Draw(renderer);
 			batch.End();
 
+			TimeWatcher.ClearCurrent();
+
 			base.Draw(time);
-		}
-
-
-
-		private RenderTarget2D CopyRenderTarget(RenderTarget2D gameContent)
-		{
-			RenderTarget2D result = new RenderTarget2D(gameContent.GraphicsDevice, gameContent.Width, gameContent.Height);
-			Color[] data = new Color[gameContent.Width * gameContent.Height];
-			gameContent.GetData(data);
-			result.SetData(data);
-			return result;
 		}
 	}
 }

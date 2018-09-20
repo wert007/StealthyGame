@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using StealthyGame.Engine.GameDebug.DataStructures;
+using StealthyGame.Engine.GameDebug.DataStructures.TimeManagement;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -163,6 +164,39 @@ namespace StealthyGame.Engine.GameDebug.Console
 						throw new NotImplementedException();
 				}
 
+			}
+		}
+
+		public static void Value(ParameterValue[] args)
+		{
+			GameConsole.Error("Not implemented");
+			if(args.Length == 2)
+			{
+
+			}
+		}
+
+		public static void Set(ParameterValue[] args)
+		{
+			GameConsole.Error("Not implemented");
+		}
+
+		public static void TimeWatcherCmd(ParameterValue[] args)
+		{
+			if(args.Length == 1)
+			{
+				switch(args[0].Parameter.Names[0])
+				{
+					case "list":
+						//foreach (var entry in TimeWatcher.GetEntries())
+						//{
+						//	GameConsole.Log(entry.ToString());
+						//}
+						//break;
+					default:
+						GameConsole.Error("Not implemented");
+						break;
+				}
 			}
 		}
 	}

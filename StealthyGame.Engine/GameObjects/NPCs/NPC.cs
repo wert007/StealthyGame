@@ -76,9 +76,9 @@ namespace StealthyGame.Engine.GameObjects.NPCs
 			if (Speed > 400)
 				return Speed / 10;
 			if (Speed > 200)
-				return 10;
+				return 20;
 			if (Speed > 30)
-				return 3;
+				return 10;
 			else
 				return 1;
 		}

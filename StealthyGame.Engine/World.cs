@@ -25,9 +25,6 @@ namespace StealthyGame.Engine
 		Camera cam;
 		public List<NPC> npcs;
 
-		List<NPC> followed = new List<NPC>();
-		List<Light> follower = new List<Light>();
-
 		public World(Camera cam)
 		{
 			this.cam = cam;
@@ -75,10 +72,7 @@ namespace StealthyGame.Engine
 								throw new NotSupportedException("Unknown Type " + o.Type);
 						}
 					}
-					followed.Add(new RoutedNPC(new Route(true, wayPoints.ToArray()), map));
-					npcs.Add(followed.Last());
-					follower.Add(new Light((Index2)followed.Last().Position, 50, 0.5f, Color.Red));
-					map.hope.AddLight(follower.Last());
+					npcs.Add(new RoutedNPC(new Route(true, wayPoints.ToArray()), map));
 					break;
 				case "Wander":
 					foreach (var o in objects)
@@ -105,10 +99,6 @@ namespace StealthyGame.Engine
 			foreach (var npc in npcs)
 			{
 				npc.Update(time);
-			}
-			for (int i = 0; i < followed.Count; i++)
-			{
-				follower[i].Position = (Index2)followed[i].Position;
 			}
 		}
 	}

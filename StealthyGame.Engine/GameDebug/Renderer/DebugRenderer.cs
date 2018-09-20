@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StealthyGame.Engine.GameMechanics.Phases;
 using StealthyGame.Engine.MapBasics;
 using StealthyGame.Engine.Renderer;
 
@@ -54,31 +56,50 @@ namespace StealthyGame.Engine.GameDebug
 			drawablesWorldSingleCall[type].Visible = visible;
 		}
 
-		public static void DrawWorld(Renderer2D renderer)
+		public static void Update(UpdateContainer container)
 		{
 			if (drawablesWorld != null)
 				foreach (var drawable in drawablesWorld)
 				{
-					drawable.Value.Draw(renderer);
+					drawable.Value.Update(container);
+				}
+			if (drawablesWorldSingleCall != null)
+				foreach (var drawable in drawablesWorldSingleCall)
+				{
+					drawable.Value.Update(container);
+				}
+			if (drawablesScreen != null)
+				foreach (var drawable in drawablesScreen)
+				{
+					drawable.Value.Update(container);
+				}
+		}
+
+		public static void DrawWorld(Renderer2D renderer, GameTime time)
+		{
+			if (drawablesWorld != null)
+				foreach (var drawable in drawablesWorld)
+				{
+					drawable.Value.Draw(renderer, time);
 				}
 			if (drawablesWorldSingleCall != null)
 			{
 				foreach (var drawable in drawablesWorldSingleCall)
 				{
-					drawable.Value.Draw(renderer);
+					drawable.Value.Draw(renderer, time);
 				}
 				drawablesWorldSingleCall.Clear();
 			}
 
 		}
 
-		public static void DrawScreen(Renderer2D renderer)
+		public static void DrawScreen(Renderer2D renderer, GameTime time)
 		{
 			if (drawablesScreen != null)
 			{
 				foreach (var drawable in drawablesScreen)
 				{
-					drawable.Value.Draw(renderer);
+					drawable.Value.Draw(renderer, time);
 				}
 			}
 		}
