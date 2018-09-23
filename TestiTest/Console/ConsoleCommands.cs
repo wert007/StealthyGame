@@ -1,4 +1,4 @@
-﻿using StealthyGame.Engine.GameDebug.Console;
+﻿using StealthyGame.Engine.GameDebug.GameConsole;
 using StealthyGame.Engine.GameDebug.UI;
 using System;
 using System.Collections.Generic;
@@ -12,8 +12,6 @@ namespace TestiTest.Console
 	{
 		public static bool PlayLoop { get; set; }
 		public static bool FreezeGame { get; set; }
-		public static ClassTree ClassTree { get; set; }
-		private static ClassTreeItem current;
 
 
 		public static void ConsoleLoop(ParameterValue[] args)
@@ -21,65 +19,7 @@ namespace TestiTest.Console
 			PlayLoop = !PlayLoop;
 		}
 
-		public static void ConsoleInspect(ParameterValue[] args)
-		{
-			if (args.Length == 0)
-			{
-				current = ClassTree.GetRoot();
-				if (current.Children == null)
-					current.GenerateChildren();
-				foreach (var child in current.Children)
-				{
-					GameConsole.Log(child.ToString());
-				}
-			}
-			else if (args.Length == 1)
-			{
-				switch (args[0].Parameter.Names[0])
-				{
-					case "object":
-						ConsoleInspectObject(args);
-						break;
-					case "reset":
-						current = ClassTree.GetRoot();
-						GameConsole.Log("Current ClassTreeItem reset to root.");
-						break;
-					case "current":
-						GameConsole.Log(current.ToString());
-						break;
-					default:
-						throw new NotImplementedException();
-
-				}
-			}
-		}
-
-		private static void ConsoleInspectObject(ParameterValue[] args)
-		{
-			if (current == null)
-				current = ClassTree.GetRoot();
-			string obj = args[0].GetAsString();
-			ClassTreeItem target = null;
-			if (current.Children == null)
-				current.GenerateChildren();
-			foreach (var child in current.Children)
-			{
-				if (child.HasName && child.Name == obj)
-					target = child;
-			}
-			if (target == null)
-			{
-				GameConsole.Error("No object named " + obj + " is a child of the " + current.ClassName + " class.");
-				return;
-			}
-			current = target;
-			if (target.Children == null)
-				target.GenerateChildren();
-			foreach (var child in target.Children)
-			{
-				GameConsole.Log(child.ToString());
-			}
-		}
+		
 
 		public static void ConsoleFreeze(ParameterValue[] args)
 		{

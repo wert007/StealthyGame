@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using StealthyGame.Engine.GameDebug.Console;
+using StealthyGame.Engine.GameDebug.GameConsole;
 using StealthyGame.Engine.GameDebug.DataStructures.TimeManagement;
 using StealthyGame.Engine.Renderer;
 using System;

@@ -9,21 +9,12 @@ namespace StealthyGame.Engine.GameDebug.UI
 {
 	public class ClassTree
 	{
-		ClassTreeItem root;
+		public ClassTreeItem Root { get; set; }
+		public ClassTreeItem Current { get; set; }
 
 		public ClassTree()
 		{
 
-		}
-
-		public void SetRoot(object root, string name)
-		{
-			this.root = new ClassTreeItem(root, name);
-		}
-
-		public ClassTreeItem GetRoot()
-		{
-			return root;
 		}
 	}
 
@@ -34,15 +25,17 @@ namespace StealthyGame.Engine.GameDebug.UI
 		public string Name { get; }
 		public string ClassName { get; }
 		public object Value { get; }
+		public object Parent { get; }
 		List<ClassTreeItem> children;
 		public IEnumerable<ClassTreeItem> Children => children;
 		
-		public ClassTreeItem(object element, string name)
+		public ClassTreeItem(object element, string name, object parent = null)
 		{
 			this.elementType = element.GetType();
 			this.ClassName = elementType.Name;
 			Value = element;
 			Name = name;
+			Parent = parent;
 		}
 
 		public void GenerateChildren()
@@ -54,7 +47,7 @@ namespace StealthyGame.Engine.GameDebug.UI
 			{
 				object value = attribute.GetValue(Value);
 				if(value != null)
-					children.Add(new ClassTreeItem(value, attribute.Name));
+					children.Add(new ClassTreeItem(value, attribute.Name, Value));
 			}
 		}
 
@@ -65,6 +58,11 @@ namespace StealthyGame.Engine.GameDebug.UI
 				return ClassName + " " + Name + " = " + Value.ToString() + ";";
 			else
 				return ClassName + " " + Name + ";";
+		}
+
+		internal void SetValue(object value)
+		{
+			Parent.GetType().GetField(Name).SetValue(Parent, value);
 		}
 	}
 }

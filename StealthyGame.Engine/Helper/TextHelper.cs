@@ -19,6 +19,18 @@ namespace StealthyGame.Engine.Helper
 						int c = i % 4;
 						builder.Append(' ', 4 - c);
 						break;
+					case 'Ä':
+					case 'ä':
+						builder.Append("ae");
+						break;
+					case 'Ö':
+					case 'ö':
+						builder.Append("oe");
+						break;
+					case 'Ü':
+					case 'ü':
+						builder.Append("ue");
+						break;
 					default:
 						builder.Append(str[i]);
 						break;

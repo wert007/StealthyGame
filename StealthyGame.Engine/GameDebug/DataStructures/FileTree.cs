@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Graphics;
+using StealthyGame.Engine.GameDebug.GameConsole;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -29,7 +31,7 @@ namespace StealthyGame.Engine.GameDebug.DataStructures
 	{
 		public string FilePath { get; private set; }
 		public bool IsFile => Path.HasExtension(FilePath);
-		public string FileExtension => Path.GetExtension(FilePath);
+		public string FileExtension => Path.GetExtension(FilePath).ToLower();
 		public string FileName => Path.GetFileNameWithoutExtension(FilePath);
 		public FileTreeItem[] Children { get; private set; }
 		public string ShortName
@@ -69,6 +71,26 @@ namespace StealthyGame.Engine.GameDebug.DataStructures
 			if (Children == null)
 				GenerateChildren();
 			return Children;
+		}
+
+		public object Load()
+		{
+			object result = null;
+			if (!IsFile)
+				return result;
+			switch (FileExtension)
+			{
+				case ".png":
+				case ".jpg":
+					using (FileStream fs = new FileStream(FilePath, FileMode.Open))
+						result = Texture2D.FromStream(null, fs);
+					break;
+				default:
+					GameConsole.GameConsole.Error("Couldn't match file-extension " + FileExtension);
+					break;
+			}
+
+			return result;
 		}
 	}
 }

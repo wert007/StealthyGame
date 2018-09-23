@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.DataTypes;
-using StealthyGame.Engine.GameDebug.Console;
+using StealthyGame.Engine.GameDebug.GameConsole;
 using StealthyGame.Engine.MapBasics.Tiles;
 using System;
 using System.Collections.Generic;

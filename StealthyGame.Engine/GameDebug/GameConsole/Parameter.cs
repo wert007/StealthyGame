@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace StealthyGame.Engine.GameDebug.Console
+namespace StealthyGame.Engine.GameDebug.GameConsole
 {
 	public class Parameter
 	{
@@ -18,36 +18,32 @@ namespace StealthyGame.Engine.GameDebug.Console
 
 		public string[] Names { get; private set; }
 		public bool HasValue { get; private set; }
-		public bool IsOptional { get; private set; }
 		public ParameterType Type { get; private set; }
 		List<object> lastValues;
 
-		public Parameter(string name, bool hasValue, bool isOptional, ParameterType type)
+		public Parameter(string name, bool hasValue, ParameterType type)
 		{
 			Names = new string[1] { name };
 			HasValue = hasValue;
-			IsOptional = isOptional;
 			Type = type;
 			lastValues = new List<object>();
 		}
 
-		public Parameter(string name, string shortName, bool hasValue, bool isOptional, ParameterType type)
+		public Parameter(string name, string shortName, bool hasValue, ParameterType type)
 		{
 			if (string.IsNullOrWhiteSpace(shortName))
 				Names = new string[1] { name };
 			else
 				Names = new string[2] { name, shortName };
 			HasValue = hasValue;
-			IsOptional = isOptional;
 			Type = type;
 			lastValues = new List<object>();
 		}
 
-		public Parameter(string[] names, bool hasValue, bool isOptional, ParameterType type)
+		public Parameter(string[] names, bool hasValue, ParameterType type)
 		{
 			Names = names;
 			HasValue = hasValue;
-			IsOptional = isOptional;
 			Type = type;
 			lastValues = new List<object>();
 		}
@@ -81,18 +77,18 @@ namespace StealthyGame.Engine.GameDebug.Console
 
 	public class MetaParameter : Parameter
 	{
-		public MetaParameter(string name, bool isOptional, ParameterType type)
-			: base(name, true, isOptional, type)
+		public MetaParameter(string name, ParameterType type)
+			: base(name, true, type)
 		{
 		}
 
-		public MetaParameter(string name, string shortName, bool isOptional, ParameterType type)
-			: base(name, shortName, true, isOptional, type)
+		public MetaParameter(string name, string shortName, ParameterType type)
+			: base(name, shortName, true, type)
 		{
 		}
 
-		public MetaParameter(string[] names, bool isOptional, ParameterType type)
-			: base(names, true, isOptional, type)
+		public MetaParameter(string[] names, ParameterType type)
+			: base(names, true, type)
 		{
 		}
 	}

@@ -1,64 +1,28 @@
-﻿cmd:
-    name: inspect
-    callback: ConsoleInspect
+﻿#ver5
 
-    parameter:
-        name: object
-        shortName: o
-        optional: true
-        type: string
-    parameter:
-        name: reset
-        shortName: r
-        optional: true
-        type: bool
-    parameter:
-        name: current
-        shortName: c
-        optional: true
-        type: bool
-
-    parameter:
-        name: load
-        shortName: l
-        optional: true
-        type: file
-    
-    example:
-        usingparameter: object
-        line: /inspect -o game1
-        explanation: Shows the fields and properties of an object 'game1'
-        exp: Must be a attribute or field of the current gameObject.
-        exp: <c:ddd> See '/inspect current'
-
-    example:
-        usingparameter: reset
-        line: /inspect -r
-        exp: Resets the current gameObject to the Game1-class again
-
-    example:
-        usingparameter: current
-        line: /inspect -current
-        exp: Shows the current gameObject.
-
-    example:
-        usingparameter: load
-        line: NOT IMPLEMENTED
-        exp: <c:f00>Currently not working
-
-cmd:
-    name: freeze
-
+cmd(freeze):
     example:
         line: /freeze
         exp: Toggles the freeze state of the game
 
-cmd:
-    name: loop
-
+cmd(loop):
     example:
         line: /loop
         exp: Toggles the loop state of the game.
         exp: If the game is frozen, it will play
         exp: a loop instead.
         exp: <c:ddd>See '/freeze'
+
+
+cmd(foo):
+    parameter(bar):
+        flags: short //Equals shortName: b
+        com: baaar
+
+    parameter(ebaar):
+        flags: short, exclusive //Equals shortName: e
+        
+    parameter(baaar):
+        com: bar, baaaar        //TODO: Somehow indentify must combined Parameter like with an ! or ~ or something
+    parameter(baaaar):
+        com: baaar

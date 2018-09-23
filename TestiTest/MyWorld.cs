@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StealthyGame.Engine.MapBasics;
 using TestiTest.GameObjects.NPCs;
-using StealthyGame.Engine.GameDebug.Console;
+using StealthyGame.Engine.GameDebug.GameConsole;
 
 namespace TestiTest
 {

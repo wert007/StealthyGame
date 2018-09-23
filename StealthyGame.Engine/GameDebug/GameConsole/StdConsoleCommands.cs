@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using StealthyGame.Engine.GameDebug.DataStructures;
 using StealthyGame.Engine.GameDebug.DataStructures.TimeManagement;
+using StealthyGame.Engine.GameDebug.DataStructures.VariableSystem;
+using StealthyGame.Engine.GameDebug.UI;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,11 +10,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StealthyGame.Engine.GameDebug.Console
+namespace StealthyGame.Engine.GameDebug.GameConsole
 {
 	public static class StdConsoleCommands
 	{
 		public static FileTree FileTree { get; set; }
+		static List<CmdValue> Values;
+		public static ClassTree ClassTree { get; set; }
 
 		public delegate void ExitCalledEventHandler();
 		public static event ExitCalledEventHandler ExitCalled;
@@ -22,6 +26,8 @@ namespace StealthyGame.Engine.GameDebug.Console
 		public static void Init()
 		{
 			FileTree = new FileTree();
+			Values = new List<CmdValue>();
+			ClassTree = new ClassTree();
 		}
 
 		public static void Help(ParameterValue[] args)
@@ -167,18 +173,105 @@ namespace StealthyGame.Engine.GameDebug.Console
 			}
 		}
 
+		
 		public static void Value(ParameterValue[] args)
 		{
 			GameConsole.Error("Not implemented");
-			if(args.Length == 2)
+			if(args.Length == 1)
 			{
+				switch (args[0].Parameter.Names[0])
+				{
+					case "name":
+						Values.Add(new CmdValue(args[0].GetAsString(), FileTree.Current.Load()));
+						break;
+					default:
+						GameConsole.Error("Not implemented");
+						break;
 
+				}
+			
 			}
 		}
 
 		public static void Set(ParameterValue[] args)
 		{
+
 			GameConsole.Error("Not implemented");
+			if (args.Length == 1)
+			{
+				switch (args[0].Parameter.Names[0])
+				{
+					case "name":
+						var val = Values.FirstOrDefault(v => v.Name == args[0].GetAsString());
+						if (val == null)
+							GameConsole.Error("No Value is named like this..");
+						ClassTree.Current.SetValue(val.Value);
+						break;
+					default:
+						GameConsole.Error("Not implemented");
+						break;
+
+				}
+
+			}
+		}
+
+		public static void Inspect(ParameterValue[] args)
+		{
+			if (args.Length == 0)
+			{
+				ClassTree.Current = ClassTree.Root;
+				if (ClassTree.Current.Children == null)
+					ClassTree.Current.GenerateChildren();
+				foreach (var child in ClassTree.Current.Children)
+				{
+					GameConsole.Log(child.ToString());
+				}
+			}
+			else if (args.Length == 1)
+			{
+				switch (args[0].Parameter.Names[0])
+				{
+					case "object":
+						InspectObject(args);
+						break;
+					case "reset":
+						ClassTree.Current = ClassTree.Root;
+						GameConsole.Log("Current ClassTreeItem reset to root.");
+						break;
+					case "current":
+						GameConsole.Log(ClassTree.Current.ToString());
+						break;
+					default:
+						throw new NotImplementedException();
+
+				}
+			}
+		}
+
+		private static void InspectObject(ParameterValue[] args)
+		{
+			string obj = args[0].GetAsString();
+			ClassTreeItem target = null;
+			if (ClassTree.Current.Children == null)
+				ClassTree.Current.GenerateChildren();
+			foreach (var child in ClassTree.Current.Children)
+			{
+				if (child.HasName && child.Name == obj)
+					target = child;
+			}
+			if (target == null)
+			{
+				GameConsole.Error("No object named " + obj + " is a child of the " + ClassTree.Current.ClassName + " class.");
+				return;
+			}
+			ClassTree.Current = target;
+			if (target.Children == null)
+				target.GenerateChildren();
+			foreach (var child in target.Children)
+			{
+				GameConsole.Log(child.ToString());
+			}
 		}
 
 		public static void TimeWatcherCmd(ParameterValue[] args)

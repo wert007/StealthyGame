@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StealthyGame.Engine.GameDebug.Console
+namespace StealthyGame.Engine.GameDebug.GameConsole
 {
 	public struct ConsoleMessage
 	{
@@ -98,7 +98,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 						i++;
 						switch (text[i])
 						{
-							case 'c':
+							case 'c':	//Color is in hex defined for this line.
 								usedColorCoding = true;
 								i += 2;
 								int length = text.IndexOf('>', i) - i;
@@ -142,7 +142,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 										throw new NotSupportedException();
 								}
 								break;
-							case 't':
+							case 't':	//MessageType is defined for this line (w=Warning, e=Error, t=TerminatingError)
 								i += 2;
 								switch (text[i++])
 								{
@@ -158,6 +158,8 @@ namespace StealthyGame.Engine.GameDebug.Console
 									default:
 										throw new NotSupportedException();
 								}
+								break;
+							case 'a':	//Message has an action linked. Don't ask further questions, I don't know (n)either.	
 								break;
 							default:
 								throw new NotSupportedException();

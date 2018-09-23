@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StealthyGame.Engine.GameDebug.Console
+namespace StealthyGame.Engine.GameDebug.GameConsole
 {
 	public struct CommandExample
 	{

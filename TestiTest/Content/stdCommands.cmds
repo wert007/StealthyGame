@@ -1,95 +1,76 @@
-﻿cmd:
-	name: help
+﻿#ver5
+
+cmd(help):
 	callback: Help
 
-	metaParameter:
-		name: command
-		shortName: c
-		optional: true
+	metaparameter(command):
+		flags: short
 		type: command
 
-	example:
+	example(#empty):
 		line: /help
 		exp: This is the help command. It might be your
 		exp: first step in discovering the console.
 		exp: As it displays all commands you might use.
 		exp: Yes, even help itself
 
-	example:
-		usingparameter: command
+	example(command):
 		line: /help help
 		exp: Exactly what you just typed. 
 		exp: Try the other commands as well to discover
 		exp: what you can do with these.
 
-cmd:
-	name: tw
+cmd(tw, timewatcher):
 	callback: TimeWatcherCmd
 
-	parameter:
-		name: list
-		shortName: l
-		optional: true
+	parameter(list):
+		flags: short, exclusive
 		type: bool
 
-cmd:
-	name: exit
+cmd(exit):
 	callback: Exit
 
-	example:
+	example(#empty):
 		line: /exit
 		exp: Exits the Game via Game.Exit() or whatever you choose.
 
-cmd:
-	name: clear
+cmd(clear):
 	callback: Clear
 
-	example:
+	example(#empty):
 		line: /clear
 		exp: Clears the entire Console.
 
-cmd:
-	name: size
+cmd(size):
 	callback: Size
 
-	parameter:
-		name: xPosition
-		shortName: x
-		optional: true
+	parameter(xPosition):
+		flags: short
 		type: int
 
-	parameter:
-		name: yPosition
-		shortName: y
-		optional: true
+	parameter(yPosition):
+		flags: short
 		type: int
 
-	example:
-		usingparameter: xPosition
-		usingparameter: yPosition
-		line: /size -x 50 -y 15
+	example(xPosition, yPosition):
+		//Add the values extra, so people can play with it.
+		line: /size -x 50 -y 15				
 		exp: Sets the size of the Console.
 		exp: Size is given in 'cells' (equals one letter)
 		exp: <c:0ff>Currently not Working
 
-cmd:
-	name: filter
+cmd(filter):
 	callback: Filter
 
-	parameter:
-		name: level
-		shortName: l
-		optional: true
+	parameter(level):
 		type: int
+		flags: exclusive, short
 	
-	parameter:
-		name: toggle
-		shortName: t
-		optional: true
+	parameter(toggle):
 		type: string
+		flags: exclusive, short
 
-	example:
-		usingparameter: level
+	example(level):
 		line: /filter -l 0
 		exp: Only Messages may be displayed.
 		line: /filter -l 1
@@ -99,71 +80,108 @@ cmd:
 		line: /filter -l 3
 		exp: Everthing will be displayed
 
-	example:
-		usingparameter: toggle
+	example(toggle):
 		line: /filter -t w
 		exp: The displaying of Warnings is toggled.
 		exp: You can use m, w, e, or t as well as
 		exp: Message, Warning, Error, TerminatingError
 
-cmd: 
-	name: fm
+cmd(fm, filemanager):
 	callback: FileManager
 
-	parameter:
-		name: list
-		shortName: l
-		optional: true
+	parameter(list):
 		type: bool
+		flags: exclusive, short
 
-	parameter:
-		name: home
-		shortName: h
-		optional: true
+	parameter(home):
 		type: file
+		flags: exclusive, short
 
-	parameter:
-		name: reset
-		shortName: r
-		optional: true
+	parameter(reset):
 		type: bool
+		flags: exclusive, short
 
-	example:
-		usingparameter: list
+	example(list):
 		line: /fm -list
 		exp: Lists the directories and the files which
 		exp: are contained in the current directoy
 
-	example:
-		usingparameter: home
+	example(home):
 		line: /fm -home 'C:/My/Home/Directory/'
 		line: /fm -home '.\..\Relative\Path\'
 		exp: With this you can set the current or home
 		exp: directory. Absolute and relative paths are Working
 
-	example:
-		usingparameter: reset
+	example(reset):
 		line: /fm -reset
 		exp: Sets the home or current directory to the 
 		exp: game directory.
 
-cmd:
-	name: save
+cmd(inspect):
+    callback: Inspect
+
+    parameter(object):
+        type: string
+		flags: exclusive, short
+
+    parameter(reset):
+        type: bool
+		flags: exclusive, short
+
+    parameter(current):
+        type: bool
+		flags: exclusive, short
+
+    parameter(load):
+        type: file
+		flags: exclusive, short
+    
+    example(object):
+        line: /inspect -o game1
+        explanation: Shows the fields and properties of an object 'game1'
+        exp: Must be a attribute or field of the current gameObject.
+        exp: <c:ddd> See '/inspect current'
+
+    example(reset):
+        line: /inspect -r
+        exp: Resets the current gameObject to the Game1-class again
+
+    example(current):
+        line: /inspect -current
+        exp: Shows the current gameObject.
+
+    example(load):
+        line: NOT IMPLEMENTED
+        exp: <c:f00>Currently not working
+
+
+cmd(save):
 	callback: Save
 
-	parameter:
-		name: gif
-		optional: true
+	parameter(gif):
 		type: file
 
-	example:
-		usingparameter: gif
+	example(gif):
 		line: /save -gif 'C:/MyDirectory/My/File/
 		line: /save -gif './gif/'
 		exp: Saves the last 80-ish Frames in a Folder which you may turn in a Gif.
 		exp: May use relative as well as absolute Paths
 
 		
-	example:
+	example(#empty):
 		line: There is a terrible Bug in my Parser.. He doesnt like end of Files...
 		exp: <c:0ff>This really stinks
+
+cmd(value):
+	callback: Value
+
+	parameter(name):
+		flags: short
+		type: string
+
+cmd(set):
+	callback: Set
+
+	parameter(name):
+		flags: short
+		type: string

@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StealthyGame.Engine.DataTypes;
 using StealthyGame.Engine.GameDebug;
-using StealthyGame.Engine.GameDebug.Console;
+using StealthyGame.Engine.GameDebug.GameConsole;
 using StealthyGame.Engine.Helper;
 using StealthyGame.Engine.Input;
 using StealthyGame.Engine.Renderer;

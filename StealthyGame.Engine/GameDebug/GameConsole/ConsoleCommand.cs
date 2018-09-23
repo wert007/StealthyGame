@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace StealthyGame.Engine.GameDebug.Console
+namespace StealthyGame.Engine.GameDebug.GameConsole
 {
 	public struct ConsoleCommand
 	{
@@ -15,9 +15,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 		CommandExample[] examples;
 		//Action<ParameterValue[]> callback;
 		MethodInfo callback;
-		readonly int necessaryParameters;
-
-		//TODO:							This will be accepted,	  vvvvvvvvvvvv		but not used in code
+		
 		static string Regex => "\\/" + CommandRegex + "( " + CommandRegex +"| (" + Parameter.Regex + ")+)*";
 		static string CommandRegex => @"[a-zA-Z][a-zA-Z_0-9]*";
 
@@ -30,7 +28,6 @@ namespace StealthyGame.Engine.GameDebug.Console
 			this.parameters = parameters;
 			this.callback = callback;
 			examples = new CommandExample[0];
-			necessaryParameters = parameters.Count(c => !c.IsOptional);
 			if(parameters.Length > 1 && parameters.Count(p => p is MetaParameter) >= 1)
 			{
 				throw new ArgumentException("MetaParameter may be the only one in a list of parameters!");
@@ -49,7 +46,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 			line = line.Trim('/');
 			if(line == Name || line.StartsWith(Name + " "))
 			{
-				if (!line.Contains(' ') && necessaryParameters <= 0)
+				if (!line.Contains(' '))
 					return true;
 				line = line.Substring(line.IndexOf(' '));
 				line = line.Trim('-');
@@ -75,8 +72,6 @@ namespace StealthyGame.Engine.GameDebug.Console
 
 								}
 							}
-							else if (!parameters[i].IsOptional)
-								return false;
 						}
 					}
 					else
@@ -95,7 +90,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 			List<string> result = new List<string>();
 			if (line.Trim() == Name)
 			{
-				foreach (var p in parameters.OrderBy(p => p.IsOptional))
+				foreach (var p in parameters)
 				{
 					result.Add(text.Trim() + " -" + p.Names[0]);
 				}
@@ -119,7 +114,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 			if (line.StartsWith(Name))
 			{
 
-				if (!line.Contains(' ') && necessaryParameters <= 0)
+				if (!line.Contains(' '))
 				{
 					callback.Invoke(null, new object[1] { new ParameterValue[0] });
 					return;
@@ -173,16 +168,15 @@ namespace StealthyGame.Engine.GameDebug.Console
 											throw new NotImplementedException();
 									}
 									line = line.Substring(match.Index + match.Length);
+									break;
 								}
 								else
 								{
 									args.Add(parameters[i].CreateValue(true));
+									break;
 								}
 
 							}
-							else if (!parameters[i].IsOptional)
-								throw new ArgumentException();
-							//Total bullshit boy. like totally.
 						}
 					}
 				}

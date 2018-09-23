@@ -66,11 +66,14 @@
     <Compile Include="GameDebug\DataStructures\TimeManagement\TimeWatchCollection.cs" />
     <Compile Include="GameDebug\DataStructures\TimeManagement\TimeWatchEntry.cs" />
     <Compile Include="GameDebug\DataStructures\TimeManagement\TimeWatcher.cs" />
+    <Compile Include="GameDebug\DataStructures\VariableSystem\CmdValue.cs" />
     <Compile Include="GameDebug\GameConsole\CommandExample.cs" />
     <Compile Include="GameDebug\GameConsole\ConsoleCommand.cs" />
     <Compile Include="GameDebug\GameConsole\ConsoleMessage.cs" />
     <Compile Include="GameDebug\GameConsole\GameConsole.cs" />
     <Compile Include="GameDebug\GameConsole\Parameter.cs" />
+    <Compile Include="GameDebug\GameConsole\Parser\CommandsFile.cs" />
+    <Compile Include="GameDebug\GameConsole\Parser\CommandTextReader.cs" />
     <Compile Include="GameDebug\GameConsole\Parser\Parser.cs" />
     <Compile Include="GameDebug\GameConsole\StdConsoleCommands.cs" />
     <Compile Include="GameDebug\Renderer\DebugCollection.cs" />

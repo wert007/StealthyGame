@@ -1,5 +1,5 @@
 using Microsoft.Xna.Framework;
-using StealthyGame.Engine.GameDebug.Console;
+using StealthyGame.Engine.GameDebug.GameConsole;
 using StealthyGame.Engine.MapBasics;
 using StealthyGame.Engine.MapBasics.Tiles;
 using StealthyGame.Engine.MapBasics.Tiles.InteractiveTiles;

@@ -4,8 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using StealthyGame.Engine;
 using StealthyGame.Engine.DataTypes;
 using StealthyGame.Engine.GameDebug;
-using StealthyGame.Engine.GameDebug.Console;
-using StealthyGame.Engine.GameDebug.Console.Parser;
+using StealthyGame.Engine.GameDebug.GameConsole;
+using StealthyGame.Engine.GameDebug.GameConsole.Parser;
 using StealthyGame.Engine.GameDebug.UI;
 using StealthyGame.Engine.Dialogs;
 using StealthyGame.Engine.GameMechanics.Phases;
@@ -98,9 +98,8 @@ namespace TestiTest
 			Parser.Parse(@".\Content\stdCommands.cmds", typeof(StdConsoleCommands));
 			Parser.Parse(@".\Content\commands.cmds", typeof(ConsoleCommands));
 			StdConsoleCommands.ExitCalled += () => Exit();
-
-			ConsoleCommands.ClassTree = new ClassTree();
-			ConsoleCommands.ClassTree.SetRoot(this, "game1");
+		
+			StdConsoleCommands.ClassTree.Root = new ClassTreeItem(this, "game1");
 
 			base.Initialize();
 		}

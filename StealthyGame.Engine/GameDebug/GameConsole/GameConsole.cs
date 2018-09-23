@@ -9,7 +9,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StealthyGame.Engine.GameDebug.Console
+namespace StealthyGame.Engine.GameDebug.GameConsole
 {
 	public static class GameConsole
 	{
@@ -55,13 +55,9 @@ namespace StealthyGame.Engine.GameDebug.Console
 			if (!ShownMessages.HasFlag(consoleMessage.Type))
 				return;
 			if(output.Count - messagesOnScreen >= height)
-			{
 				waiting.Enqueue(consoleMessage);
-			}
 			else
-			{
 				output.Enqueue(consoleMessage);
-			}
 			CleanOutput();
 		}
 
@@ -84,57 +80,27 @@ namespace StealthyGame.Engine.GameDebug.Console
 		}
 
 		public static void Log(string message)
-		{
-			Enqueue(new ConsoleMessage((
-				(intend ? new string('\t', intendation) : string.Empty)
-				+ message)
-				.Sanitize()));
-		}
-
+			=> Log(new ConsoleMessage(message.Sanitize()));
 		public static void Log(string message, Color color)
-		{
-			Enqueue(new ConsoleMessage((
-				(intend ? new string('\t', intendation) : string.Empty)
-				+ message)
-				.Sanitize(), color));
-		}
-
+			=> Log(new ConsoleMessage(message.Sanitize(), color));
 		public static void Log(string message, Color color, Color background)
-		{
-			Enqueue(new ConsoleMessage((
-				(intend ? new string('\t', intendation) : string.Empty)
-				+ message)
-				.Sanitize(), color, background));
-		}
-		
-		public static void Log(ConsoleMessage[] consoleMessages)
-		{
-			foreach (var consoleMessage in consoleMessages)
-			{
-				Log(consoleMessage);
-			}
-		}
-		
+			=> Log(new ConsoleMessage(message.Sanitize(), color, background));
+		public static void Log(ConsoleMessage[] consoleMessages) 
+			=> Array.ForEach(consoleMessages, consoleMessage => { Log(consoleMessage); });
+
+		public static void Warning(string message) 
+			=> Log(new ConsoleMessage(message, MessageType.Warning));
+
+		public static void Error(string message, Color color, Color background) 
+			=> Log(new ConsoleMessage(message, color, background, MessageType.Error));
+		public static void Error(string message) 
+			=> Log(new ConsoleMessage(message, MessageType.Error));
+
 		public static void Log(ConsoleMessage consoleMessage)
 		{
 			if (intend)
 				consoleMessage.Intend(intendation);
 			Enqueue(consoleMessage);
-		}
-
-		public static void Warning(string message)
-		{
-			Log(new ConsoleMessage(message, MessageType.Warning));
-		}
-
-		public static void Error(string message, Color color, Color background)
-		{
-			Log(new ConsoleMessage(message, color, background, MessageType.Error));
-		}
-
-		public static void Error(string message)
-		{
-			Log(new ConsoleMessage(message, MessageType.Error));
 		}
 
 		public static void SetBufferSize(Index2 size)
@@ -189,7 +155,7 @@ namespace StealthyGame.Engine.GameDebug.Console
 			else if(!string.IsNullOrWhiteSpace(text.Trim('/')))
 			{
 				Error("Typed:");
-				Error("\t" + text, Color.Red, Color.DarkGray); //0.7f should be in ConsoleControl
+				Error("\t" + text, Color.Red, Color.DarkGray);
 				Error("Couldn't match to any command");
 			}
 			TextReceived?.Invoke(text);
