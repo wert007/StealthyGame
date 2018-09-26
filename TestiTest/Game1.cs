@@ -95,8 +95,12 @@ namespace TestiTest
 			consoleControl = new ConsoleControl(null);
 
 			StdConsoleCommands.Init();
-			Parser.Parse(@".\Content\stdCommands.cmds", typeof(StdConsoleCommands));
-			Parser.Parse(@".\Content\commands.cmds", typeof(ConsoleCommands));
+			Parser p = new Parser();
+
+			var res5 = p.Parse(@".\Content\stdCommands.cmds", typeof(StdConsoleCommands));
+			var res6 = p.Parse(@".\Content\commands.cmds", typeof(ConsoleCommands));
+			GameConsole.Add(res5);
+			GameConsole.Add(res6);
 			StdConsoleCommands.ExitCalled += () => Exit();
 		
 			StdConsoleCommands.ClassTree.Root = new ClassTreeItem(this, "game1");

@@ -3,8 +3,8 @@
 cmd(help):
 	callback: Help
 
-	metaparameter(command):
-		flags: short
+	parameter(command):
+		flags: short, exclusive, meta
 		type: command
 
 	example(#empty):
@@ -47,10 +47,12 @@ cmd(size):
 	parameter(xPosition):
 		flags: short
 		type: int
+		others: yPosition
 
 	parameter(yPosition):
 		flags: short
 		type: int
+		others: xPosition
 
 	example(xPosition, yPosition):
 		//Add the values extra, so people can play with it.
@@ -166,11 +168,6 @@ cmd(save):
 		line: /save -gif './gif/'
 		exp: Saves the last 80-ish Frames in a Folder which you may turn in a Gif.
 		exp: May use relative as well as absolute Paths
-
-		
-	example(#empty):
-		line: There is a terrible Bug in my Parser.. He doesnt like end of Files...
-		exp: <c:0ff>This really stinks
 
 cmd(value):
 	callback: Value

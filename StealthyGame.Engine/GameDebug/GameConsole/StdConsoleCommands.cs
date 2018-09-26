@@ -35,8 +35,8 @@ namespace StealthyGame.Engine.GameDebug.GameConsole
 			if(args.Length == 1)
 			{
 				string commandName = args[0].GetAsString();
-				var cmd = GameConsole.GetCommands().FirstOrDefault(c => c.Name == commandName);
-				if (cmd.Name == null)
+				var cmd = GameConsole.GetCommands().FirstOrDefault(c => c.Names.Contains(commandName));
+				if (cmd.Names == null)
 					GameConsole.Error("No Command named " + commandName);
 				else
 					cmd.PrintExamples();
@@ -45,7 +45,7 @@ namespace StealthyGame.Engine.GameDebug.GameConsole
 			{
 				foreach (var cmd in GameConsole.GetCommands())
 				{
-					GameConsole.Log(cmd.Name);
+					GameConsole.Log(cmd.Names[0]);
 				}
 				GameConsole.Log("Type /help <command> to see examples of the usage.");
 			}

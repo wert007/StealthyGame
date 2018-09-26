@@ -1,10 +1,6 @@
-﻿using StealthyGame.Engine.GameDebug.GameConsole.Parser;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -13,300 +9,234 @@ namespace StealthyGame.Engine.GameDebug.GameConsole.Parser
 {
 	public class Parser
 	{
-		public static int[] SupportedVersions => new int[] { 5 };
-		public static void Parse(string file, Type commandsClass)
+		public CommandsFile Parse(string file, Type targetClass)
 		{
-			if (!IsValid(file, commandsClass))
-				GameConsole.Error("Couldn't Parse commands. File is not valid.");
-			ParserState state = ParserState.Command;
-			List<ConsoleCommand> result = new List<ConsoleCommand>();
+			CommandFileReader reader = new CommandFileReader(file);
+			CommandsFile result = new CommandsFile(5);
 
+			try
+			{
+				Validator.Validate(reader, new int[] { 5 });
+			}
+			catch (Exception e)
+			{
+				Console.Write(e);
+				GameConsole.Error(e);
+				return null;
+			}
+			reader.Reset();
+			string line = null;
+			while(!reader.IsDone)
+			{
+				line = reader.NextLine();
+				if (line.StartsWith("#")) continue;
+				if (Regex.IsMatch(line, RegexCommand))
+				{
+					result.Add(ParseCommand(reader.Copy(), result, targetClass, out int skip));
+					reader.Skip(skip);
+					if (!reader.IsDone)
+						reader.Back();
+				}
+				else throw new Exception();
+			}
 
-			string commandName = string.Empty;
-			MethodInfo commandCallback = null;
-			List<Parameter> commandParameters = new List<Parameter>();
-			List<CommandExample> commandExamples = new List<CommandExample>();
+			result.Load();
+			return result;
+		}
 
+		public ConsoleCommand ParseCommand(CommandFileReader reader, CommandsFile commandsFile, Type targetClass, out int skip)
+		{
+			ConsoleCommand result = new ConsoleCommand();
 
+			string line = reader.NextLine();
+			if(Regex.IsMatch(line, RegexCommand))
+			{
+				result.Names = Regex.Match(line, @"\(" + CreateMulitpleRegex(RegexVariable) + @"\)").Value
+								.Trim('(', ')').Split(',').Select(s => s.Trim()).ToArray();
+			}
+			while(!reader.IsDone)
+			{
+				line = reader.NextLine();
 
-			string type = string.Empty;
-			string value = string.Empty;
+				if (Regex.IsMatch(line, RegexParameter))
+				{
+					result.Add(ParseParameter(reader.Copy(), commandsFile, out int _skip));
+					reader.Skip(_skip);
+					if(!reader.IsDone)
+					reader.Back();
+				}
+				else if (Regex.IsMatch(line, RegexExample))
+				{
+					result.Add(ParseExample(reader.Copy(), commandsFile, out int _skip));
+					reader.Skip(_skip);
+					if (!reader.IsDone)
+						reader.Back();
+				}
+				else if (Regex.IsMatch(line, RegexCommandContents))
+				{
+					string value = line.Substring(line.IndexOf(':') + 1).Trim();
+					result.SetCallback(targetClass.GetMethod(value));
+				}
+				else if (EndsBlock(line))
+					break;
+				else throw new Exception();
+			}
 
-			CommandTextReader reader = new CommandTextReader(file);
+			skip = reader.Position - reader.Start - 1;
+			return result;
+		}
 
+		public Parameter ParseParameter(CommandFileReader reader, CommandsFile commandsFile, out int skip)
+		{
+			Parameter result = new Parameter();
+
+			string line = reader.NextLine();
+			if (Regex.IsMatch(line, RegexParameter))
+			{
+				result.Names = Regex.Match(line, @"\(" + CreateMulitpleRegex(RegexVariable) + @"\)").Value
+								.Trim('(', ')').Split(',').Select(s => s.Trim()).ToArray();
+			}
 			while (!reader.IsDone)
 			{
-				string currentLine = reader.NextLine();
-				if (string.IsNullOrWhiteSpace(currentLine)) continue;
-				if (currentLine.StartsWith("#")) continue;
+				line = reader.NextLine();
 
-				switch (state)
+				if (Regex.IsMatch(line, RegexParameterType))
 				{
-					case ParserState.Command:
-						value = currentLine.Substring(currentLine.IndexOf(':') + 1).Trim();
-						type = currentLine.Remove(currentLine.IndexOf(':'));
-						switch (type)
+					string value = line.Substring(line.IndexOf(':') + 1).Trim();
+					switch (value)
+					{
+						case "bool":
+							result.Type = ParameterType.Boolean;
+							break;
+						case "string":
+							result.Type = ParameterType.String;
+							break;
+						case "file":
+							result.Type = ParameterType.File;
+							break;
+						case "int":
+							result.Type = ParameterType.Integer;
+							break;
+						case "float":
+							result.Type = ParameterType.Float;
+							break;
+						case "command":
+							result.Type = ParameterType.Command;
+							break;
+						default:
+							throw new Exception("Can't happen because of Regex above.");
+					}
+				}
+				else if (Regex.IsMatch(line, RegexParameterFlags))
+				{
+					string[] values = line.Substring(line.IndexOf(':') + 1).Trim().Split(',').Select(v => v.Trim()).ToArray();
+					foreach (var value in values)
+					{
+						switch (value)
 						{
-							case "name":
-								commandName = value;
+							case "short":
+								result.HasShort = true;
 								break;
-							case "callback":
-								string methodName = value;
-								commandCallback = commandsClass.GetMethod(methodName);
+							case "exclusive":
+								result.SetOthers(null);
 								break;
-							case "parameter":
-								state = ParserState.Parameter;
-								break;
-							case "metaParameter":
-								state = ParserState.MetaParameter;
-								break;
-							case "example":
-								state = ParserState.Example;
-								break;
-							case "cmd":
-								state = ParserState.Command;
+							case "meta":
+								result.IsMeta = true;
 								break;
 							default:
-								throw new NotImplementedException("Didn't expect " + type + " here.");
+								throw new NotImplementedException("No Flag with this name known: " + value);
 						}
-						break;
-					case ParserState.MetaParameter:
-					case ParserState.Parameter:
-						{
-							commandParameters.Add(loadParameter(reader, state, out ParserState newState));
-							state = newState;
-							if (state == ParserState.Command)
-							{
-								result.Add(new ConsoleCommand(commandName, commandCallback, commandParameters.ToArray()));
-								commandParameters.Clear();
-							}
-						}
-						break;
-					case ParserState.Example:
-						{
-							var exmp = loadExample(reader, state, out ParserState newState);
-							state = newState;
-							if (exmp.HasValue)
-								commandExamples.Add(exmp.Value);
-							if (state == ParserState.Command)
-							{
-								result.Add(new ConsoleCommand(commandName, commandCallback, commandParameters.ToArray(), commandExamples.ToArray()));
-								commandParameters.Clear();
-								commandExamples.Clear();
-							}
-						}
-						break;
-					default:
-						throw new NotImplementedException();
+					}
 				}
+				else if (Regex.IsMatch(line, RegexParameterOthers))
+				{
+					string[] others = line.Substring(line.IndexOf(':') + 1).Trim().Split(',').Select(o => o.Trim()).ToArray();
+					commandsFile.Add(result, others);
+				}
+				else if (EndsBlock(line))
+					break;
+				else throw new Exception();
 			}
 
-			//Empty FILES
-			result.Add(new ConsoleCommand(commandName, commandCallback, commandParameters.ToArray()));
-
-			foreach (var cmd in result)
-			{
-				GameConsole.AddCommand(cmd);
-			}
+			skip = reader.Position - reader.Start - 1;
+			return result;
 		}
-		
+
+		public CommandExample ParseExample(CommandFileReader reader, CommandsFile commandsFile, out int skip)
+		{
+			CommandExample result = new CommandExample();
+
+			string line = reader.NextLine();
+			if (Regex.IsMatch(line, RegexExample))
+			{
+				string[] used = Regex.Match(line, @"\(" + CreateMulitpleRegex(RegexVariable) + @"\)").Value
+								.Trim('(', ')').Split(',').Select(s => s.Trim()).ToArray();
+				if(used.Length > 0 && used[0] != string.Empty)
+					commandsFile.Add(result, used);
+			}
+			while (!reader.IsDone)
+			{
+				line = reader.NextLine();
+
+				if (Regex.IsMatch(line, RegexExampleExplanation))
+				{
+					string value = line.Substring(line.IndexOf(':') + 1).Trim();
+					result.AddExplanation(value);
+				}
+				else if (Regex.IsMatch(line, RegexExampleLine))
+				{
+					string value = line.Substring(line.IndexOf(':') + 1).Trim();
+					result.AddLine(value);
+				}
+				else if (EndsBlock(line))
+					break;
+				else throw new Exception();
+			}
+			skip = reader.Position - reader.Start - 1;
+			return result;
+		}
+
+		private bool EndsBlock(string line)
+		{
+			return line.StartsWith("cmd") ||
+				line.StartsWith("parameter") ||
+				line.StartsWith("metaparameter") ||
+				line.StartsWith("example");
+		}
+
+
 		//TODO: Use string.Format();
 		private static string RegexVariable => "[a-zA-Z][a-zA-Z_0-9]*";
 		private static string RegexCommand => @"cmd\(" + RegexVariable + @"(\s*,\s*" + RegexVariable + @")*\):";
-		private static string RegexParameter=> CreateOptionRegex("parameter","metaparameter") + @"\(" + CreateMulitpleRegex(RegexVariable) + @"\):";
-		private static string RegexExample=> @"example\(" + CreateOptionRegex(RegexVariable + @"(\s*,\s*" + RegexVariable + @")*","#empty") + @"\):";
+		private static string RegexParameter => CreateOptionRegex("parameter", "metaparameter") + @"\(" + CreateMulitpleRegex(RegexVariable) + @"\):";
+		private static string RegexExample => @"example\(" + CreateOptionRegex(RegexVariable + @"(\s*,\s*" + RegexVariable + @")*", "#empty") + @"\):";
 		private static string RegexCommandContents => @"callback:\s?" + RegexVariable;
 		private static string RegexParameterContents => CreateOptionRegex(
-					CreateKeyValueRegex("flags", CreateMulitpleRegex(CreateOptionRegex("short", "exclusive"))),
-					CreateKeyValueRegex("type", CreateOptionRegex("bool", "string", "file", "int", "float", "command")), //bool, string, file, command, int, or float
-					CreateRegex("com", true)        //TODO: Implement List and Use list of possible values -> See SecondRunIsValid
+					RegexParameterFlags,
+					RegexParameterType,
+					RegexParameterOthers
 				);
+		private static string RegexParameterFlags =>
+			CreateKeyValueRegex("flags", CreateMulitpleRegex(CreateOptionRegex("short", "exclusive")));
+		private static string RegexParameterType =>
+			CreateKeyValueRegex("type", CreateOptionRegex("bool", "string", "file", "int", "float", "command"));
+		private static string RegexParameterOthers =>
+			CreateRegex("others", true);
 		private static string RegexExampleContents => CreateOptionRegex(
-					CreateRegex("line", false, true),
-					CreateRegex(CreateOptionRegex("exp", "explanation"), false, true) 
+					RegexExampleLine,
+					RegexExampleExplanation
 				);
-
-		private static bool IsValid(string file, Type commandsClass)
-		{
-			CommandTextReader reader = new CommandTextReader(file);
-			if(FirstRunIsValid(reader, out CommandStructure[] commands))
-			{
-				reader.Reset();
-				return SecondRunIsValid(reader, commands);
-			}
-			return false;
-		}
-
-		private static bool SecondRunIsValid(CommandTextReader reader, CommandStructure[] commandStructures)
-		{
-			string line;
-			int cmdIndex = 0;
-			int parameterIndex = 0;
-			while (!reader.IsDone)
-			{
-				line = reader.NextLine();
-
-				if (Regex.IsMatch(line, RegexCommand))
-				{
-					int nameCount = line.Count(c => c == ',') + 1;
-					string[] names = Regex.Match(line, @"\(" + RegexVariable + @"(\s*,\s*" + RegexVariable + @")*\)").Value
-						.Trim('(', ')').Split(','); 
-
-					foreach (var name in names)
-					{
-						if (commandStructures.Take(cmdIndex).Any(c => c.Command == name)) //TODO: Support multiple names for commands
-							return false; //TODO: throw Exception
-					}
-					cmdIndex++;
-					parameterIndex = 0;
-
-					while (!reader.IsDone)
-					{
-						line = reader.NextLine();
-						if (Regex.IsMatch(line, RegexParameter))
-						{
-							nameCount = line.Count(c => c == ',') + 1;
-							names = Regex.Match(line, @"\(" + RegexVariable + @"(\s*,\s*" + RegexVariable + @")*\)").Value
-								.Trim('(', ')').Split(','); //Magic. Basicly getting rid of everthing til Brackets. Then getting rid of the Brackets and taking the First Element
-																	
-							foreach (var name in names)
-							{
-								foreach(var cmd in commandStructures.Take(cmdIndex))
-								{
-									foreach (var p in cmd.GetParameters().Take(parameterIndex))
-									{
-										if (p == name) //TODO: ShortNames are Missing..
-											return false;
-									}
-								}
-							}
-
-							parameterIndex++;
-
-
-							while (!reader.IsDone)
-							{
-								line = reader.NextLine();
-								if (!Regex.IsMatch(line, RegexParameterContents))
-								{
-									reader.SkipLines(-1);
-									break;
-								}
-							}
-						}
-						else if (Regex.IsMatch(line, RegexExample))
-						{
-							int parameterCount = line.Count(c => c == ',') + 1;
-							if (line.Contains('#'))
-								parameterCount = 0;
-							//TODO: Check if parameters named here are actually allowed to be used with each other
-
-							while (!reader.IsDone)
-							{
-								line = reader.NextLine();
-								if (!Regex.IsMatch(line, RegexExampleContents))
-								{
-									reader.SkipLines(-1);
-									break;
-								}
-							}
-						}
-						else if (!Regex.IsMatch(line, RegexCommandContents))
-						{
-							reader.SkipLines(-1);
-							break;
-						}
-					}
-				}
-			}
-			return true;
-		}
-
-		private static bool FirstRunIsValid(CommandTextReader reader, out CommandStructure[] commandStructures)
-		{
-			List<CommandStructure> commands = new List<CommandStructure>();
-			commandStructures = null;
-			string line;
-			while (!reader.IsDone)
-			{
-				line = reader.NextLine();
-
-				if (line.StartsWith("#ver"))
-				{
-					if (int.TryParse(line.Substring("#ver".Length), out int version))
-					{
-						if (!SupportedVersions.Contains(version))
-							return false;
-					}
-					else return false;
-				}
-				else if (Regex.IsMatch(line, RegexCommand))
-				{
-					int nameCount = line.Count(c => c == ',') + 1;
-					string firstName = Regex.Match(line, @"\(" + RegexVariable + @"(\s*,\s*" + RegexVariable + @")*\)").Value
-						.Trim('(', ')').Split(',')[0].Trim(); //Magic. Basicly getting rid of everthing til Brackets. Then getting rid of the Brackets and taking the First Element
-					commands.Add(new CommandStructure(firstName));
-
-					while (!reader.IsDone)
-					{
-						line = reader.NextLine();
-						if (Regex.IsMatch(line, RegexParameter))
-						{
-							nameCount = line.Count(c => c == ',') + 1;
-							firstName = Regex.Match(line, @"\(" + RegexVariable + @"(\s*,\s*" + RegexVariable + @")*\)").Value
-								.Trim('(', ')').Split(',')[0].Trim(); //Magic. Basicly getting rid of everthing til Brackets. Then getting rid of the Brackets and taking the First Element
-							commands.Last().AddParameter(firstName);
-
-							while (!reader.IsDone)
-							{
-								line = reader.NextLine();
-								if (!Regex.IsMatch(line, RegexParameterContents))
-								{
-									reader.SkipLines(-1);
-									break;
-								}
-							}
-						}
-						else if (Regex.IsMatch(line, RegexExample))
-						{
-							int parameterCount = line.Count(c => c == ',') + 1;
-							if (line.Contains('#'))
-								parameterCount = 0;
-							//TODO: Check if parameters named here are actually allowed to be used with each other
-
-							while (!reader.IsDone)
-							{
-								line = reader.NextLine();
-								if (!Regex.IsMatch(line, RegexExampleContents))
-								{
-									reader.SkipLines(-1);
-									break;
-								}
-							}
-						}
-						else if (!Regex.IsMatch(line, RegexCommandContents))
-						{
-							reader.SkipLines(-1);
-							break;
-						}
-					}
-				}
-				else
-				{
-					return false;
-				}
-			}
-			commandStructures = commands.ToArray();
-			return true;
-
-		}
+		private static string RegexExampleLine =>
+					CreateRegex("line", false, true);
+		private static string RegexExampleExplanation =>
+					CreateRegex(CreateOptionRegex("exp", "explanation"), false, true);
 
 		private static string CreateRegex(string name, bool multiple = false, bool allowStringValues = false)
 		{
 			string value = "[a-zA-Z][a-zA-Z_0-9]*";
-			if(allowStringValues)
+			if (allowStringValues)
 				value = ".*";
-			if(multiple)
+			if (multiple)
 				value = CreateMulitpleRegex(value);
 			return CreateKeyValueRegex(name, value);
 		}
@@ -324,186 +254,6 @@ namespace StealthyGame.Engine.GameDebug.GameConsole.Parser
 		private static string CreateOptionRegex(params string[] options)
 		{
 			return "(" + string.Join("|", options) + ")";
-		}
-
-		private static CommandExample? loadExample(CommandTextReader reader, ParserState state, out ParserState newState)
-		{
-
-			string exampleFormatted = string.Empty;
-			List<string> exampleParameterNames = new List<string>();
-			reader.SkipLines(-1);
-			string currentLine;
-
-			while (!reader.IsDone)
-			{
-				currentLine = reader.NextLine();
-				if (string.IsNullOrWhiteSpace(currentLine))
-					continue;
-
-				string type = currentLine.Remove(currentLine.IndexOf(':'));
-				string value = currentLine.Substring(currentLine.IndexOf(':') + 1).Trim();
-				value = currentLine.Substring(currentLine.IndexOf(':') + 1).Trim();
-				type = currentLine.Remove(currentLine.IndexOf(':'));
-				switch (type)
-				{
-					case "line":
-						exampleFormatted += "l" + value + "\n";
-						break;
-					case "exp":
-					case "explanation":
-						exampleFormatted += "e" +  value + "\n";
-						break;
-					case "usingparameter":
-						exampleParameterNames.Add(value);
-						break;
-					case "parameter":
-						newState = ParserState.Parameter;
-						return new CommandExample(exampleFormatted, exampleParameterNames.ToArray());
-					case "example":
-						newState = ParserState.Example; //Just to make it obvious
-						return new CommandExample(exampleFormatted, exampleParameterNames.ToArray());
-					case "cmd":
-						newState = ParserState.Command;
-						return new CommandExample(exampleFormatted, exampleParameterNames.ToArray());
-					default:
-						throw new NotImplementedException("Didn't expect " + type + " here.");
-				}
-
-
-				currentLine = reader.NextLine();
-			}
-			newState = state;
-			return null;
-		}
-
-		private static Parameter loadParameter(CommandTextReader reader, ParserState state, out ParserState newState)
-		{
-			string parameterName = string.Empty;
-			string parameterShortName = string.Empty;
-			bool parameterHasValue = false;
-			ParameterType parameterType = ParameterType.Boolean;
-
-			reader.SkipLines(-1);
-			string currentLine;
-
-			while (!reader.IsDone)
-			{
-				currentLine = reader.NextLine();
-				if (string.IsNullOrWhiteSpace(currentLine))
-					continue;
-
-				string type = currentLine.Remove(currentLine.IndexOf(':'));
-				string value = currentLine.Substring(currentLine.IndexOf(':') + 1).Trim();
-
-				switch (type)
-				{
-					case "name":
-						parameterName = value;
-						break;
-					case "shortName":
-						parameterShortName = value;
-						break;
-					case "optional":
-						throw new Exception("Old Using of optional argument. Is not supported anymore, every parameter is optional.");
-					case "type":
-						string pType = value;
-						parameterHasValue = true;
-						switch (pType)
-						{
-							case "bool":
-								parameterHasValue = false;
-								parameterType = ParameterType.Boolean;
-								break;
-							case "string":
-								parameterType = ParameterType.String;
-								break;
-							case "file":
-								parameterType = ParameterType.File;
-								break;
-							case "int":
-								parameterType = ParameterType.Integer;
-								break;
-							case "float":
-								parameterType = ParameterType.Float;
-								break;
-							case "command":
-								parameterType = ParameterType.Command;
-								break;
-							default:
-								throw new NotSupportedException("No ParameterType named " + pType + ". Try bool, string, file, command, int, or float");
-						}
-						break;
-					case "parameter":
-						newState = ParserState.Parameter;
-						if (state == ParserState.Parameter)
-							return new Parameter(parameterName, parameterShortName, parameterHasValue, parameterType);
-						else if (state == ParserState.MetaParameter)
-							return new MetaParameter(parameterName, parameterShortName, parameterType);
-						else
-							throw new NotSupportedException("Wrong State at this point..");
-					case "example":
-						newState = ParserState.Example;
-						if (state == ParserState.Parameter)
-							return new Parameter(parameterName, parameterShortName, parameterHasValue, parameterType);
-						else if (state == ParserState.MetaParameter)
-							return new MetaParameter(parameterName, parameterShortName, parameterType);
-						else
-							throw new NotSupportedException("Wrong State at this point..");
-					case "cmd":
-						newState = ParserState.Command;
-						if (state == ParserState.Parameter)
-							return new Parameter(parameterName, parameterShortName, parameterHasValue, parameterType);
-						else if (state == ParserState.MetaParameter)
-							return new MetaParameter(parameterName, parameterShortName, parameterType);
-						break;
-					default:
-						throw new NotImplementedException("Didn't expect " + type + " here.");
-				}
-				currentLine = reader.NextLine();
-			}
-			newState = state;
-			if (state == ParserState.Parameter)
-				return new Parameter(parameterName, parameterShortName, parameterHasValue, parameterType);
-			else if (state == ParserState.MetaParameter)
-				return new MetaParameter(parameterName, parameterShortName, parameterType);
-			else throw new Exception();
-		}
-
-		private static string Sanitize(string currentLine)
-		{
-			if(currentLine.Contains("//"))
-				return currentLine.Remove(currentLine.IndexOf("//")).Trim();
-			return currentLine.Trim();
-		}
-	}
-
-	enum ParserState
-	{
-		Command,
-		Parameter,
-		Example,
-		MetaParameter
-	}
-
-	struct CommandStructure
-	{
-		public string Command { get; private set; }
-		List<string> parameters;
-
-		public CommandStructure(string name)
-		{
-			Command = name;
-			parameters = new List<string>();
-		}
-
-		public void AddParameter(string parameter)
-		{
-			parameters.Add(parameter);
-		}
-
-		public IEnumerable<string> GetParameters()
-		{
-			return parameters;
 		}
 	}
 }

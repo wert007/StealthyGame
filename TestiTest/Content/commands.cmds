@@ -1,12 +1,12 @@
 ﻿#ver5
 
 cmd(freeze):
-    example:
+    example(#empty):
         line: /freeze
         exp: Toggles the freeze state of the game
 
 cmd(loop):
-    example:
+    example(#empty):
         line: /loop
         exp: Toggles the loop state of the game.
         exp: If the game is frozen, it will play
@@ -17,12 +17,12 @@ cmd(loop):
 cmd(foo):
     parameter(bar):
         flags: short //Equals shortName: b
-        com: baaar
+        others: baaar
 
     parameter(ebaar):
         flags: short, exclusive //Equals shortName: e
         
     parameter(baaar):
-        com: bar, baaaar        //TODO: Somehow indentify must combined Parameter like with an ! or ~ or something
+        others: bar, baaaar        //TODO: Somehow indentify must-combined Parameter like with an ! or ~ or something
     parameter(baaaar):
-        com: baaar
+        others: baaar

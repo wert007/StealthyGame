@@ -82,6 +82,17 @@ namespace StealthyGame.Engine.GameDebug.GameConsole
 			}
 		}
 
+		public static ConsoleMessage[] Create(string text, MessageType type)
+		{
+			string[] lines = text.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+			ConsoleMessage[] result = new ConsoleMessage[lines.Length];
+			for (int i = 0; i < lines.Length; i++)
+			{
+				result[i] = new ConsoleMessage(lines[i], type);
+			}
+			return result;
+		}
+
 		public static ConsoleMessage[] Parse(string text)
 		{
 			List<ConsoleMessage> result = new List<ConsoleMessage>();

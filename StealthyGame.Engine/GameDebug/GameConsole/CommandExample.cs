@@ -7,15 +7,29 @@ using System.Threading.Tasks;
 
 namespace StealthyGame.Engine.GameDebug.GameConsole
 {
-	public struct CommandExample
+	public class CommandExample
 	{
 		private string formatted;
-		private string[] usedParameters;
+		private Parameter[] used;
 
 		public CommandExample(string formatted, string[] usedParameters)
 		{
 			this.formatted = formatted;
-			this.usedParameters = usedParameters;
+			used = null;
+		}
+
+		public CommandExample()
+		{
+		}
+
+		public void AddLine(string text)
+		{
+			formatted += "l" + text + "\n";
+		}
+
+		public void AddExplanation(string text)
+		{
+			formatted += "e" + text + "\n";
 		}
 
 		public void Print()
@@ -34,6 +48,11 @@ namespace StealthyGame.Engine.GameDebug.GameConsole
 				}
 				else throw new NotSupportedException();
 			}
+		}
+
+		public void SetUsed(Parameter[] used)
+		{
+			this.used = used;
 		}
 	}
 }

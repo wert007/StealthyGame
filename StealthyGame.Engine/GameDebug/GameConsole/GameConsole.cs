@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StealthyGame.Engine.DataTypes;
+using StealthyGame.Engine.GameDebug.GameConsole.Parser;
 using StealthyGame.Engine.Helper;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace StealthyGame.Engine.GameDebug.GameConsole
 		static List<string> suggestions;
 		static Queue<ConsoleMessage> output;
 		static Queue<ConsoleMessage> waiting;
+
+
 		static List<ConsoleCommand> commands;
 		public delegate void TextReceivedHandler(string text);
 		public static event TextReceivedHandler TextReceived;
@@ -94,7 +97,17 @@ namespace StealthyGame.Engine.GameDebug.GameConsole
 		public static void Error(string message, Color color, Color background) 
 			=> Log(new ConsoleMessage(message, color, background, MessageType.Error));
 		public static void Error(string message) 
-			=> Log(new ConsoleMessage(message, MessageType.Error));
+			=> Log(ConsoleMessage.Create(message, MessageType.Error));
+		public static void Error(Exception exception) 
+			=> Error(exception.Message);
+
+		public static void Add(CommandsFile res5)
+		{
+			foreach (var cmd in res5.Commands)
+			{
+				AddCommand(cmd);
+			}
+		}
 
 		public static void Log(ConsoleMessage consoleMessage)
 		{

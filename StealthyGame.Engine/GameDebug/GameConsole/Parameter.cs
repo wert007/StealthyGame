@@ -16,36 +16,43 @@ namespace StealthyGame.Engine.GameDebug.GameConsole
 		public static string String => @"@?(.*)?";
 		public static string File => @"'[a-zA-Z_0-9\\\/:. ]+'";
 
-		public string[] Names { get; private set; }
-		public bool HasValue { get; private set; }
-		public ParameterType Type { get; private set; }
+		public string[] Names { get; set; }
+		public string Name => Names[0];
+		public bool HasValue => Type != ParameterType.Boolean;
+		public ParameterType Type { get; set; }
+		public bool HasShort { get; set; }
+		public bool IsMeta { get; set; }
+		public Parameter[] Others { get; private set; }
+		public bool IsExclusive => Others == null;
+
 		List<object> lastValues;
 
-		public Parameter(string name, bool hasValue, ParameterType type)
+		public Parameter(string name, ParameterType type)
 		{
 			Names = new string[1] { name };
-			HasValue = hasValue;
 			Type = type;
 			lastValues = new List<object>();
 		}
 
-		public Parameter(string name, string shortName, bool hasValue, ParameterType type)
+		public Parameter(string name, string shortName, ParameterType type)
 		{
 			if (string.IsNullOrWhiteSpace(shortName))
 				Names = new string[1] { name };
 			else
 				Names = new string[2] { name, shortName };
-			HasValue = hasValue;
 			Type = type;
 			lastValues = new List<object>();
 		}
 
-		public Parameter(string[] names, bool hasValue, ParameterType type)
+		public Parameter(string[] names, ParameterType type)
 		{
 			Names = names;
-			HasValue = hasValue;
 			Type = type;
 			lastValues = new List<object>();
+		}
+
+		public Parameter()
+		{
 		}
 
 		public ParameterValue CreateValue(object value)
@@ -59,7 +66,7 @@ namespace StealthyGame.Engine.GameDebug.GameConsole
 			switch (Type)
 			{
 				case ParameterType.Command:
-					return GameConsole.GetCommands().Select(c => c.Name);
+					return GameConsole.GetCommands().Select(c => c.Names[0]); //TODO
 				case ParameterType.File:
 					return StdConsoleCommands.FileTree.Current.GetChildren().Select(f => f.ShortName);
 				case ParameterType.String:
@@ -73,23 +80,10 @@ namespace StealthyGame.Engine.GameDebug.GameConsole
 			}
 			return new string[0];
 		}
-	}
 
-	public class MetaParameter : Parameter
-	{
-		public MetaParameter(string name, ParameterType type)
-			: base(name, true, type)
+		internal void SetOthers(Parameter[] others)
 		{
-		}
-
-		public MetaParameter(string name, string shortName, ParameterType type)
-			: base(name, shortName, true, type)
-		{
-		}
-
-		public MetaParameter(string[] names, ParameterType type)
-			: base(names, true, type)
-		{
+			this.Others = others;
 		}
 	}
 
@@ -135,7 +129,6 @@ namespace StealthyGame.Engine.GameDebug.GameConsole
 			return bool.Parse(Value.ToString());
 		}
 	}
-
 
 	public enum ParameterType
 	{
